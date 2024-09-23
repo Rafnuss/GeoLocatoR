@@ -36,6 +36,8 @@ Suggests:
     readxl,
     quarto,
     testthat (>= 3.0.0)
+Remotes: 
+  rafnuss/GeoPressureR
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
