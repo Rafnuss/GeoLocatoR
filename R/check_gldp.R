@@ -66,8 +66,11 @@ check_gldp_pkg <- function(pkg) {
 #' @noRd
 check_gldp_profile <- function(pkg) {
   schema <- jsonlite::fromJSON(pkg$`$schema`, simplifyVector = FALSE)
-  schema <- jsonlite::fromJSON(glue::glue("/Users/rafnuss/Library/CloudStorage/OneDrive-Vogelwarte",
-  "/geolocator-dp/geolocator-dp-profile.json"),
+  schema <- jsonlite::fromJSON(
+    glue::glue(
+      "/Users/rafnuss/Library/CloudStorage/OneDrive-Vogelwarte",
+      "/geolocator-dp/geolocator-dp-profile.json"
+    ),
     simplifyVector = FALSE
   )
 
@@ -404,8 +407,9 @@ check_format <- function(value, format, field) {
         error = function(e) FALSE
       )
     },
-    color = function(v)
-      grepl("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^(red|blue|green|yellow|black|white)$", v),
+    color = function(v) {
+      grepl("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^(red|blue|green|yellow|black|white)$", v)
+    },
     style = function(v) grepl("^.+: .+;$", v),
     phone = function(v) grepl("^\\+?[0-9 .-]{7,}$", v),
     uri = function(v) grepl("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?", v),

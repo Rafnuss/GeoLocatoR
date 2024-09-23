@@ -87,8 +87,10 @@ create_gldp <- function(
   assertthat::assert_that(all(sapply(contributors, function(x) is.list(x) && !is.null(x$title))))
 
   if (is.null(schema)) {
-    schema <- glue::glue("https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/main/",
-                         "geolocator-dp-profile.json")
+    schema <- glue::glue(
+      "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/main/",
+      "geolocator-dp-profile.json"
+    )
   }
   assertthat::assert_that(assertthat::is.string(schema))
   assertthat::assert_that(grepl("^https?://[[:alnum:].-]+/?", schema))

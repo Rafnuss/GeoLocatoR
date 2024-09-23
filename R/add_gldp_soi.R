@@ -86,18 +86,24 @@ add_gldp_soi <- function(pkg,
       attachment_type = paste0(
         c(
           if (!is.na(.data[["Harness_data"]])) .data[["Harness_data"]],
-          if (!is.na(.data[["HarnessMaterial_data"]]))
-            glue::glue("material:{.data[['HarnessMaterial_data']]}"),
-          if (!is.na(.data[["HarnessAttachement_data"]]))
-            glue::glue("attachement:{.data[['HarnessAttachement_data']]}"),
-          if (!is.na(.data[["HarnessThickness"]]))
-            glue::glue("thickness:{.data[['HarnessThickness']]}"),
-          if (!is.na(.data[["LegHarnessDiameter"]]))
-            glue::glue("legDiameter:{.data[['LegHarnessDiameter']]}"),
-          if (!is.na(.data[["BreastHarnessDiameterHead"]]))
-            glue::glue("BreastDiameterHead:{.data[['BreastHarnessDiameterHead']]}"),
-          if (!is.na(.data[["BreastHarnessDiameterTail"]]))
+          if (!is.na(.data[["HarnessMaterial_data"]])) {
+            glue::glue("material:{.data[['HarnessMaterial_data']]}")
+          },
+          if (!is.na(.data[["HarnessAttachement_data"]])) {
+            glue::glue("attachement:{.data[['HarnessAttachement_data']]}")
+          },
+          if (!is.na(.data[["HarnessThickness"]])) {
+            glue::glue("thickness:{.data[['HarnessThickness']]}")
+          },
+          if (!is.na(.data[["LegHarnessDiameter"]])) {
+            glue::glue("legDiameter:{.data[['LegHarnessDiameter']]}")
+          },
+          if (!is.na(.data[["BreastHarnessDiameterHead"]])) {
+            glue::glue("BreastDiameterHead:{.data[['BreastHarnessDiameterHead']]}")
+          },
+          if (!is.na(.data[["BreastHarnessDiameterTail"]])) {
             glue::glue("BreastDiameterTail:{.data[['BreastHarnessDiameterTail']]}")
+          }
         ),
         collapse = "|"
       )
