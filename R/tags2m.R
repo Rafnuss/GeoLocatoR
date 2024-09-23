@@ -29,13 +29,14 @@
 #'
 #' @export
 tags2m <- function(tags) {
-
   if (length(tags) > 0) {
     m <- tags %>%
       purrr::map(function(tag) {
         tag %>%
-          purrr::keep(names(tag) %in% c("pressure", "acceleration", "light", "temperature",
-                                        "airtemperature", "magnetic")) %>%
+          purrr::keep(names(tag) %in% c(
+            "pressure", "acceleration", "light", "temperature",
+            "airtemperature", "magnetic"
+          )) %>%
           purrr::imap(\(df, sensor) {
             if (sensor == "acceleration") {
               sensor <- "activity"
@@ -50,8 +51,11 @@ tags2m <- function(tags) {
             return(df)
           }) %>%
           purrr::map(~ select(.x, any_of(
-            c("pressure", "activity", "pitch", "light", "temperature", "airtemperature",  "gX",
-              "gY", "gZ", "mX", "mY", "mZ", "date", "label")))) %>%
+            c(
+              "pressure", "activity", "pitch", "light", "temperature", "airtemperature", "gX",
+              "gY", "gZ", "mX", "mY", "mZ", "date", "label"
+            )
+          ))) %>%
           purrr::map(~ pivot_longer(.x,
             cols = -c(date, label), names_to = "sensor",
             values_to = "value"

@@ -177,8 +177,10 @@ write_geopressuretemplate_readme <- function(pkg) {
     if (!is.null(pkg$description)) paste(pkg$description, "\n\n") else "",
     "## Contributors\n\n",
     paste(sapply(pkg$contributors, function(c) {
-      paste0("- **", c$title, "** - ", paste(c$roles, collapse = ", "),
-             " ([Email](mailto:", c$email, "))\n")
+      paste0(
+        "- **", c$title, "** - ", paste(c$roles, collapse = ", "),
+        " ([Email](mailto:", c$email, "))\n"
+      )
     }), collapse = ""),
     "\n",
     "## Overview\n\n",
@@ -188,7 +190,10 @@ write_geopressuretemplate_readme <- function(pkg) {
     "**Taxonomic coverage:** ", paste(pkg$taxonomic, collapse = ", "), "\n",
     if (!is.null(pkg$embargo)) paste("**Embargo until:** ", pkg$embargo, "\n") else "",
     if (!is.null(pkg$keywords)) {
-      paste("**Keywords:** ", paste(pkg$keywords, collapse = ", "), "\n")} else {""},
+      paste("**Keywords:** ", paste(pkg$keywords, collapse = ", "), "\n")
+    } else {
+      ""
+    },
     sep = ""
   )
 
@@ -221,10 +226,10 @@ write_geopressuretemplate_licences <- function(licenses) {
   } else if (grepl("Apache", licenses$name)) {
     usethis::use_apache_license()
   } else if (grepl("CC0", licenses$name) || grepl("CC-0", licenses$name) ||
-             grepl("CC 0", licenses$name)) {
+    grepl("CC 0", licenses$name)) {
     usethis::use_cc0_license()
   } else if (grepl("CCBY", licenses$name) || grepl("CC-BY", licenses$name) ||
-             grepl("CC BY", licenses$name)) {
+    grepl("CC BY", licenses$name)) {
     usethis::use_ccby_license()
   } else if (grepl("Proprietary", licenses$name)) {
     usethis::use_proprietary_license()
