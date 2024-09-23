@@ -1,0 +1,111 @@
+---
+title: "Create from GeoPressureTemplate"
+format: 
+  html:
+    self_contained: true
+vignette: >
+  %\VignetteIndexEntry{create-from-GeoPressureTemplate}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: '#>'
+---
+
+```{r setup, message=F}
+library(frictionless)
+library(GeoLocatoR)
+library(tidyverse)
+```
+
+::: callout-important
+In this guide, we will see how to generate a GeoLocator Data Package from a [GeoPressureTemplate
+](https://github.com/Rafnuss/GeoPressureTemplate) folder. This GeoPressureTemplate project need to 
+have:
+- Updated the `DESCRIPTION` file with all relevant information, including `version`, 
+`contributors`, `licences` etc... 
+- Performed the workflow analysis described in the [GeoPressureManual]() so that you have one 
+interim `RData` file per tag, with all ouputs you would like to publish (i.e. ideally the 
+trajectory).
+- Ideally, you would have created the `tag.csv` and `observations.csv` files in the `data/` folder.
+:::
+
+## Create an (empty) datapackage
+
+We can generate a GeoLocator Data Package from a GeoPressureTemplate folder with 
+`create_gldp_geopressuretemplate()`. This function will read the `DESCRIPTION` file and create a 
+frictionless package with the metadata. At this stage, no data is added to the package.
+
+```{r}
+directory <- "/Users/rafnuss/Library/CloudStorage/OneDrive-Vogelwarte/WoodlandKingfisher"
+pkg <- create_gldp_geopressuretemplate(directory)
+```
+
+Additional metadata can be added or edited. 
+
+```{r}
+# There are no embargo by default (1970-01-01)
+pkg$embargo <- "2030-01-01"
+
+# And the url to an image describing your datapackage
+pkg$image <- NULL
+# You can also add keywords:
+pkg$keywords <- c("Woodland Kingfisher", "intra-african", "multi-sensor geolocator")
+# Add DOI of the datapackage if already available or reserve it https://help.zenodo.org/docs/deposit/describe-records/reserve-doi/#reserve-doi
+pkg$id <- "https://doi.org/10.5281/zenodo.11207141"
+# Provide the recommended citation for the package
+pkg$citation <- "Nussbaumer, R., & Rime, Y. (2024). Woodland Kingfisher: Migration route and timing of South African Woodland Kingfisher (v1.1). Zenodo. https://doi.org/10.5281/zenodo.11207141"
+# Funding sources
+pkg$grants <- c("Swiss Ornithological Intitute")
+# Identifiers of resources related to the package (e.g. papers, project pages, derived datasets, APIs, etc.).
+pkg$relatedIdentifiers <- NULL
+# List of references related to the package
+pkg$references <- NULL
+pkg$reference_location <- list(
+  lat = 45.211,
+  lon = 34.25
+)
+```
+
+## Add data to the package
+
+After creating the package, we can add the data to the package. If present, the data is read
+preferentially from the interim `RData` files. 
+
+::: callout-warning
+The `RData` files data should be generated through the GeoPressureR workflow functions `geopressuretemplate()`. Read more on the GeoPressureManual. 
+:::
+
+```{r}
+pkg <- pkg %>%
+  add_gldp_geopressuretemplate(directory)
+print(pkg)
+```
+
+::: callout-info
+If you haven't run the GeoPressureR workflow but still want to create a GeoLocator Data package from the raw data, you can still use `add_gldp_geopressuretempate` with `from="raw-tag"`, reading directly the data from "./data/raw-tag/".
+
+```{r}
+create_gldp_geopressuretemplate(directory) %>%
+  add_gldp_geopressuretemplate(directory, from = "raw-tag")
+```
+::: 
+
+## Check package
+
+Finally, we can check the package to ensure that it is compliant with the GeoLocator Data Package standard.
+
+```{r}
+check_gldp(pkg)
+```
+
+## Write package
+
+Once the package is ready, we can write it to disk.
+
+```{r}
+write_package(pkg, file.path("~/", pkg$name))
+```
+
+

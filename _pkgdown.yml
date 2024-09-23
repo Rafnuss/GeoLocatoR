@@ -1,0 +1,67 @@
+url: https://github.com/rafnuss/geolocator
+template:
+  bootstrap: 5
+  bslib:
+    bootswatch: flatly
+    primary: "#516F6A"
+
+reference:
+  - title: Main operation
+    contents:
+      - create_gldp
+      - add_gldp_resource
+      - read_gldp
+      - update_gldp
+  - title: GeoPressureTemplate
+    contents:
+      - create_gldp_geopressuretemplate
+      - add_gldp_geopressuretemplate
+      - write_geopressuretemplate
+  - title: SOI
+    contents:
+      - read_gdl
+      - add_gldp_soi
+  - title: Accessor (and assignment) functions
+    contents:
+      - tags
+      - observations
+      - measurements
+      - staps
+      - edges
+      - paths
+      - twilights
+  - title: Check and validate
+    contents:
+      - validate_gldp
+      - check_gldp
+      - check_gldp_pkg
+  - title: Miscellaneous functions
+    contents:
+      - tags2m
+      - params2t
+      - params2o
+      - print.geolocatordp
+      - version
+
+navbar:
+  structure:
+    left:  [reference, articles, geolocator-dp]
+  components:
+    geolocator-dp:
+      text: GeolocatorDP
+      href: https://raphaelnussbaumer.com/GeoLocator-DP/
+    articles:
+      text: User Guides
+      menu:
+      - text: Create Data Package
+      - text: "from GeoPressureTemplate"
+        href: articles/create-from-geopressuretemplate.html
+      - text: "from Swiss Ornithological Institute (SOI)"
+        href: articles/create-from-soi.html
+      - text: -------
+      - text: Read and Use Data Package
+        href: articles/read-and-use-datapackage.html
+
+
+vignettes:
+  toc: false

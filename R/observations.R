@@ -1,0 +1,38 @@
+#' Get or set observations
+#'
+#' @description
+#' `observations()` gets the observations from a GeoLocator Data Package object.
+#'
+#' `observations<-()` is the assignment equivalent.
+#'   It should only be used within other functions, where the expected data
+#'   structure can be guaranteed.
+#'
+#' @inheritParams print.geolocatordp
+#' @return [tibble::tibble()] data frame with observations
+#' @export
+observations <- function(x) {
+  check_gldp_pkg(x)
+  # pluck(x, "data", "observations")
+  frictionless::read_resource(x, resource_name = "observations")
+}
+
+#' @rdname observations
+#' @param value A data frame to assign as observations
+#' @export
+"observations<-" <- function(x, value) {
+  if (!is.data.frame(value)) {
+    cli_abort(
+      "{.arg value} must be a data.frame, not {.type {value}}."
+    )
+  }
+  # pluck(x, "data", "observations") <- as_tibble(value)
+
+  x <- add_gldp_resource(
+    package = x,
+    resource_name = "observations",
+    data = value,
+    replace = "observations" %in% frictionless::resources(x)
+  )
+
+  return(x)
+}

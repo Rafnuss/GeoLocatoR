@@ -1,0 +1,16 @@
+.navbar a[href="https://raphaelnussbaumer.com/GeoLocator-DP/"] {
+  background-color: #f0f0f0;  /* Background color to make it stand out */
+  color: #000000;             /* Optional: Sets text color */
+  margin-left: 10px;
+}
+
+.navbar a[href="https://raphaelnussbaumer.com/GeoLocator-DP/"]::before {
+  content: '';
+  display: inline-block;
+  background-image: url(https://raphaelnussbaumer.com/GeoLocator-DP/assets/logo.png);
+  background-size: contain;
+  width: 22px;
+  height: 22px;
+  margin-right: 10px;
+  vertical-align: middle;
+}

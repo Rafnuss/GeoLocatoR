@@ -1,0 +1,14 @@
+^GeoLocator\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^README\.Rmd$
+^cran-comments\.md$
+^doc$
+^Meta$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
+^\.lintr$
+^vignettes/.quarto
+^vignettes/*_files$
