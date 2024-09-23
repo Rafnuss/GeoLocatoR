@@ -17,7 +17,8 @@
 #' The schema for the resource is fetched from a JSON file located in a specified directory.
 #' The function adjusts the data frame according to the schema's `fieldsMatch` property:
 #' \itemize{
-#'   \item \code{"equal"}: The data frame must have exactly the same fields as defined in the schema.
+#'   \item \code{"equal"}: The data frame must have exactly the same fields as defined in the
+#'   schema.
 #'   \item \code{"subset"}: The data frame must have at least the fields defined in the schema,
 #'   but may have additional fields. Fields not present in the schema are added to the schema.
 #'   \item \code{"superset"}: The data frame may have fields not present in the schema, but must
@@ -44,7 +45,6 @@ add_gldp_resource <- function(package,
   schema_url <- glue::glue(
     "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/main/{resource_name}-table-schema.json"
   )
-  # schema_url <- glue::glue("/Users/rafnuss/Library/CloudStorage/OneDrive-Vogelwarte/geolocator-dp/{resource_name}-table-schema.json")
 
   schema <- jsonlite::fromJSON(schema_url, simplifyDataFrame = FALSE, simplifyVector = TRUE)
 
@@ -56,11 +56,13 @@ add_gldp_resource <- function(package,
   # data_fields <- names(data)
 
   if (schema$fieldsMatch == "equal") {
-    # The data source MUST have exactly the same fields as defined in the fields array. Fields MUST be mapped by their names.
+    # The data source MUST have exactly the same fields as defined in the fields array.
+    # Fields MUST be mapped by their names.
 
     data <- data %>% select(all_of(schema_fields))
   } else if (schema$fieldsMatch == "subset") {
-    # The data source MUST have all the fields defined in the fields array, but MAY have more. Fields MUST be mapped by their names.
+    # The data source MUST have all the fields defined in the fields array, but MAY have more.
+    # Fields MUST be mapped by their names.
 
     # Create a schema from the data (adding all possible field)
     schema_data <- frictionless::create_schema(data)
@@ -76,8 +78,10 @@ add_gldp_resource <- function(package,
 
     data <- data %>% select(all_of(schema_fields))
   } else if (schema$fieldsMatch == "superset" || schema$fieldsMatch == "partial") {
-    # superset: The data source MUST only have fields defined in the fields array, but MAY have fewer. Fields MUST be mapped by their names.
-    # partial: The data source MUST have at least one field defined in the fields array. Fields MUST be mapped by their names.
+    # superset: The data source MUST only have fields defined in the fields array, but MAY have
+    # fewer. Fields MUST be mapped by their names.
+    # partial: The data source MUST have at least one field defined in the fields array.
+    # Fields MUST be mapped by their names.
 
     for (i in seq_along(schema_fields)) {
       # Check if column already exists

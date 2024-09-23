@@ -1,12 +1,19 @@
 #' Add GLDP SOI Data to a Package
 #'
-#' This function adds data from the Swiss Ornithological Institute (SOI) to a package. It includes tags, measurements, and observations based on the provided data frame and directory of data. The function also handles missing directories and updates the package accordingly.
+#' This function adds data from the Swiss Ornithological Institute (SOI) to a package. It includes
+#' tags, measurements, and observations based on the provided data frame and directory of data. The
+#' function also handles missing directories and updates the package accordingly.
 #'
 #' @param pkg The package object to which the data will be added.
-#' @param gdl A data frame containing the SOI data. Must include columns like `OrderName`, `GDL_ID`, and other relevant fields for tags, measurements, and observations.
-#' @param directory_data A character string specifying the path to the directory where data files are located. This directory is used to locate and match GDL_IDs to their corresponding directories.
-#' @param allow_empty_o A logical value indicating whether to allow observations with missing datetime values. Default is \code{FALSE}.
-#' @param replace A logical value indicating whether to replace existing resources in the package with the new data. Default is \code{FALSE}.
+#' @param gdl A data frame containing the SOI data. Must include columns like `OrderName`,
+#' `GDL_ID`, and other relevant fields for tags, measurements, and observations.
+#' @param directory_data A character string specifying the path to the directory where data files
+#' are located. This directory is used to locate and match GDL_IDs to their corresponding
+#' directories.
+#' @param allow_empty_o A logical value indicating whether to allow observations with missing
+#' datetime values. Default is \code{FALSE}.
+#' @param replace A logical value indicating whether to replace existing resources in the package
+#' with the new data. Default is \code{FALSE}.
 #'
 #' @details
 #' The function performs the following steps:
@@ -79,12 +86,18 @@ add_gldp_soi <- function(pkg,
       attachment_type = paste0(
         c(
           if (!is.na(.data[["Harness_data"]])) .data[["Harness_data"]],
-          if (!is.na(.data[["HarnessMaterial_data"]])) glue::glue("material:{.data[['HarnessMaterial_data']]}"),
-          if (!is.na(.data[["HarnessAttachement_data"]])) glue::glue("attachement:{.data[['HarnessAttachement_data']]}"),
-          if (!is.na(.data[["HarnessThickness"]])) glue::glue("thickness:{.data[['HarnessThickness']]}"),
-          if (!is.na(.data[["LegHarnessDiameter"]])) glue::glue("legDiameter:{.data[['LegHarnessDiameter']]}"),
-          if (!is.na(.data[["BreastHarnessDiameterHead"]])) glue::glue("BreastDiameterHead:{.data[['BreastHarnessDiameterHead']]}"),
-          if (!is.na(.data[["BreastHarnessDiameterTail"]])) glue::glue("BreastDiameterTail:{.data[['BreastHarnessDiameterTail']]}")
+          if (!is.na(.data[["HarnessMaterial_data"]]))
+            glue::glue("material:{.data[['HarnessMaterial_data']]}"),
+          if (!is.na(.data[["HarnessAttachement_data"]]))
+            glue::glue("attachement:{.data[['HarnessAttachement_data']]}"),
+          if (!is.na(.data[["HarnessThickness"]]))
+            glue::glue("thickness:{.data[['HarnessThickness']]}"),
+          if (!is.na(.data[["LegHarnessDiameter"]]))
+            glue::glue("legDiameter:{.data[['LegHarnessDiameter']]}"),
+          if (!is.na(.data[["BreastHarnessDiameterHead"]]))
+            glue::glue("BreastDiameterHead:{.data[['BreastHarnessDiameterHead']]}"),
+          if (!is.na(.data[["BreastHarnessDiameterTail"]]))
+            glue::glue("BreastDiameterTail:{.data[['BreastHarnessDiameterTail']]}")
         ),
         collapse = "|"
       )

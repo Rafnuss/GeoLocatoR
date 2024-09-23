@@ -1,23 +1,25 @@
 #' Update a GeoLocator Data Package Metadata
 #'
 #' This function updates the metadata of an existing GeoLocator Data Package by setting or updating
-#' several fields based on the data contained within the package. Specifically, it updates the `created`,
-#' `temporal`, `taxonomic`, and `reference_location` fields based on the data resources present in the
-#' package.
+#' several fields based on the data contained within the package. Specifically, it updates the
+#' `created`,`temporal`, `taxonomic`, and `reference_location` fields based on the data resources
+#' present in the package.
 #'
 #' The function performs the following updates:
 #'
 #' 1. Sets the `created` field to the current date and time in RFC3339 format.
-#' 2. Updates the `temporal` field with the date range of the `datetime` values from the `measurements`
-#'    resource, if available.
-#' 3. Updates the `taxonomic` field with unique, non-missing `scientific_name` values from the `tags`
-#'    resource, if available.
-#' 4. Sets the `reference_location` field to the median latitude and longitude values from the `observations`
-#'    resource, if available.
+#' 2. Updates the `temporal` field with the date range of the `datetime` values from the
+#'    `measurements` resource, if available.
+#' 3. Updates the `taxonomic` field with unique, non-missing `scientific_name` values from the
+#'    `tags` resource, if available.
+#' 4. Sets the `reference_location` field to the median latitude and longitude values from the
+#'    `observations` resource, if available.
 #'
-#' @param pkg An object of class `"geolocatordp"` representing the GeoLocator Data Package to be updated.
+#' @param pkg An object of class `"geolocatordp"` representing the GeoLocator Data Package to be
+#' updated.
 #'
-#' @return An updated GeoLocator Data Package object of class `"geolocatordp"` with modified metadata.
+#' @return An updated GeoLocator Data Package object of class `"geolocatordp"` with modified
+#' metadata.
 #'
 #' @export
 update_gldp <- function(pkg) {

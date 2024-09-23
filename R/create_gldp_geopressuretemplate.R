@@ -45,7 +45,8 @@ create_gldp_geopressuretemplate <- function(directory) {
     # Check for suggested variable
     for (var in c("Version", "Description")) {
       if (!d$has_fields(var)) {
-        cli::cli_warn("{.field {var}} is not present in {.file DESCRIPTION} and is strongly suggested")
+        cli::cli_warn("{.field {var}} is not present in
+                      {.file DESCRIPTION} and is strongly suggested")
       }
     }
 

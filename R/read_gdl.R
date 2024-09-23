@@ -1,35 +1,42 @@
 #' Read Geolocator Data and Orders
 #'
-#' This set of functions facilitates the reading and combining of Geolocator Data (GDL) and associated order information from various sources.
-#' The main function, `read_gdl()`, allows for reading data from an Access file or directly from separate CSV files containing GDL data and order information.
+#' This set of functions facilitates the reading and combining of Geolocator Data (GDL) and
+#' associated order information from various sources.
+#' The main function, `read_gdl()`, allows for reading data from an Access file or directly from
+#' separate CSV files containing GDL data and order information.
 #' It returns a data frame that integrates GDL data with summarized order details.
 #'
-#' @param access_file A string specifying the path to an Access file containing both the GDL data and order information.
+#' @param access_file A string specifying the path to an Access file containing both the GDL data
+#' and order information.
 #' If provided, it takes precedence over `file_data` and `file_order`. Defaults to `NA`.  §
-#' @param file_data A string specifying the path to the GDL data file. Required if `access_file` is not provided. Defaults to `NA`.
-#' @param file_order A string specifying the path to the GDL order file. Required if `access_file` is not provided. Defaults to `NA`.
-#' @param filter_col A logical value or a character vector. If `TRUE`, only a predefined set of columns is selected.
-#' If `FALSE`, all columns are included. Alternatively, a character vector can be passed to specify which columns to select. Defaults to `TRUE`.
+#' @param file_data A string specifying the path to the GDL data file. Required if `access_file`
+#' is not provided. Defaults to `NA`.
+#' @param file_order A string specifying the path to the GDL order file. Required if `access_file`
+#' is not provided. Defaults to `NA`.
+#' @param filter_col A logical value or a character vector. If `TRUE`, only a predefined set of
+#' columns is selected.
+#' If `FALSE`, all columns are included. Alternatively, a character vector can be passed to specify
+#' which columns to select. Defaults to `TRUE`.
 #'
-#' @return A data frame combining GDL data and summarized order information. The data frame includes columns such as `OrderName`,
-#' `Client`, `NumberDelivered`, `GDL_ID`, `Species`, and more, depending on the value of `filter_col`.
+#' @return A data frame combining GDL data and summarized order information. The data frame
+#' includes columns such as `OrderName`, `Client`, `NumberDelivered`, `GDL_ID`, `Species`, and more,
+#'  depending on the value of `filter_col`.
 #'
 #' @details
-#' The `read_gdl()` function is the primary interface for reading and combining GDL data with orders. It can read from an Access file or from separate data and order files.
-#' If an Access file is provided, the `read_gdl_access()` function is used to extract the GDL data and order information. Otherwise, the `read_gdl_data()` and `read_gdl_orders()`
+#' The `read_gdl()` function is the primary interface for reading and combining GDL data with
+#' orders. It can read from an Access file or from separate data and order files.
+#' If an Access file is provided, the `read_gdl_access()` function is used to extract the GDL data
+#' and order information. Otherwise, the `read_gdl_data()` and `read_gdl_orders()`
 #' functions are employed to read the data from specified CSV files.
 #'
-#' - **`read_gdl()`**: Reads GDL and order data, either from an Access file or separate CSV files, and returns a combined data frame.
-#' - **`read_gdl_orders()`**: Reads GDL order information from a CSV file, including columns like `OrderID`, `OrderName`, `Species`, `Client`, and `NumberDelivered`.
-#' - **`read_gdl_data()`**: Reads GDL data from a CSV file, including columns like `DataID`, `OrderName`, `GDL_ID`, `Species`, and spatial and temporal information.
-#' - **`read_gdl_access()`**: Extracts GDL data and order information from an Access database file and exports them to temporary CSV files.
-#'
-#' @examples
-#' # Reading data from an Access file
-#' # gdl_data <- read_gdl(access_file = "path/to/access_file.accdb")
-#'
-#' # Reading data from separate CSV files
-#' # gdl_data <- read_gdl(file_data = "path/to/file_data.csv", file_order = "path/to/file_order.csv")
+#' - **`read_gdl()`**: Reads GDL and order data, either from an Access file or separate CSV files,
+#' and returns a combined data frame.
+#' - **`read_gdl_orders()`**: Reads GDL order information from a CSV file, including columns like
+#' `OrderID`, `OrderName`, `Species`, `Client`, and `NumberDelivered`.
+#' - **`read_gdl_data()`**: Reads GDL data from a CSV file, including columns like `DataID`,
+#' `OrderName`, `GDL_ID`, `Species`, and spatial and temporal information.
+#' - **`read_gdl_access()`**: Extracts GDL data and order information from an Access database file
+#' and exports them to temporary CSV files.
 #'
 #' @export
 read_gdl <- function(access_file = NA,

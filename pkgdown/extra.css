@@ -9,6 +9,7 @@
   display: inline-block;
   background-image: url(https://raphaelnussbaumer.com/GeoLocator-DP/assets/logo.png);
   background-size: contain;
+  background-repeat: no-repeat;
   width: 22px;
   height: 22px;
   margin-right: 10px;

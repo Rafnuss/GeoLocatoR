@@ -52,7 +52,7 @@
 #' specification](https://datapackage.org/standard/data-package/#citation).
 #' @param grants (optional) A list of grants that funded the creation of the package. See the [Data
 #' Package specification](https://datapackage.org/standard/data-package/#grants).
-#' @param relatedIdentifiers (optional) A list of related identifiers for the package. Each related
+#' @param related_identifiers (optional) A list of related identifiers for the package. Each related
 #' identifier is a list with properties `relationType` and `relatedIdentifier`. See the [Data
 #' Package specification](https://datapackage.org/standard/data-package/#related-identifiers).
 #' @param references (optional) A list of references for the package. See the [Data Package
@@ -79,7 +79,7 @@ create_gldp <- function(
     keywords = NULL,
     citation = NULL,
     grants = NULL,
-    relatedIdentifiers = NULL,
+    related_identifiers = NULL,
     references = NULL) {
   # Assertions to check input validity
   assertthat::assert_that(assertthat::is.string(title))
@@ -87,7 +87,8 @@ create_gldp <- function(
   assertthat::assert_that(all(sapply(contributors, function(x) is.list(x) && !is.null(x$title))))
 
   if (is.null(schema)) {
-    schema <- "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/main/geolocator-dp-profile.json"
+    schema <- glue::glue("https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/main/",
+                         "geolocator-dp-profile.json")
   }
   assertthat::assert_that(assertthat::is.string(schema))
   assertthat::assert_that(grepl("^https?://[[:alnum:].-]+/?", schema))
@@ -125,10 +126,10 @@ create_gldp <- function(
   if (!is.null(keywords)) assertthat::assert_that(is.character(keywords))
   if (!is.null(citation)) assertthat::assert_that(assertthat::is.string(citation))
   if (!is.null(grants)) assertthat::assert_that(is.character(grants))
-  if (!is.null(relatedIdentifiers)) {
-    assertthat::assert_that(is.list(relatedIdentifiers))
+  if (!is.null(related_identifiers)) {
+    assertthat::assert_that(is.list(related_identifiers))
     assertthat::assert_that(all(sapply(
-      relatedIdentifiers,
+      related_identifiers,
       \(x) is.list(x) && !is.null(x$relationType) && !is.null(x$relatedIdentifier)
     )))
   }
@@ -154,7 +155,7 @@ create_gldp <- function(
   if (!is.null(keywords)) descriptor$keywords <- keywords
   if (!is.null(citation)) descriptor$citation <- citation
   if (!is.null(grants)) descriptor$grants <- grants
-  if (!is.null(relatedIdentifiers)) descriptor$relatedIdentifiers <- relatedIdentifiers
+  if (!is.null(related_identifiers)) descriptor$relatedIdentifiers <- related_identifiers
   if (!is.null(references)) descriptor$references <- references
 
   # Create frictionless package
@@ -169,9 +170,4 @@ create_gldp <- function(
   attr(package, "version") <- version(package)
 
   return(package)
-}
-
-# Custom URL validation function
-is.url <- function(x) {
-
 }

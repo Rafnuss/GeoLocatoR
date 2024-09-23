@@ -13,7 +13,7 @@
 #' @export
 params2t <- function(params) {
   params %>%
-    purrr::map(\(param){
+    purrr::map(\(param) {
       t <- tibble::tibble(
         tag_id = param$id,
         manufacturer = param$manufacturer,
@@ -29,22 +29,6 @@ params2t <- function(params) {
             firwmare = s$`FW Version`
           )
       }
-
-      # Not encouraged
-      # var <- glue::glue("https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/main/tags-table-schema.json") %>%
-      #   read_descriptor(safe = FALSE) %>%
-      #   .$fields %>%
-      #   map_vec(\(x) x$name) %>%
-      #   setdiff(c("tag_id", "manufacturer", "scientific_name")) # variable already set above
-      #
-      # var %>%
-      #   purrr::map(\(x){
-      #     tmp <- config::get(config = param$id, x)
-      #     if (!is.null(tmp)) {
-      #       t <- t %>%
-      #         mutate(!!sym(x) := tmp)
-      #     }
-      #   })
     }) %>%
     purrr::list_rbind()
 }

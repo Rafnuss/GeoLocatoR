@@ -1,15 +1,18 @@
 #' Validate a GeoLocator Data Package
 #'
-#' This function performs a comprehensive validation of a GeoLocator Data Package by checking the package
-#' metadata, profile, and resources. The validation includes verifying that the package conforms to the
-#' GeoLocator Data Package profile and that each resource adheres to its schema.
+#' This function performs a comprehensive validation of a GeoLocator Data Package by checking the
+#' package metadata, profile, and resources. The validation includes verifying that the package
+#' conforms to the GeoLocator Data Package profile and that each resource adheres to its schema.
 #'
 #' If `quiet` is `TRUE`, the function suppresses the output of the `cli` package's messages.
 #'
-#' @param pkg An object of class `"geolocatordp"` representing the GeoLocator Data Package to be validated.
-#' @param quiet A logical indicating whether to suppress messages from the `cli` package. Defaults to `FALSE`.
+#' @param pkg An object of class `"geolocatordp"` representing the GeoLocator Data Package to be
+#' validated.
+#' @param quiet A logical indicating whether to suppress messages from the `cli` package. Defaults
+#' to `FALSE`.
 #'
-#' @return A logical value indicating whether the package validation was successful (`TRUE`) or failed (`FALSE`).
+#' @return A logical value indicating whether the package validation was successful (`TRUE`) or
+#' failed (`FALSE`).
 #'
 #' @export
 check_gldp <- function(pkg, quiet = FALSE) {
@@ -37,9 +40,9 @@ check_gldp <- function(pkg, quiet = FALSE) {
 
 #' Validate the GeoLocator Data Package Metadata
 #'
-#' This function checks that the provided object is a valid GeoLocator Data Package and conforms to the expected
-#' structure. It verifies that the object has the `"geolocatordp"` class and performs a general package validation
-#' using the `frictionless` package.
+#' This function checks that the provided object is a valid GeoLocator Data Package and conforms to
+#' the expected structure. It verifies that the object has the `"geolocatordp"` class and performs
+#' a general package validation using the `frictionless` package.
 #'
 #' @param pkg An object of class `"geolocatordp"` to be validated.
 #'
@@ -62,10 +65,10 @@ check_gldp_pkg <- function(pkg) {
 
 #' @noRd
 check_gldp_profile <- function(pkg) {
-  schema <- jsonlite::fromJSON(pkg$`$schema`, simplifyVector = F)
-  schema <- jsonlite::fromJSON(
-    "/Users/rafnuss/Library/CloudStorage/OneDrive-Vogelwarte/geolocator-dp/geolocator-dp-profile.json",
-    simplifyVector = F
+  schema <- jsonlite::fromJSON(pkg$`$schema`, simplifyVector = FALSE)
+  schema <- jsonlite::fromJSON(glue::glue("/Users/rafnuss/Library/CloudStorage/OneDrive-Vogelwarte",
+  "/geolocator-dp/geolocator-dp-profile.json"),
+    simplifyVector = FALSE
   )
 
   required <- unlist(schema$allOf[[2]]$required)
@@ -93,12 +96,12 @@ check_gldp_resources <- function(pkg) {
     resource <- pkg$resources[[i]]
 
     if (resource$profile == "tabular-data-resource") {
-      # schema <- jsonlite::fromJSON(resource$schema, simplifyVector = F)
       schema <- jsonlite::fromJSON(
         glue::glue(
-          "/Users/rafnuss/Library/CloudStorage/OneDrive-Vogelwarte/geolocator-dp/{resource$name}-table-schema.json"
+          "/Users/rafnuss/Library/CloudStorage/OneDrive-Vogelwarte/geolocator-dp/{resource$name}-",
+          "table-schema.json"
         ),
-        simplifyVector = F
+        simplifyVector = FALSE
       )
 
       checked <- checked & check_gldp_table(resource$data, schema)
@@ -153,7 +156,8 @@ check_gldp_object <- function(obj, required, properties, name = "") {
   checked <- TRUE
   for (field in names(obj)) {
     if (field %in% names(properties)) {
-      checked <- checked & check_gldp_item(obj[[field]], properties[[field]], glue::glue("{name}{field}"))
+      checked <- checked &
+        check_gldp_item(obj[[field]], properties[[field]], glue::glue("{name}{field}"))
 
       if (properties[[field]]$type == "object") {
         checked <- checked & check_gldp_object(
@@ -303,8 +307,7 @@ check_gldp_item <- function(item, prop, field) {
 
 
     if (any(!in_enum)) {
-      # Display message showing which items are not in the enum
-      invalid_values <- item[!in_enum]
+      invalid_values <- item[!in_enum] # nolint
       cli_alert_danger(
         "{.field {field}} has {sum(!in_enum)} item{?s} that are not in the allowed values:
       {.val {paste(prop$enum, collapse = ', ')}}. Invalid value{?s}:
@@ -361,13 +364,13 @@ check_gldp_fields_match <- function(schema_fields, data_fields, fields_match) {
     }
   } else if (fields_match == "subset") {
     if (!all(schema_fields %in% data_fields)) {
-      missing_fields <- schema_fields[!schema_fields %in% data_fields]
+      missing_fields <- schema_fields[!schema_fields %in% data_fields] # nolint
       cli_alert_danger("Subset match failed. Missing fields: {missing_fields}")
       checked <- FALSE
     }
   } else if (fields_match == "superset") {
     if (!all(data_fields %in% schema_fields)) {
-      extra_fields <- data_fields[!data_fields %in% schema_fields]
+      extra_fields <- data_fields[!data_fields %in% schema_fields] # nolint
       cli_alert_danger("Superset match failed. Extra fields: {extra_fields}")
       checked <- FALSE
     }
@@ -401,7 +404,8 @@ check_format <- function(value, format, field) {
         error = function(e) FALSE
       )
     },
-    color = function(v) grepl("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^(red|blue|green|yellow|black|white)$", v),
+    color = function(v)
+      grepl("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^(red|blue|green|yellow|black|white)$", v),
     style = function(v) grepl("^.+: .+;$", v),
     phone = function(v) grepl("^\\+?[0-9 .-]{7,}$", v),
     uri = function(v) grepl("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?", v),
@@ -418,7 +422,8 @@ check_format <- function(value, format, field) {
     format_func <- format_map[[format]]
     # checked the value using the corresponding validation function
     if (!format_func(value)) {
-      cli_alert_danger("Format mismatch for {.field {field}}: Expected format {.val {format}}, but got {.val {value}}.")
+      cli_alert_danger("Format mismatch for {.field {field}}: Expected format {.val {format}},
+                       but got {.val {value}}.")
       checked <- FALSE
     }
   } else {
@@ -456,9 +461,9 @@ check_type <- function(value, type, field) {
     geopoint = function(v) grepl("^\\s*-?\\d+(\\.\\d+)?,\\s*-?\\d+(\\.\\d+)?\\s*$", v),
     geojson = function(v) {
       TRUE || grepl(glue::glue(
-        "^\\s*\\{\\s*\"type\"\\s*:\\s*\"Feature\"\\s*,\\s*\"geometry\"\\s*:\\s*\\{\\s*\"type\"\\s*:",
-        "\\s*\"Point\"\\s*,\\s*\"coordinates\"\\s*:\\s*\\[\\s*-?\\d+(\\.\\d+)?,\\s*-?\\d+(\\.\\d+)?",
-        "\\s*\\]\\s*\\}\\s*\\}\\s*$"
+        "^\\s*\\{\\s*\"type\"\\s*:\\s*\"Feature\"\\s*,\\s*\"geometry\"\\s*:\\s*\\{\\s*\"type",
+        "\"\\s*:\\s*\"Point\"\\s*,\\s*\"coordinates\"\\s*:\\s*\\[\\s*-?\\d+(\\.\\d+)?,",
+        "\\s*-?\\d+(\\.\\d+)?\\s*\\]\\s*\\}\\s*\\}\\s*$"
       ), v)
     },
     any = function(v) TRUE # 'any' accepts everything

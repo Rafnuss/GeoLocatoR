@@ -7,8 +7,8 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check](https://github.com/Rafnuss/GeoLocatoR/workflows/R-CMD-check/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions)
-[![lint](https://github.com/Rafnuss/GeoPressureR/actions/workflows/lint.yaml/badge.svg)](https://github.com/Rafnuss/GeoPressureR/actions/workflows/lint.yaml)
+[![R-CMD-check](https://github.com/Rafnuss/GeoLocatoR/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/R-CMD-check.yaml)
+[![lint](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/lint.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/lint.yaml)
 <!-- badges: end -->
 
 **GeoLocatoR** is here to help you fly through the complexities of

@@ -14,7 +14,7 @@
 #' @export
 params2o <- function(params) {
   params %>%
-    purrr::map(\(param){
+    purrr::map(\(param) {
       o0 <- tibble::tibble(
         ring_number = NA_character_,
         tag_id = param$id,
@@ -45,7 +45,8 @@ params2o <- function(params) {
           oe <- oe %>% mutate(
             longitude = known$known_lon[id],
             latitude = known$known_lat[id],
-            observation_comments = "Automatically computed from `known$stap_id==1` with `params2o()`"
+            observation_comments =
+              "Automatically computed from `known$stap_id==1` with `params2o()`"
           )
         }
 
@@ -54,7 +55,8 @@ params2o <- function(params) {
           or <- or %>% mutate(
             longitude = known$known_lon[id],
             latitude = known$known_lat[id],
-            observation_comments = "Automatically computed from `known$stap_id==-1` with `params2o()`"
+            observation_comments =
+              "Automatically computed from `known$stap_id==-1` with `params2o()`"
           )
         }
       }
