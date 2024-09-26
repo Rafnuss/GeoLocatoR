@@ -154,10 +154,9 @@
 <div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_gldp_geopressuretemplate.html">create_gldp_geopressuretemplate</a></span><span class="op">(</span><span class="va">directory</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_gldp_geopressuretemplate.html">add_gldp_geopressuretemplate</a></span><span class="op">(</span><span class="va">directory</span>, from <span class="op">=</span> <span class="st">"raw-tag"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ⠙ 1/5 ETA: 12s |</span></span>
+<span><span class="co">#&gt; ⠙ 1/5 ETA: 11s |</span></span>
 <span><span class="co">#&gt; ⠹ 2/5 ETA:  8s |</span></span>
-<span><span class="co">#&gt; ⠸ 3/5 ETA:  5s |</span></span>
-<span><span class="co">#&gt; ⠼ 4/5 ETA:  3s |</span></span>
+<span><span class="co">#&gt; ⠸ 4/5 ETA:  3s |</span></span>
 <span><span class="co">#&gt; A GeoLocator Data Package with 3 resourcess:</span></span>
 <span><span class="co">#&gt; • tags</span></span>
 <span><span class="co">#&gt; • observations</span></span>
@@ -233,9 +232,7 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ✔ observations$ring_number is valid.</span></span>
 <span><span class="co">#&gt; ✔ observations$tag_id is valid.</span></span>
-<span><span class="co">#&gt; ✖ observations$observation_type has 25 items that are not in the allowed values:</span></span>
-<span><span class="co">#&gt; "equipment, retrieval, capture, sighting, other". Invalid value:</span></span>
-<span><span class="co">#&gt; "deployment"</span></span>
+<span><span class="co">#&gt; ✔ observations$observation_type is valid.</span></span>
 <span><span class="co">#&gt; ✔ observations$datetime is valid.</span></span>
 <span><span class="co">#&gt; ✔ observations$latitude is valid.</span></span>
 <span><span class="co">#&gt; ✔ observations$longitude is valid.</span></span>
@@ -250,16 +247,18 @@
 <span><span class="co">#&gt; ✔ observations$wing_length is valid.</span></span>
 <span><span class="co">#&gt; ✔ observations$additional_metric is valid.</span></span>
 <span><span class="co">#&gt; ✔ observations$observation_comments is valid.</span></span>
-<span><span class="co">#&gt; ✖ Table observations is not consistent with the schema.</span></span>
+<span><span class="co">#&gt; ✔ Table observations is consistent with the schema.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Check GeoLocator DataPackage Resources measurements ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ✔ measurements$tag_id is valid.</span></span>
-<span><span class="co">#&gt; ✔ measurements$sensor is valid.</span></span>
+<span><span class="co">#&gt; ✖ measurements$sensor has 224911 items that are not in the allowed values:</span></span>
+<span><span class="co">#&gt; "light, pressure, activity, pitch, temperature, airtemperature, acceleration_x, acceleration_y, acceleration_z, magnetic_x, magnetic_y, magnetic_z". Invalid value:</span></span>
+<span><span class="co">#&gt; "temperature_external"</span></span>
 <span><span class="co">#&gt; ✔ measurements$datetime is valid.</span></span>
 <span><span class="co">#&gt; ✔ measurements$value is valid.</span></span>
 <span><span class="co">#&gt; ✔ measurements$label is valid.</span></span>
-<span><span class="co">#&gt; ✔ Table measurements is consistent with the schema.</span></span>
+<span><span class="co">#&gt; ✖ Table measurements is not consistent with the schema.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Check GeoLocator DataPackage Resources twilights ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -302,10 +301,8 @@
 <span><span class="co">#&gt; ✔ edges$lon_s is valid.</span></span>
 <span><span class="co">#&gt; ✔ edges$lat_t is valid.</span></span>
 <span><span class="co">#&gt; ✔ edges$lon_t is valid.</span></span>
-<span><span class="co">#&gt; ✖ Type mismatch for edges$s: Expected `integer`, but got</span></span>
-<span><span class="co">#&gt; `double`.</span></span>
-<span><span class="co">#&gt; ✖ Type mismatch for edges$t: Expected `integer`, but got</span></span>
-<span><span class="co">#&gt; `double`.</span></span>
+<span><span class="co">#&gt; ✔ edges$s is valid.</span></span>
+<span><span class="co">#&gt; ✔ edges$t is valid.</span></span>
 <span><span class="co">#&gt; ✔ edges$j is valid.</span></span>
 <span><span class="co">#&gt; ✔ edges$start is valid.</span></span>
 <span><span class="co">#&gt; ✔ edges$end is valid.</span></span>
@@ -316,7 +313,7 @@
 <span><span class="co">#&gt; ✔ edges$gs_v is valid.</span></span>
 <span><span class="co">#&gt; ✔ edges$ws_u is valid.</span></span>
 <span><span class="co">#&gt; ✔ edges$ws_v is valid.</span></span>
-<span><span class="co">#&gt; ✖ Table edges is not consistent with the schema.</span></span>
+<span><span class="co">#&gt; ✔ Table edges is consistent with the schema.</span></span>
 <span><span class="co">#&gt; ✖ Package's ressources validation failed.</span></span>
 <span><span class="co">#&gt; ✖ Package validation failed.</span></span></code></pre></div>
 </div>

@@ -261,8 +261,13 @@ write_geopressuretemplate_data <- function(pkg) {
           str_detect(.data$variable_type, "pressure") ~ "pressure",
           str_detect(.data$variable_type, "activity|pitch") ~ "acceleration",
           str_detect(.data$variable_type, "light") ~ "light",
-          str_detect(.data$variable_type, "temperature|airtemperature") ~ "temperature",
-          str_detect(.data$variable_type, "gX|gY|gZ|mX|mY|mZ") ~ "magnetic",
+          str_detect(.data$variable_type, "temperature_internal") ~ "temperature_internal",
+          str_detect(.data$variable_type, "temperature_external") ~ "temperature_external",
+          str_detect(
+            .data$variable_type,
+            "acceleration_x|acceleration_y|acceleration_z|magnetic_x|magnetic_y|magnetic_z"
+          ) ~
+            "magnetic",
           TRUE ~ "other"
         ))
 
@@ -279,8 +284,8 @@ write_geopressuretemplate_data <- function(pkg) {
             select(-c("tag_id", "sensor", "label")) %>%
             tidyr::pivot_wider(names_from = "variable_type", values_from = "value") %>%
             rename(value = any_of(c(
-              "pressure", "acceleration", "light", "temperature",
-              "airtemperature", "magnetic", "activity"
+              "pressure", "acceleration", "light", "temperature_external",
+              "temperature_internal", "magnetic", "activity"
             ))) %>%
             readr::write_csv(
               file = glue::glue("{dir_path}/{sensor}.csv")

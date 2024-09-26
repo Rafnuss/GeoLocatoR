@@ -9,19 +9,26 @@ add_gldp_soi(pkg, gdl, directory_data, allow_empty_o = FALSE, replace = FALSE)
 \arguments{
 \item{pkg}{The package object to which the data will be added.}
 
-\item{gdl}{A data frame containing the SOI data. Must include columns like \code{OrderName}, \code{GDL_ID}, and other relevant fields for tags, measurements, and observations.}
+\item{gdl}{A data frame containing the SOI data. Must include columns like \code{OrderName},
+\code{GDL_ID}, and other relevant fields for tags, measurements, and observations.}
 
-\item{directory_data}{A character string specifying the path to the directory where data files are located. This directory is used to locate and match GDL_IDs to their corresponding directories.}
+\item{directory_data}{A character string specifying the path to the directory where data files
+are located. This directory is used to locate and match GDL_IDs to their corresponding
+directories.}
 
-\item{allow_empty_o}{A logical value indicating whether to allow observations with missing datetime values. Default is \code{FALSE}.}
+\item{allow_empty_o}{A logical value indicating whether to allow observations with missing
+datetime values. Default is \code{FALSE}.}
 
-\item{replace}{A logical value indicating whether to replace existing resources in the package with the new data. Default is \code{FALSE}.}
+\item{replace}{A logical value indicating whether to replace existing resources in the package
+with the new data. Default is \code{FALSE}.}
 }
 \value{
 The updated package object with the added resources.
 }
 \description{
-This function adds data from the Swiss Ornithological Institute (SOI) to a package. It includes tags, measurements, and observations based on the provided data frame and directory of data. The function also handles missing directories and updates the package accordingly.
+This function adds data from the Swiss Ornithological Institute (SOI) to a package. It includes
+tags, measurements, and observations based on the provided data frame and directory of data. The
+function also handles missing directories and updates the package accordingly.
 }
 \details{
 The function performs the following steps:

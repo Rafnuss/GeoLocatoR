@@ -21,7 +21,8 @@ library(GeoPressureR)
 
 ## Read Geolocator Data Package
 
-A very cool feature of using zenodo is that you can load the data directly from Zenodo without downloading the files! 
+A very cool feature of using zenodo is that you can load the data directly from Zenodo without 
+downloading the files! 
 
 ```{r}
 pkg <- read_gldp("https://zenodo.org/records/13829930/files/datapackage.json")
@@ -35,7 +36,8 @@ pkg <- read_gldp(file.path("~/", "woodlandkingfisher", "datapackage.json"))
 
 ## Write to GeoPressureTemplate
 
-You can create a [GeoPressureTemplate](https://github.com/Rafnuss/GeoPressureTemplate) folder from the data package using
+You can create a [GeoPressureTemplate](https://github.com/Rafnuss/GeoPressureTemplate) folder from 
+the data package using
 
 ```{r}
 project_dir <- write_geopressuretemplate(pkg, destdir = "~/Desktop/", overwrite = TRUE)
@@ -50,4 +52,4 @@ id <- "16LN"
 withr::with_dir(project_dir, {
   tag <- tag_create(id, assert_pressure = FALSE)
 })
-````
+```

@@ -12,21 +12,27 @@ write_geopressuretemplate(
 )
 }
 \arguments{
-\item{pkg}{A list containing package metadata, including \code{name}, \code{title}, \code{description}, \code{version}, \code{licenses}, and \code{contributors}.}
+\item{pkg}{A list containing package metadata, including \code{name}, \code{title}, \code{description},
+\code{version}, \code{licenses}, and \code{contributors}.}
 
-\item{destdir}{A character string specifying the destination directory where the project will be created. Default is the current directory (\code{"."}).}
+\item{destdir}{A character string specifying the destination directory where the project will
+be created. Default is the current directory (\code{"."}).}
 
-\item{project_name}{A character string that sets the name of the project. Default is derived from \code{pkg$name}.}
+\item{project_name}{A character string that sets the name of the project. Default is derived
+from \code{pkg$name}.}
 
-\item{overwrite}{A logical value indicating whether to overwrite an existing directory with the same name. Default is \code{FALSE}.}
+\item{overwrite}{A logical value indicating whether to overwrite an existing directory with the
+same name. Default is \code{FALSE}.}
 }
 \value{
 The path to the created project directory.
 }
 \description{
-Initializes a geopressure template project by creating a specified directory structure and populating it with essential files, including a DESCRIPTION file, README, license, and data.
+Initializes a geopressure template project by creating a specified directory structure and
+populating it with essential files, including a DESCRIPTION file, README, license, and data.
 
-This function sets up the project directory and ensures that all necessary components are in place for a geopressure analysis project.
+This function sets up the project directory and ensures that all necessary components are in
+place for a geopressure analysis project.
 }
 \details{
 Upon execution, the function performs the following steps:

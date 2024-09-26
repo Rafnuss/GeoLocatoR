@@ -15,7 +15,7 @@ A tibble (data frame) with columns:
 \describe{
 \item{tag_id}{A character vector representing the unique identifier for each tag.}
 \item{sensor}{A character vector representing the type of sensor measurement, including types
-like "activity", "pitch", "light", "temperature", etc.}
+like "activity", "pitch", "light", "temperature_external", etc.}
 \item{datetime}{A POSIXct datetime object representing the timestamp of the measurements.}
 \item{value}{A numeric vector containing the sensor measurement values.}
 \item{label}{A character vector for additional labeling, which is NA if not present in the

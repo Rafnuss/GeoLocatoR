@@ -45,7 +45,8 @@ before adding it to the package.
 The schema for the resource is fetched from a JSON file located in a specified directory.
 The function adjusts the data frame according to the schema's \code{fieldsMatch} property:
 \itemize{
-\item \code{"equal"}: The data frame must have exactly the same fields as defined in the schema.
+\item \code{"equal"}: The data frame must have exactly the same fields as defined in the
+schema.
 \item \code{"subset"}: The data frame must have at least the fields defined in the schema,
 but may have additional fields. Fields not present in the schema are added to the schema.
 \item \code{"superset"}: The data frame may have fields not present in the schema, but must

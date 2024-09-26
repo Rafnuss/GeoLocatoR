@@ -11,11 +11,12 @@ read_gldp(file = "datapackage.json")
 metadata. Defaults to \code{"datapackage.json"}.}
 }
 \value{
-An object of class \code{"geolocatordp"} containing the metadata from the GeoLocator Data Package.
+An object of class \code{"geolocatordp"} containing the metadata from the GeoLocator Data
+Package.
 }
 \description{
 This function reads a GeoLocator Data Package from a specified JSON file. The file should conform
-to the GeoLocator Data Package format. The function utilizes the \code{frictionless} package to read the
-package metadata and then assigns the class \code{"geolocatordp"} to the resulting object for proper
-identification and handling.
+to the GeoLocator Data Package format. The function utilizes the \code{frictionless} package to read
+the package metadata and then assigns the class \code{"geolocatordp"} to the resulting object for
+proper identification and handling.
 }

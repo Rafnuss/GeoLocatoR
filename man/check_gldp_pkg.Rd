@@ -13,7 +13,7 @@ check_gldp_pkg(pkg)
 The validated GeoLocator Data Package object (invisible).
 }
 \description{
-This function checks that the provided object is a valid GeoLocator Data Package and conforms to the expected
-structure. It verifies that the object has the \code{"geolocatordp"} class and performs a general package validation
-using the \code{frictionless} package.
+This function checks that the provided object is a valid GeoLocator Data Package and conforms to
+the expected structure. It verifies that the object has the \code{"geolocatordp"} class and performs
+a general package validation using the \code{frictionless} package.
 }

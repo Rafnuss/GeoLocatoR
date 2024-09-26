@@ -11,7 +11,7 @@
 #' \describe{
 #'   \item{tag_id}{A character vector representing the unique identifier for each tag.}
 #'   \item{sensor}{A character vector representing the type of sensor measurement, including types
-#'   like "activity", "pitch", "light", "temperature", etc.}
+#'   like "activity", "pitch", "light", "temperature_external", etc.}
 #'   \item{datetime}{A POSIXct datetime object representing the timestamp of the measurements.}
 #'   \item{value}{A numeric vector containing the sensor measurement values.}
 #'   \item{label}{A character vector for additional labeling, which is NA if not present in the
@@ -34,8 +34,8 @@ tags2m <- function(tags) {
       purrr::map(function(tag) {
         tag %>%
           purrr::keep(names(tag) %in% c(
-            "pressure", "acceleration", "light", "temperature",
-            "airtemperature", "magnetic"
+            "pressure", "acceleration", "light", "temperature_external",
+            "temperature_internal", "magnetic"
           )) %>%
           purrr::imap(\(df, sensor) {
             if (sensor == "acceleration") {
@@ -52,8 +52,9 @@ tags2m <- function(tags) {
           }) %>%
           purrr::map(~ select(.x, any_of(
             c(
-              "pressure", "activity", "pitch", "light", "temperature", "airtemperature", "gX",
-              "gY", "gZ", "mX", "mY", "mZ", "date", "label"
+              "pressure", "activity", "pitch", "light", "temperature_external",
+              "temperature_internal", "acceleration_x", "acceleration_y", "acceleration_z",
+              "magnetic_x", "magnetic_y", "magnetic_z", "date", "label"
             )
           ))) %>%
           purrr::map(~ pivot_longer(.x,

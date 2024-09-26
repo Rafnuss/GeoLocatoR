@@ -20,7 +20,7 @@ create_gldp(
   keywords = NULL,
   citation = NULL,
   grants = NULL,
-  relatedIdentifiers = NULL,
+  related_identifiers = NULL,
   references = NULL
 )
 }
@@ -73,7 +73,7 @@ See the \href{https://datapackage.org/standard/data-package/#keywords}{Data Pack
 
 \item{grants}{(optional) A list of grants that funded the creation of the package. See the \href{https://datapackage.org/standard/data-package/#grants}{Data Package specification}.}
 
-\item{relatedIdentifiers}{(optional) A list of related identifiers for the package. Each related
+\item{related_identifiers}{(optional) A list of related identifiers for the package. Each related
 identifier is a list with properties \code{relationType} and \code{relatedIdentifier}. See the \href{https://datapackage.org/standard/data-package/#related-identifiers}{Data Package specification}.}
 
 \item{references}{(optional) A list of references for the package. See the \href{https://datapackage.org/standard/data-package/#references}{Data Package specification}.}

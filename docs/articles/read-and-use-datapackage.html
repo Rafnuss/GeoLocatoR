@@ -117,7 +117,16 @@
 </section><section class="level2"><h2 id="read-data-with-geopressurer">Read data with GeoPressureR<a class="anchor" aria-label="anchor" href="#read-data-with-geopressurer"></a>
 </h2>
 <p>Analysis of the tag data is best performed with GeoPressureR</p>
-<p>id &lt;- “16LN” withr::with_dir(project_dir, { tag &lt;- tag_create(id, assert_pressure = FALSE) }) ````</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="st">"16LN"</span></span>
+<span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_dir.html" class="external-link">with_dir</a></span><span class="op">(</span><span class="va">project_dir</span>, <span class="op">{</span></span>
+<span>  <span class="va">tag</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://raphaelnussbaumer.com/GeoPressureR/reference/tag_create.html" class="external-link">tag_create</a></span><span class="op">(</span><span class="va">id</span>, assert_pressure <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ✔ Read './data/raw-tag/16LN/pressure.csv'</span></span>
+<span><span class="co">#&gt; ✔ Read './data/raw-tag/16LN/light.csv'</span></span>
+<span><span class="co">#&gt; ✔ Read './data/raw-tag/16LN/acceleration.csv'</span></span></code></pre></div>
+</div>
 </section><script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
