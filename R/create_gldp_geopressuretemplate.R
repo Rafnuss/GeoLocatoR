@@ -22,7 +22,7 @@
 #' @return A list containing the descriptor for the GeoLocator Data Package.
 #'
 #' @export
-create_gldp_geopressuretemplate <- function(directory) {
+create_gldp_geopressuretemplate <- function(directory = ".") {
   # Check if the directory exists
   if (!dir.exists(directory)) {
     cli_abort(
@@ -86,7 +86,7 @@ create_gldp_geopressuretemplate <- function(directory) {
       licenses = list(list(
         name = as.character(d$get("License"))
       )),
-      homepage = d$get_urls()[1],
+      homepage = if (is.na(d$get("url"))) NULL else d$get("url"),
       # image = ,
       version = as.character(d$get_version()), # default
       # keywords =

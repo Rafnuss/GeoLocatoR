@@ -28,12 +28,12 @@ params2o <- function(params) {
       )
 
       oe <- o0 %>% mutate(
-        datetime = param$tag_create$crop_start,
+        datetime = as.POSIXct(param$tag_create$crop_start, tz = "UTC"),
         observation_type = "equipment"
       )
 
       or <- o0 %>% mutate(
-        datetime = param$tag_create$crop_end,
+        datetime = as.POSIXct(param$tag_create$crop_end, tz = "UTC"),
         observation_type = "retrieval"
       )
 

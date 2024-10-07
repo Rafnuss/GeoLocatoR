@@ -57,7 +57,7 @@ tags2m <- function(tags) {
               "magnetic_x", "magnetic_y", "magnetic_z", "date", "label"
             )
           ))) %>%
-          purrr::map(~ pivot_longer(.x,
+          purrr::map(~ tidyr::pivot_longer(.x,
             cols = -c(date, label), names_to = "sensor",
             values_to = "value"
           )) %>%

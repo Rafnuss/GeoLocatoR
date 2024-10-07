@@ -86,7 +86,7 @@ create_gldp <- function(
   assertthat::assert_that(is.list(contributors))
   assertthat::assert_that(all(sapply(contributors, function(x) is.list(x) && !is.null(x$title))))
 
-  if (is.null(schema)) {
+  if (is.null(schema) || is.na(schema)) {
     schema <- glue::glue(
       "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/main/",
       "geolocator-dp-profile.json"
@@ -118,6 +118,7 @@ create_gldp <- function(
     }
   )))
 
+  if (description == "") description <- NULL
   if (!is.null(description)) assertthat::assert_that(assertthat::is.string(description))
   if (!is.null(homepage)) {
     assertthat::assert_that(assertthat::is.string(homepage))

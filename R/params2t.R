@@ -29,6 +29,7 @@ params2t <- function(params) {
             firwmare = s$`FW Version`
           )
       }
+      return(t)
     }) %>%
     purrr::list_rbind()
 }

@@ -34,7 +34,7 @@
 #' @export
 add_gldp_geopressuretemplate <- function(
     pkg,
-    directory,
+    directory = ".",
     from = NULL, # "raw-tag", "interim", ????"config"
     replace = FALSE) {
   check_gldp_pkg(pkg)
