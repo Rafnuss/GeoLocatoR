@@ -4,7 +4,12 @@
 \alias{add_gldp_geopressuretemplate}
 \title{Add GLDP Geopressure Template}
 \usage{
-add_gldp_geopressuretemplate(pkg, directory, from = NULL, replace = FALSE)
+add_gldp_geopressuretemplate(
+  pkg,
+  directory = ".",
+  from = NULL,
+  replace = FALSE
+)
 }
 \arguments{
 \item{pkg}{A GLDP package object.}

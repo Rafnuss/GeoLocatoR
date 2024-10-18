@@ -10,53 +10,65 @@
 #' You can find more information about how to enter these meta-data information in the [R package
 #' description](https://r-pkgs.org/description.html#the-description-file).
 #'
-#' @param title A string providing a title or one sentence description for this package. See the
-#' [Data Package specification](https://datapackage.org/standard/data-package/#title). It should be
-#' plain text (no markup), capitalised like a title, NOT end in a period and less than 65
-#' characters.
-#' @param description A markdown-formatted string describing the package. See the
-#' [Data Package specification](https://datapackage.org/standard/data-package/#description).You can
-#' (and should!) use multiple sentences, but limited to a single paragraph.
+#' @param title A string providing a title or one sentence description for this package. It should
+#' be plain text (no markup), capitalised like a title, NOT end in a period and less than 65
+#' characters. See [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#title)
+#' and thw [Data Package specification](https://datapackage.org/standard/data-package/#title).
+#' @param description A markdown-formatted string describing the package. You can
+#' (and should!) use multiple sentences, but limited to a single paragraph. See the
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#description) and the
+#' [Data Package specification](https://datapackage.org/standard/data-package/#description).
 #' @param contributors A list of contributors, where each contributor is a list with properties
 #' including at leas `title` but also optionally `givenName`, `familyName`, `path`, `email`,
-#' `roles`, and `organization`. See the [Data Package specification
-#' ](https://datapackage.org/standard/data-package/#contributors).
-#' For Role, we suggest to use R standards (`aut`, `cre`, `ctb`, `cph` or `fnd`) see [R package
-#' documentations for more details
+#' `roles`, and `organization`. See the
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#contributors) and the
+#' [Data Package specification ](https://datapackage.org/standard/data-package/#contributors).
 #' ](https://r-pkgs.org/description.html#sec-description-authors-at-r)
 #' @param id A globally unique identifier for the package, such as a UUID or DOI. Defaults to NULL.
-#' See the [Data Package specification](https://datapackage.org/standard/data-package/#id).
+#' See the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#id) and the
+#' [Data Package specification](https://datapackage.org/standard/data-package/#id).
 #' @param licenses A list of licenses under which the package is provided. Each license is a list
 #' with properties `name` and `path` and optionally `title`. Defaults is a CC-BY-4.0 license. See
-#' the [Data Package specification](https://datapackage.org/standard/data-package/#licenses).
+#' the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#licenses) and the
+#' [Data Package specification](https://datapackage.org/standard/data-package/#licenses).
 #' @param homepage (optional) A URL for the home on the web related to this data package.
-#' See the [Data Package specification](https://datapackage.org/standard/data-package/#homepage).
+#' See the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#homepage) and
+#' the [Data Package specification](https://datapackage.org/standard/data-package/#homepage).
 #' @param image (optional) A URL or path pointing to the location of an image representing the data
-#' package. See the
-#' [Data Package specification](https://datapackage.org/standard/data-package/#image).
+#' package. See the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#image)
+#' and the [Data Package specification](https://datapackage.org/standard/data-package/#image).
 #' @param version (optional) A version string identifying the version of the package, following
-#' Semantic Versioning. Defaults to "1.0.0". See the
+#' Semantic Versioning. Defaults to "1.0.0". See
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#version) and the
 #' [Data Package specification](https://datapackage.org/standard/data-package/#version) and [Data
 #' Package Version recipe](https://datapackage.org/recipes/data-package-version/).
 #' @param embargo End date of the embargo. Default to `"1970-01-01"`. See the
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#embargo) and the
 #' [Data Package specification](https://datapackage.org/standard/data-package/#embargo).
 #' @param keywords (optional) A list of keywords to assist users in searching for the package.
-#' See the [Data Package specification](https://datapackage.org/standard/data-package/#keywords).
+#' See the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#keywords) and
+#' the [Data Package specification](https://datapackage.org/standard/data-package/#keywords).
 #' @param schema (optional) A URL to the JSON Table Schema that describes the data package. Defaults
 #' to the GeoLocator Data Package profile. See the [Data Package specification
 #' ](https://datapackage.org/standard/data-package/#dollar-schema).
 #' @param name (optional) A string providing a name for the package. Defaults to a slugified version
-#' of the title. See the [Data Package specification
-#' ](https://datapackage.org/standard/data-package/#name).
-#' @param citation (optional) A string providing a citation for the package. See the [Data Package
-#' specification](https://datapackage.org/standard/data-package/#citation).
-#' @param grants (optional) A list of grants that funded the creation of the package. See the [Data
-#' Package specification](https://datapackage.org/standard/data-package/#grants).
+#' of the title. See the
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#name) and the
+#' [Data Package specification](https://datapackage.org/standard/data-package/#name).
+#' @param citation (optional) A string providing a citation for the package. See the
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#citation) and the
+#' [Data Package specification](https://datapackage.org/standard/data-package/#citation).
+#' @param grants (optional) A list of grants that funded the creation of the package. See the
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#grants) and the
+#' [Data Package specification](https://datapackage.org/standard/data-package/#grants).
 #' @param related_identifiers (optional) A list of related identifiers for the package. Each related
-#' identifier is a list with properties `relationType` and `relatedIdentifier`. See the [Data
-#' Package specification](https://datapackage.org/standard/data-package/#related-identifiers).
-#' @param references (optional) A list of references for the package. See the [Data Package
-#' specification](https://datapackage.org/standard/data-package/#references).
+#' identifier is a list with properties `relationType` and `relatedIdentifier`. See the
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#relatedIdentifiers) and
+#' the [Data Package specification
+#' ](https://datapackage.org/standard/data-package/#related-identifiers).
+#' @param references (optional) A list of references for the package. See the
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#references) and the
+#' [Data Package specification](https://datapackage.org/standard/data-package/#references).
 #'
 #' @return A list containing the descriptor for the data package.
 #' @export

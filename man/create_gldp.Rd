@@ -25,58 +25,77 @@ create_gldp(
 )
 }
 \arguments{
-\item{title}{A string providing a title or one sentence description for this package. See the
-\href{https://datapackage.org/standard/data-package/#title}{Data Package specification}. It should be
-plain text (no markup), capitalised like a title, NOT end in a period and less than 65
-characters.}
+\item{title}{A string providing a title or one sentence description for this package. It should
+be plain text (no markup), capitalised like a title, NOT end in a period and less than 65
+characters. See \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#title}{Geolocator DP}
+and thw \href{https://datapackage.org/standard/data-package/#title}{Data Package specification}.}
 
 \item{contributors}{A list of contributors, where each contributor is a list with properties
 including at leas \code{title} but also optionally \code{givenName}, \code{familyName}, \code{path}, \code{email},
-\code{roles}, and \code{organization}. See the \href{https://datapackage.org/standard/data-package/#contributors}{Data Package specification }.
-For Role, we suggest to use R standards (\code{aut}, \code{cre}, \code{ctb}, \code{cph} or \code{fnd}) see \href{https://r-pkgs.org/description.html#sec-description-authors-at-r}{R package documentations for more details }}
+\code{roles}, and \code{organization}. See the
+\href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#contributors}{Geolocator DP} and the
+\href{https://datapackage.org/standard/data-package/#contributors}{Data Package specification }.
+](https://r-pkgs.org/description.html#sec-description-authors-at-r)}
 
 \item{schema}{(optional) A URL to the JSON Table Schema that describes the data package. Defaults
 to the GeoLocator Data Package profile. See the \href{https://datapackage.org/standard/data-package/#dollar-schema}{Data Package specification }.}
 
 \item{name}{(optional) A string providing a name for the package. Defaults to a slugified version
-of the title. See the \href{https://datapackage.org/standard/data-package/#name}{Data Package specification }.}
+of the title. See the
+\href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#name}{Geolocator DP} and the
+\href{https://datapackage.org/standard/data-package/#name}{Data Package specification}.}
 
 \item{id}{A globally unique identifier for the package, such as a UUID or DOI. Defaults to NULL.
-See the \href{https://datapackage.org/standard/data-package/#id}{Data Package specification}.}
+See the \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#id}{Geolocator DP} and the
+\href{https://datapackage.org/standard/data-package/#id}{Data Package specification}.}
 
 \item{licenses}{A list of licenses under which the package is provided. Each license is a list
 with properties \code{name} and \code{path} and optionally \code{title}. Defaults is a CC-BY-4.0 license. See
-the \href{https://datapackage.org/standard/data-package/#licenses}{Data Package specification}.}
+the \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#licenses}{Geolocator DP} and the
+\href{https://datapackage.org/standard/data-package/#licenses}{Data Package specification}.}
 
-\item{description}{A markdown-formatted string describing the package. See the
-\href{https://datapackage.org/standard/data-package/#description}{Data Package specification}.You can
-(and should!) use multiple sentences, but limited to a single paragraph.}
+\item{description}{A markdown-formatted string describing the package. You can
+(and should!) use multiple sentences, but limited to a single paragraph. See the
+\href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#description}{Geolocator DP} and the
+\href{https://datapackage.org/standard/data-package/#description}{Data Package specification}.}
 
 \item{homepage}{(optional) A URL for the home on the web related to this data package.
-See the \href{https://datapackage.org/standard/data-package/#homepage}{Data Package specification}.}
+See the \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#homepage}{Geolocator DP} and
+the \href{https://datapackage.org/standard/data-package/#homepage}{Data Package specification}.}
 
 \item{image}{(optional) A URL or path pointing to the location of an image representing the data
-package. See the
-\href{https://datapackage.org/standard/data-package/#image}{Data Package specification}.}
+package. See the \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#image}{Geolocator DP}
+and the \href{https://datapackage.org/standard/data-package/#image}{Data Package specification}.}
 
 \item{version}{(optional) A version string identifying the version of the package, following
-Semantic Versioning. Defaults to "1.0.0". See the
+Semantic Versioning. Defaults to "1.0.0". See
+\href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#version}{Geolocator DP} and the
 \href{https://datapackage.org/standard/data-package/#version}{Data Package specification} and \href{https://datapackage.org/recipes/data-package-version/}{Data Package Version recipe}.}
 
 \item{embargo}{End date of the embargo. Default to \code{"1970-01-01"}. See the
+\href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#embargo}{Geolocator DP} and the
 \href{https://datapackage.org/standard/data-package/#embargo}{Data Package specification}.}
 
 \item{keywords}{(optional) A list of keywords to assist users in searching for the package.
-See the \href{https://datapackage.org/standard/data-package/#keywords}{Data Package specification}.}
+See the \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#keywords}{Geolocator DP} and
+the \href{https://datapackage.org/standard/data-package/#keywords}{Data Package specification}.}
 
-\item{citation}{(optional) A string providing a citation for the package. See the \href{https://datapackage.org/standard/data-package/#citation}{Data Package specification}.}
+\item{citation}{(optional) A string providing a citation for the package. See the
+\href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#citation}{Geolocator DP} and the
+\href{https://datapackage.org/standard/data-package/#citation}{Data Package specification}.}
 
-\item{grants}{(optional) A list of grants that funded the creation of the package. See the \href{https://datapackage.org/standard/data-package/#grants}{Data Package specification}.}
+\item{grants}{(optional) A list of grants that funded the creation of the package. See the
+\href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#grants}{Geolocator DP} and the
+\href{https://datapackage.org/standard/data-package/#grants}{Data Package specification}.}
 
 \item{related_identifiers}{(optional) A list of related identifiers for the package. Each related
-identifier is a list with properties \code{relationType} and \code{relatedIdentifier}. See the \href{https://datapackage.org/standard/data-package/#related-identifiers}{Data Package specification}.}
+identifier is a list with properties \code{relationType} and \code{relatedIdentifier}. See the
+\href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#relatedIdentifiers}{Geolocator DP} and
+the \href{https://datapackage.org/standard/data-package/#related-identifiers}{Data Package specification }.}
 
-\item{references}{(optional) A list of references for the package. See the \href{https://datapackage.org/standard/data-package/#references}{Data Package specification}.}
+\item{references}{(optional) A list of references for the package. See the
+\href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#references}{Geolocator DP} and the
+\href{https://datapackage.org/standard/data-package/#references}{Data Package specification}.}
 }
 \value{
 A list containing the descriptor for the data package.

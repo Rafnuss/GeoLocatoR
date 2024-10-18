@@ -4,7 +4,7 @@
 \alias{create_gldp_geopressuretemplate}
 \title{Create a GeoLocator Data Package from a GeoPressure Template}
 \usage{
-create_gldp_geopressuretemplate(directory)
+create_gldp_geopressuretemplate(directory = ".")
 }
 \arguments{
 \item{directory}{A string specifying the path to the directory containing the
