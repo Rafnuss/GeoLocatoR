@@ -24,6 +24,7 @@ check_gldp <- function(pkg, quiet = FALSE) {
 
   checked <- check_gldp_profile(pkg)
   checked <- checked & check_gldp_resources(pkg)
+  checked <- checked & check_gldp_coherence(pkg)
 
   if (checked) {
     cli_alert_success("Package is valid.")
@@ -66,13 +67,6 @@ check_gldp_pkg <- function(pkg) {
 #' @noRd
 check_gldp_profile <- function(pkg) {
   schema <- jsonlite::fromJSON(pkg$`$schema`, simplifyVector = FALSE)
-  schema <- jsonlite::fromJSON(
-    glue::glue(
-      "/Users/rafnuss/Library/CloudStorage/OneDrive-Vogelwarte",
-      "/geolocator-dp/geolocator-dp-profile.json"
-    ),
-    simplifyVector = FALSE
-  )
 
   required <- unlist(schema$allOf[[2]]$required)
   properties <- schema$allOf[[2]]$properties
@@ -98,16 +92,23 @@ check_gldp_resources <- function(pkg) {
   for (i in seq_along(pkg$resources)) {
     resource <- pkg$resources[[i]]
 
-    if (resource$profile == "tabular-data-resource") {
+    if (resource$profile == "tabular-data-resource" &&
+      (resource$name %in% c(
+        "tags", "observations", "measurements", "staps", "twilights", "paths",
+        "edges", "pressurepaths"
+      ))) {
       schema <- jsonlite::fromJSON(
         glue::glue(
-          "/Users/rafnuss/Library/CloudStorage/OneDrive-Vogelwarte/geolocator-dp/{resource$name}-",
-          "table-schema.json"
+          "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/refs/heads/main/{resource$name}",
+          "-table-schema.json"
         ),
         simplifyVector = FALSE
       )
-
       checked <- checked & check_gldp_table(resource$data, schema)
+    } else {
+      cli_h2("Check GeoLocator DataPackage Resources {.field {resource$name}}")
+      cli_alert_warning("Could not check {.field {resource$name}}")
+      checked <- FALSE
     }
   }
 
@@ -123,6 +124,11 @@ check_gldp_resources <- function(pkg) {
 #' @noRd
 check_gldp_table <- function(data, schema) {
   cli_h2("Check GeoLocator DataPackage Resources {.field {schema$name}}")
+
+  if (is.null(data)) {
+    cli_alert_danger("data is not available.")
+    return(FALSE)
+  }
 
   schema_fields <- stats::setNames(
     schema$fields,
@@ -488,4 +494,84 @@ check_type <- function(value, type, field) {
   }
 
   return(checked)
+}
+
+
+#' @noRd
+check_gldp_coherence <- function(pkg) {
+  cli_h3("Check GeoLocator DataPackage Coherence")
+  checked <- TRUE
+
+  min_res_required <- c("tags", "observations", "measurements")
+  res_missing <- min_res_required[!(min_res_required %in% sapply(pkg$resources, \(x) x$name))]
+  if (length(res_missing) > 0) {
+    cli_alert_warning("{.pkg pkg} is missing {.val {res_missing}}. \\
+                      We could not check package coherence.")
+    checked <- FALSE
+    return(checked)
+  }
+
+  t <- tags(pkg)
+  o <- observations(pkg)
+  m <- measurements(pkg)
+
+  # different scientific_name on the same ring_number
+  t %>%
+    group_by(.data$ring_number) %>%
+    filter(n_distinct(.data$scientific_name) > 1) %>%
+    distinct(.data$ring_number) %>%
+    pull(.data$ring_number) %>%
+    purrr::walk(~ cli::cli_alert_danger(
+      "Multiple scientific names used for ring_number {.strong {}}", .
+    ))
+
+  # Missing tag_id in tags while present measurements
+  midmissing <- unique(m$tag_id[!(m$tag_id %in% t$tag_id)])
+  if (length(midmissing) > 1) {
+    cli_alert_danger(
+      "{.field tags} is missing {.field tag_id}={.val {midmissing}} which are present in \\
+    {.field measurements}."
+    )
+    cli_alert_info(
+      "All {.field tag_id} presents in the resource {.field measurements} need to also be present \\
+    in the resource {.field tags}."
+    )
+    checked <- FALSE
+  }
+
+  # Missing ring_number in observations while present in tags
+  tringmissing <- unique(t$ring_number[!(t$ring_number %in% o$ring_number)])
+  if (length(tringmissing) > 1) {
+    cli_alert_danger(
+      "{.field observations} is missing {.field ring_number}={.val {tringmissing}} which are \\
+      present in {.field tags}."
+    )
+    cli_alert_info(
+      "All {.field ring_number} present in the resource {.field tags} need tto also be present \\
+    in the resource {.field observations}."
+    )
+    checked <- FALSE
+  }
+
+  # Observations
+  # Check for combinations in 'o' that are not present in 't'
+  invalid_combinations <- o %>%
+    filter(!is.na(.data$tag_id)) %>%
+    anti_join(t, by = c("tag_id", "ring_number"))
+  if (nrow(invalid_combinations) > 0) {
+    cli::cli_alert_danger(
+      "The following {.field tag_id} and {.field ring_number} combinations in \\
+      {.field observation} are not present in {.field tags}:"
+    )
+    print(invalid_combinations)
+    checked <- FALSE
+  }
+
+  if (checked) {
+    cli_alert_success("Package is internally coherent.")
+  } else {
+    cli_alert_danger("Package is not coherent.")
+  }
+
+  invisible(checked)
 }
