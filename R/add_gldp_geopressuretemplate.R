@@ -217,6 +217,36 @@ add_gldp_geopressuretemplate <- function(
         pkg <- add_gldp_resource(pkg, "edges", edges, replace = replace)
       }
 
+      # Add Pressurepath
+      pressurepaths <- c(
+        "pressurepath_most_likely", "pressurepath_simulation",
+        "pressurepath_geopressureviz", "pressurepath_tag"
+      ) %>%
+        purrr::map(\(x) {
+          if (x %in% names(interim)) {
+            interim[[x]] %>%
+              purrr::imap(function(p, i) {
+                if (!is.null(p)) {
+                  p %>%
+                    mutate(
+                      type = sub("pressurepath_", "", x),
+                      tag_id = interim$tag[[i]]$param$id
+                    ) %>%
+                    rename(
+                      datetime = date
+                    )
+                }
+              }) %>%
+              purrr::list_rbind()
+          }
+        }) %>%
+        purrr::list_rbind() %>%
+        tibble::tibble() %>%
+        select(-any_of(c("known", "include")))
+
+      if (nrow(pressurepaths) > 0) {
+        pkg <- add_gldp_resource(pkg, "pressurepaths", pressurepaths, replace = replace)
+      }
 
       # Adding tag resource if not present as csv or xlsx
       if (!("tags" %in% frictionless::resources(pkg))) {
