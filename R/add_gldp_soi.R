@@ -64,21 +64,26 @@ add_gldp_soi <- function(pkg,
   dtags <- gdl %>%
     filter(!is.na(.data$directory)) %>%
     select("GDL_ID", "directory") %>%
-    purrr::pmap(\(GDL_ID, directory) {
-      tryCatch({
-        GeoPressureR::tag_create(
-          id = GDL_ID,
-          directory = directory,
-          assert_pressure = FALSE, # Allow tag to not have pressure data
-          quiet = TRUE
+    purrr::pmap(
+      \(GDL_ID, directory) { # nolint
+        tryCatch(
+          {
+            GeoPressureR::tag_create(
+              id = GDL_ID,
+              directory = directory,
+              assert_pressure = FALSE, # Allow tag to not have pressure data
+              quiet = TRUE
+            )
+          },
+          error = function(e) {
+            list() # Return empty list on error
+          }
         )
-      }, error = function(e) {
-        list() # Return empty list on error
-      })
-    },
-    .progress = list(
-      type = "tasks"
-    ))
+      },
+      .progress = list(
+        type = "tasks"
+      )
+    )
 
   # Create measurement tibble
   m <- tags2m(dtags)

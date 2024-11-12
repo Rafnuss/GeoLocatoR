@@ -8,7 +8,8 @@ write_geopressuretemplate(
   pkg,
   destdir = ".",
   project_name = pkg$name,
-  overwrite = FALSE
+  overwrite = FALSE,
+  open = rlang::is_interactive()
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ from \code{pkg$name}.}
 
 \item{overwrite}{A logical value indicating whether to overwrite an existing directory with the
 same name. Default is \code{FALSE}.}
+
+\item{open}{If \code{TRUE}, the package is opened in a new RStudio session.}
 }
 \value{
 The path to the created project directory.

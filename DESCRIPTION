@@ -9,34 +9,36 @@ URL: https://github.com/rafnuss/geolocator
 License: MIT + file LICENSE
 Imports: 
     assertthat,
+    cli,
     config,
     curl,
     desc,
     dplyr,
+    frictionless,
+    GeoPressureR,
+    glue,
+    ggplot2,
+    jsonlite,
+    magrittr,
     purrr,
+    readr,
     rlang,
-    withr,
-    cli,
     rstudioapi,
     tibble,
     tidyr,
     usethis,
-    zip,
-    glue,
-    magrittr,
-    frictionless,
-    GeoPressureR,
-    jsonlite,
-    readr
+    withr,
+    yaml,
+    zip
 Suggests: 
     knitr,
+    quarto,
+    readxl,
     rmarkdown,
     spelling,
+    testthat (>= 3.0.0),
     tidyverse,
-    writexl,
-    readxl,
-    quarto,
-    testthat (>= 3.0.0)
+    writexl
 Remotes: 
   rafnuss/GeoPressureR
 Config/testthat/edition: 3

@@ -91,11 +91,12 @@ the \href{https://datapackage.org/standard/data-package/#keywords}{Data Package 
 \item{related_identifiers}{(optional) A list of related identifiers for the package. Each related
 identifier is a list with properties \code{relationType} and \code{relatedIdentifier}. See the
 \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#relatedIdentifiers}{Geolocator DP} and
-the \href{https://datapackage.org/standard/data-package/#related-identifiers}{Data Package specification }.}
+the \href{https://camtrap-dp.tdwg.org/metadata/#relatedIdentifiers}{Camtrap DP specification }.}
 
-\item{references}{(optional) A list of references for the package. See the
+\item{references}{(optional) List of references related to the package (e.g. references cited in
+package.description). References preferably include a DOI. See the
 \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#references}{Geolocator DP} and the
-\href{https://datapackage.org/standard/data-package/#references}{Data Package specification}.}
+\href{https://camtrap-dp.tdwg.org/metadata/#references}{Camtrap DP specification}.}
 }
 \value{
 A list containing the descriptor for the data package.

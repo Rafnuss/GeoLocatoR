@@ -64,11 +64,12 @@
 #' @param related_identifiers (optional) A list of related identifiers for the package. Each related
 #' identifier is a list with properties `relationType` and `relatedIdentifier`. See the
 #' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#relatedIdentifiers) and
-#' the [Data Package specification
-#' ](https://datapackage.org/standard/data-package/#related-identifiers).
-#' @param references (optional) A list of references for the package. See the
+#' the [Camtrap DP specification
+#' ](https://camtrap-dp.tdwg.org/metadata/#relatedIdentifiers).
+#' @param references (optional) List of references related to the package (e.g. references cited in
+#' package.description). References preferably include a DOI. See the
 #' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#references) and the
-#' [Data Package specification](https://datapackage.org/standard/data-package/#references).
+#' [Camtrap DP specification](https://camtrap-dp.tdwg.org/metadata/#references).
 #'
 #' @return A list containing the descriptor for the data package.
 #' @export

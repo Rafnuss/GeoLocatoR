@@ -220,7 +220,7 @@ There are different way to modify your resources table.
 
 ```{r, eval=FALSE}
 tags(pkg) <- read_csv("tags.csv") # or read_xlsx()
-observation(pkg) <- read_csv("observations.csv")
+observations(pkg) <- read_csv("observations.csv")
 ```
 
 -   In other case, you might want to edit the default table. I suggest to create a temporary `.xlsx` spreadsheet (and not `.csv` to preserve the column class), modify it in excel, and read it back into R. You can also edit the tibble directly with `dplyr` functions.
