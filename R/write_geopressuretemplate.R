@@ -51,6 +51,8 @@ write_geopressuretemplate <- function(pkg,
 
     # Add data
     write_geopressuretemplate_data(pkg)
+
+    write_geopressuretemplate_config(pkg)
   })
 
   return(project_dir)
@@ -300,4 +302,132 @@ write_geopressuretemplate_data <- function(pkg) {
         dir.create(dir_path, recursive = TRUE)
       }
     }, .progress = list(type = "tasks"))
+}
+
+#' @noRd
+write_geopressuretemplate_config <- function(pkg) {
+  t <- tags(pkg)
+  o <- observations(pkg)
+
+  t_config <- t %>%
+    purrr::pmap(\(tag_id, ring_number, scientific_name, ...) {
+      # Create the basic config from tag tibble
+      co <- list(
+        bird_create = list(
+          scientific_name = scientific_name
+        ),
+        ring_number = ring_number
+      )
+
+      # Construct the known data.frame from observation
+      k <- o %>%
+        filter(.data$tag_id == !!tag_id) %>%
+        arrange(.data$datetime) %>%
+        transmute(
+          stap_id = ifelse(.data$observation_type == "equipment", 1,
+            ifelse(.data$observation_type == "retrieval", -1, 0)
+          ),
+          datetime = as.POSIXct(.data$datetime, tz = "UTC"),
+          known_lon = .data$longitude,
+          known_lat = .data$latitude,
+          location_name = .data$location_name,
+          device_status = .data$device_status,
+          condition = .data$condition,
+          life_stage = .data$life_stage,
+          sex = .data$sex,
+          observation_comments = .data$observation_comments
+        )
+
+      # Add sex if unique and defined (i.e., not U)
+      usex <- unique(k$sex)
+      if (length(usex) == 1 & usex != "U") {
+        co$sex <- usex
+      }
+
+      # Conditionally remove the column
+      rm_col <- c("sex")
+      if (all(is.na(k$location_name) | k$location_name == "")) {
+        rm_col <- c(rm_col, "location_name")
+      }
+      if (all(is.na(k$device_status) | k$device_status == "" | k$device_status == "unknown")) {
+        rm_col <- c(rm_col, "device_status")
+      }
+      if (all(is.na(k$condition) | k$condition == "" | k$condition == "unknown")) {
+        rm_col <- c(rm_col, "condition")
+      }
+      if (all(is.na(k$life_stage) | k$life_stage == "" | k$life_stage == 0 | k$life_stage == "0")) {
+        rm_col <- c(rm_col, "life_stage")
+      }
+      if (all(is.na(k$observation_comments) | k$observation_comments == "")) {
+        rm_col <- c(rm_col, "observation_comments")
+      }
+      k <- k %>% select(any_of(names(k)[!names(k) %in% rm_col]))
+
+      # Add crop date from equipement and retrieval
+      co$tag_create <- list(
+        crop_start = k %>%
+          filter(.data$stap_id == 1) %>%
+          mutate(dt = format(.data$datetime + as.difftime(1, units = "days"), "%Y-%m-%d")) %>%
+          pull(dt),
+        # we start one day after equipment (at 00:00)
+        crop_end = k %>%
+          filter(.data$stap_id == -1) %>%
+          mutate(dt = format(.data$datetime, "%Y-%m-%d")) %>%
+          pull(dt)
+      )
+
+      # Add known
+      co$tag_set_map <- list(
+        known = k %>% mutate(
+          datetime = format(.data$datetime, "%Y-%m-%d")
+        )
+      )
+
+      return(co)
+    })
+
+  # Add tag_id as name
+  names(t_config) <- t$tag_id
+
+  # convert to yaml
+  t_yaml <- yaml::as.yaml(
+    t_config,
+    handlers = list(
+      data.frame = \(k) {
+        tmp <- lapply(names(k), function(name) {
+          x <- k[[name]]
+          if (name == "stap_id" && any(x == 0)) {
+            add_text <- " !!!Modify the `stap_id` of `0` to the correct stap_id"
+          } else {
+            add_text <- ""
+          }
+          if (!is.numeric(x)) {
+            x <- glue::glue('"{x}"')
+          }
+          tmp <- paste0("[", paste(x, collapse = ", "), "]")
+
+          # class(tmp) <- "verbatim" # does not work
+          return(glue::glue("{tmp}{add_text}"))
+        })
+        names(tmp) <- names(k)
+        return(tmp)
+      }
+    )
+  )
+
+  # Manually fix issue with tibble export
+  t_yaml <- gsub("\\]\\'", "]", gsub("\\'\\[", "[", t_yaml))
+
+
+  # Read the default config.yml
+  default_yaml <- readLines("config.yml")
+
+  # Remove any example
+  trim_yaml <- default_yaml[1:(grep("18LX:", default_yaml)[1] - 1)]
+
+  # Combine trim_yaml and t_yaml
+  combined_yaml <- c(trim_yaml, t_yaml)
+
+  # Write the combined output to config.yml
+  writeLines(combined_yaml, "config.yml")
 }
