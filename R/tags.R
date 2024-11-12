@@ -30,6 +30,7 @@ tags <- function(x) {
     package = x,
     resource_name = "tags",
     data = value,
+    cast_type = TRUE,
     replace = "tags" %in% frictionless::resources(x)
   )
 

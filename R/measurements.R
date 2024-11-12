@@ -31,6 +31,7 @@ measurements <- function(x) {
     package = x,
     resource_name = "measurements",
     data = value,
+    cast_type = TRUE,
     replace = "measurements" %in% frictionless::resources(x)
   )
 
