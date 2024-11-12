@@ -45,7 +45,8 @@ update_gldp <- function(pkg) {
       select("scientific_name") %>%
       pull("scientific_name") %>%
       unique() %>%
-      stats::na.omit()
+      stats::na.omit() %>%
+      as.vector()
   }
 
   # Set reference location
@@ -61,5 +62,12 @@ update_gldp <- function(pkg) {
       pull(1)
   }
 
-  return(pkg)
+  # Order properties according to the schema
+  schema <- jsonlite::fromJSON(pkg$`$schema`, simplifyVector = FALSE)
+  properties <- names(schema$allOf[[2]]$properties)
+  sorted_pkg <- c(pkg[intersect(properties, names(pkg))], pkg[setdiff(names(pkg), properties)])
+  # Ensure the class attribute is preserved
+  class(sorted_pkg) <- class(pkg)
+
+  return(sorted_pkg)
 }
