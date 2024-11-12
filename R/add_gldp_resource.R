@@ -58,9 +58,10 @@ add_gldp_resource <- function(package,
   if (schema$fieldsMatch == "equal") {
     # The data source MUST have exactly the same fields as defined in the fields array.
     # Fields MUST be mapped by their names.
+    # NOT SURE THE ORDER BY NAME IS CHECKED!!!
+  }
 
-    data <- data %>% select(all_of(schema_fields))
-  } else if (schema$fieldsMatch == "subset") {
+  if (schema$fieldsMatch == "subset" || schema$fieldsMatch == "partial") {
     # The data source MUST have all the fields defined in the fields array, but MAY have more.
     # Fields MUST be mapped by their names.
 
@@ -69,19 +70,18 @@ add_gldp_resource <- function(package,
 
     # Add fields not existing in the initial schema
     for (f in schema_data$fields) {
-      if (!(f$name %in% names(schema$fields))) {
+      if (!(f$name %in% schema_fields)) {
         schema$fields <- append(schema$fields, list(f))
       }
     }
+
     # Update schema_fields
     schema_fields <- sapply(schema$fields, \(x) x$name)
+  }
 
-    data <- data %>% select(all_of(schema_fields))
-  } else if (schema$fieldsMatch == "superset" || schema$fieldsMatch == "partial") {
+  if (schema$fieldsMatch == "superset" || schema$fieldsMatch == "partial") {
     # superset: The data source MUST only have fields defined in the fields array, but MAY have
     # fewer. Fields MUST be mapped by their names.
-    # partial: The data source MUST have at least one field defined in the fields array.
-    # Fields MUST be mapped by their names.
 
     for (i in seq_along(schema_fields)) {
       # Check if column already exists
@@ -98,9 +98,16 @@ add_gldp_resource <- function(package,
         data <- data %>% mutate(!!schema_fields[i] := na_type)
       }
     }
-    # Update schema_fields
-    data <- data %>% select(all_of(schema_fields))
   }
+
+  if (schema$fieldsMatch == "partial") {
+    # Partial: The data source MUST have at least one field defined in the fields array.
+    # Fields MUST be mapped by their names.
+    # NOT CHECKING FOR AT LEAST ONE FIELD
+  }
+
+  # Update schema_fields
+  data <- data %>% select(all_of(schema_fields))
 
   if (cast_type) {
     data <- add_gldp_resource_cast(data, schema_fields, schema_type)
@@ -135,9 +142,10 @@ add_gldp_resource_cast <- function(data, schema_fields, schema_types) {
         data[[field]] <- as.logical(data[[field]])
       } else if (type == "date") {
         data[[field]] <- as.Date(data[[field]])
-      } else if (type == "duration") {
-        # Placeholder for duration conversion, implement as needed
-        data[[field]] <- as.difftime(data[[field]], units = "secs") # Adjust as necessary
+      } else if (type == "datetime") {
+        data[[field]] <- as.POSIXct(data[[field]])
+      } else {
+        cli::cli_warn("No casting for {.field {field}} of type {.val {type}}")
       }
     }
   }
