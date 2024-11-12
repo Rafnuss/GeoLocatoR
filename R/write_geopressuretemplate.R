@@ -14,6 +14,7 @@
 #' from `pkg$name`.
 #' @param overwrite A logical value indicating whether to overwrite an existing directory with the
 #' same name. Default is `FALSE`.
+#' @param open If `TRUE`, the package is opened in a new RStudio session.
 #'
 #' @return The path to the created project directory.
 #'
@@ -30,7 +31,8 @@
 write_geopressuretemplate <- function(pkg,
                                       destdir = ".",
                                       project_name = pkg$name,
-                                      overwrite = FALSE) {
+                                      overwrite = FALSE,
+                                      open = rlang::is_interactive()) {
   # Create a geopressuretemplate directory
   project_dir <- write_geopressuretemplate_create(
     destdir = destdir,
@@ -54,6 +56,10 @@ write_geopressuretemplate <- function(pkg,
 
     write_geopressuretemplate_config(pkg)
   })
+
+  if (open) {
+    rstudioapi::openProject(project_dir, newSession = TRUE)
+  }
 
   return(project_dir)
 }

@@ -17,6 +17,7 @@ Imports:
     rlang,
     withr,
     cli,
+    rstudioapi,
     tibble,
     tidyr,
     usethis,
