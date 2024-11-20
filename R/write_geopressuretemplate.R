@@ -148,7 +148,7 @@ write_geopressuretemplate_desc <- function(pkg) {
         given = ifelse(is.null(.x$givenName) & !is.null(.x$title), .x$title, .x$givenName),
         family = .x$familyName,
         email = .x$email,
-        role = map_vec(.x$roles, ~ role_mapping[.x]),
+        role = purrr::map_vec(.x$roles, ~ role_mapping[.x]),
         comment = c(.x$path, .x$organization)
       )
     })
@@ -268,12 +268,12 @@ write_geopressuretemplate_data <- function(pkg) {
       dft_split <- dft %>%
         mutate(variable_type = .data$sensor) %>%
         mutate(sensor = case_when(
-          str_detect(.data$variable_type, "pressure") ~ "pressure",
-          str_detect(.data$variable_type, "activity|pitch") ~ "acceleration",
-          str_detect(.data$variable_type, "light") ~ "light",
-          str_detect(.data$variable_type, "temperature_internal") ~ "temperature_internal",
-          str_detect(.data$variable_type, "temperature_external") ~ "temperature_external",
-          str_detect(
+          stringr::str_detect(.data$variable_type, "pressure") ~ "pressure",
+          stringr::str_detect(.data$variable_type, "activity|pitch") ~ "acceleration",
+          stringr::str_detect(.data$variable_type, "light") ~ "light",
+          stringr::str_detect(.data$variable_type, "temperature_internal") ~ "temperature_internal",
+          stringr::str_detect(.data$variable_type, "temperature_external") ~ "temperature_external",
+          stringr::str_detect(
             .data$variable_type,
             "acceleration_x|acceleration_y|acceleration_z|magnetic_x|magnetic_y|magnetic_z"
           ) ~
@@ -346,7 +346,7 @@ write_geopressuretemplate_config <- function(pkg) {
 
       # Add sex if unique and defined (i.e., not U)
       usex <- unique(k$sex)
-      if (length(usex) == 1 & usex != "U") {
+      if (length(usex) == 1 && usex != "U") {
         co$sex <- usex
       }
 
@@ -374,12 +374,12 @@ write_geopressuretemplate_config <- function(pkg) {
         crop_start = k %>%
           filter(.data$stap_id == 1) %>%
           mutate(dt = format(.data$datetime + as.difftime(1, units = "days"), "%Y-%m-%d")) %>%
-          pull(dt),
+          pull(.data$dt),
         # we start one day after equipment (at 00:00)
         crop_end = k %>%
           filter(.data$stap_id == -1) %>%
           mutate(dt = format(.data$datetime, "%Y-%m-%d")) %>%
-          pull(dt)
+          pull(.data$dt)
       )
 
       # Add known
