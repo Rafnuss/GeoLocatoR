@@ -27,15 +27,27 @@ params2o <- function(params) {
         observation_comments = "Automatically computed with `params2o()`"
       )
 
-      oe <- o0 %>% mutate(
-        datetime = as.POSIXct(param$tag_create$crop_start, tz = "UTC"),
-        observation_type = "equipment"
-      )
+      if (!is.null(param$tag_create$crop_start)) {
+        oe <- o0 %>% mutate(
+          datetime = as.POSIXct(param$tag_create$crop_start, tz = "UTC"),
+          observation_type = "equipment"
+        )
+      } else {
+        oe <- o0 %>% mutate(
+          observation_type = "equipment"
+        )
+      }
 
-      or <- o0 %>% mutate(
-        datetime = as.POSIXct(param$tag_create$crop_end, tz = "UTC"),
-        observation_type = "retrieval"
-      )
+      if (!is.null(param$tag_create$crop_start)) {
+        or <- o0 %>% mutate(
+          datetime = as.POSIXct(param$tag_create$crop_end, tz = "UTC"),
+          observation_type = "retrieval"
+        )
+      } else {
+        or <- o0 %>% mutate(
+          observation_type = "retrieval"
+        )
+      }
 
       if ("known" %in% names(param$tag_set_map)) {
         known <- param$tag_set_map$known
