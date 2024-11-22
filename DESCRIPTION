@@ -1,6 +1,6 @@
 Package: GeoLocatoR
 Title: R package for GeoLocator Data Package
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: 
     person("Raphaël", "Nussbaumer", , "rafnuss@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8185-1020"))
@@ -24,6 +24,7 @@ Imports:
     readr,
     rlang,
     rstudioapi,
+    stringr,
     tibble,
     tidyr,
     usethis,
