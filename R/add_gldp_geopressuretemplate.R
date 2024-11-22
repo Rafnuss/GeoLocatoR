@@ -92,11 +92,14 @@ add_gldp_geopressuretemplate <- function(
       }
 
       # List of variable names to be processed
-      var_names <- c(
-        "marginal", "tag", "param", "path_most_likely", "edge_most_likely",
-        "path_simulation", "edge_simulation", "pressurepath_most_likely",
-        "pressurepath_geopressureviz", "path_geopressureviz"
+      var_names_required <- c("marginal", "tag", "param")
+      var_names_path <- c("path_simulation", "path_geopressureviz", "path_tag", "path_most_likely")
+      var_names_edges <- c("edge_most_likely", "edge_simulation", "edge_geopressureviz", "edge_tag")
+      var_names_pressurepath <- c(
+        "pressurepath_most_likely", "pressurepath_geopressureviz",
+        "path_geopressureviz"
       )
+      var_names <- c(var_names_required, var_names_path, var_names_edges, var_names_pressurepath)
 
       # Initialize lists dynamically
       interim <- stats::setNames(vector("list", length(var_names)), var_names)
@@ -151,21 +154,19 @@ add_gldp_geopressuretemplate <- function(
       }
 
       # Add Path
-      paths <- c("path_most_likely", "path_simulation", "path_geopressureviz", "path_tag") %>%
+      paths <- var_names_path %>%
         purrr::map(\(x) {
-          if (x %in% names(interim)) {
-            interim[[x]] %>%
-              purrr::imap(function(p, i) {
-                if (!is.null(p)) {
-                  p %>%
-                    mutate(
-                      type = sub("path_", "", x),
-                      tag_id = interim$tag[[i]]$param$id
-                    )
-                }
-              }) %>%
-              purrr::list_rbind()
-          }
+          interim[[x]] %>%
+            purrr::imap(function(p, i) {
+              if (!is.null(p)) {
+                p %>%
+                  mutate(
+                    type = sub("path_", "", x),
+                    tag_id = interim$tag[[i]]$param$id
+                  )
+              }
+            }) %>%
+            purrr::list_rbind()
         }) %>%
         purrr::list_rbind() %>%
         tibble::tibble() %>%
@@ -176,21 +177,19 @@ add_gldp_geopressuretemplate <- function(
       }
 
       # Add Edge
-      edges <- c("edge_most_likely", "edge_simulation", "edge_geopressureviz", "edge_tag") %>%
+      edges <- var_names_edges %>%
         purrr::map(\(x) {
-          if (x %in% names(interim)) {
-            interim[[x]] %>%
-              purrr::imap(function(e, i) {
-                if (!is.null(e)) {
-                  e %>%
-                    mutate(
-                      type = sub("edge_", "", x),
-                      tag_id = interim$tag[[i]]$param$id
-                    )
-                }
-              }) %>%
-              purrr::list_rbind()
-          }
+          interim[[x]] %>%
+            purrr::imap(function(e, i) {
+              if (!is.null(e)) {
+                e %>%
+                  mutate(
+                    type = sub("edge_", "", x),
+                    tag_id = interim$tag[[i]]$param$id
+                  )
+              }
+            }) %>%
+            purrr::list_rbind()
         }) %>%
         purrr::list_rbind() %>%
         tibble::tibble()
@@ -218,27 +217,23 @@ add_gldp_geopressuretemplate <- function(
       }
 
       # Add Pressurepath
-      pressurepaths <- c(
-        "pressurepath_most_likely", "pressurepath_simulation",
-        "pressurepath_geopressureviz", "pressurepath_tag"
-      ) %>%
+      pressurepaths <- var_names_pressurepath %>%
         purrr::map(\(x) {
-          if (x %in% names(interim)) {
-            interim[[x]] %>%
-              purrr::imap(function(p, i) {
-                if (!is.null(p)) {
-                  p %>%
-                    mutate(
-                      type = sub("pressurepath_", "", x),
-                      tag_id = interim$tag[[i]]$param$id
-                    ) %>%
-                    rename(
-                      datetime = date
-                    )
-                }
-              }) %>%
-              purrr::list_rbind()
-          }
+          interim[[x]] %>%
+            purrr::imap(function(p, i) {
+              if (!is.null(p)) {
+                p %>%
+                  mutate(
+                    type = sub("pressurepath_", "", x),
+                    tag_id = interim$tag[[i]]$param$id
+                  ) %>%
+                  select(-.data$datetime) %>%
+                  rename(
+                    datetime = date
+                  )
+              }
+            }) %>%
+            purrr::list_rbind()
         }) %>%
         purrr::list_rbind() %>%
         tibble::tibble() %>%
