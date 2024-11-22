@@ -227,7 +227,7 @@ add_gldp_geopressuretemplate <- function(
                     type = sub("pressurepath_", "", x),
                     tag_id = interim$tag[[i]]$param$id
                   ) %>%
-                  select(-.data$datetime) %>%
+                  select(-any_of("datetime")) %>%
                   rename(
                     datetime = date
                   )
