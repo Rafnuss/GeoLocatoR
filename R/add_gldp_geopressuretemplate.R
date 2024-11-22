@@ -52,10 +52,10 @@ add_gldp_geopressuretemplate <- function(
     # Read tags and observations files if present
     if (file.exists("./data/tags.xlsx")) {
       t <- readxl::read_excel("./data/tags.xlsx")
-      pkg <- add_gldp_resource(pkg, "tags", t, replace = replace)
+      pkg <- add_gldp_resource(pkg, "tags", t, replace = replace, cast_type = TRUE)
     } else if (file.exists("./data/tags.csv")) {
       t <- readr::read_csv("./data/tags.csv", show_col_types = FALSE)
-      pkg <- add_gldp_resource(pkg, "tags", t, replace = replace)
+      pkg <- add_gldp_resource(pkg, "tags", t, replace = replace, cast_type = TRUE)
     }
 
     if (file.exists("./data/observations.xlsx")) {
