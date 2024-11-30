@@ -27,9 +27,10 @@ reference:
       - observations
       - measurements
       - staps
-      - edges
-      - paths
       - twilights
+      - paths
+      - edges
+      - pressurepaths
   - title: Check and validate
     contents:
       - validate_gldp
@@ -37,30 +38,23 @@ reference:
       - check_gldp_pkg
   - title: Miscellaneous functions
     contents:
+      - print.geolocatordp
+      - plot.geolocatordp
       - tags2m
       - params2t
       - params2o
-      - print.geolocatordp
       - version
 
 navbar:
   structure:
-    left:  [reference, articles, geolocator-dp]
+    left:  [reference, geopressure-manual, geolocator-dp]
   components:
+    geopressure-manual:
+      text: User Guide
+      href: https://raphaelnussbaumer.com/GeoPressureManual/geolocator-intro.html
     geolocator-dp:
       text: GeolocatorDP
       href: https://raphaelnussbaumer.com/GeoLocator-DP/
-    articles:
-      text: User Guides
-      menu:
-      - text: Create Data Package
-      - text: "from GeoPressureTemplate"
-        href: articles/create-from-geopressuretemplate.html
-      - text: "from Swiss Ornithological Institute (SOI)"
-        href: articles/create-from-soi.html
-      - text: -------
-      - text: Read and Use Data Package
-        href: articles/read-and-use-datapackage.html
 
 
 vignettes:
