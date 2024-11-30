@@ -131,7 +131,7 @@ create_gldp <- function(
     }
   )))
 
-  if (description == "") description <- NULL
+  if (is.null(description) || description == "") description <- NULL
   if (!is.null(description)) assertthat::assert_that(assertthat::is.string(description))
   if (!is.null(homepage)) {
     assertthat::assert_that(assertthat::is.string(homepage))
