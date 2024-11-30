@@ -10,7 +10,6 @@ License: MIT + file LICENSE
 Imports: 
     assertthat,
     cli,
-    config,
     curl,
     desc,
     dplyr,

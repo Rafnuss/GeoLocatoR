@@ -17,9 +17,9 @@ creation, use, and sharing of your geolocator data like never before.
 
 ## 🚀 Overview
 
-GeoLocatoR is designed to help you create and work with the
-[**GeoLocator Data Package (GeoLocator
-DP)**](https://raphaelnussbaumer.com/GeoLocator-DP/), a standardized
+GeoLocatoR is designed to help you create and work with the [GeoLocator
+Data Package (GeoLocator
+DP)](https://raphaelnussbaumer.com/GeoLocator-DP/), a standardized
 format for geolocator data that follows the [Data Package
 standard](https://datapackage.org/standard/data-package/). No more
 flapping around with messy data structures—GeoLocatoR ensures that your
