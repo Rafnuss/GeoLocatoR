@@ -269,19 +269,63 @@ add_gldp_geopressuretemplate <- function(
         )
       }
 
+      display_config_error <- TRUE # nolint
       dtags <- list_id %>%
         purrr::map(
           \(id) {
-            tag <- GeoPressureR::tag_create(
-              id,
-              crop_start = config::get("tag_create", id)$crop_start,
-              crop_end = config::get("tag_create", id)$crop_end,
-              assert_pressure = FALSE, # Allow tag to not have pressure data
-              quiet = TRUE
+            config <- tryCatch(
+              {
+                GeoPressureR::geopressuretemplate_config(id,
+                  tag_create = list(assert_pressure = FALSE)
+                )
+              },
+              error = function(e) {
+                if (display_config_error) {
+                  # Warn that the configuration file could not be read and display the error
+                  cli::cli_warn(c(
+                    "i" = "Configuration file {.file config.yml} could not be read to build the
+                datapackage.",
+                    ">" = "Create the tag with default value wit
+                    {.fun GeoPressureR::param_create}.",
+                    "!" = "Error: {e$message}"
+                  ))
+                  display_config_error <- FALSE
+                }
+                GeoPressureR::param_create(id,
+                  default = TRUE,
+                  tag_create = list(assert_pressure = FALSE)
+                )
+              }
             )
-            if (file.exists(glue::glue("./data/tag-label/{id}-labeled.csv"))) {
-              tag <- GeoPressureR::tag_label(tag, quiet = TRUE)
-            }
+
+            tag <- do.call(GeoPressureR::tag_create, c(
+              list(id = id, quiet = TRUE),
+              config$tag_create
+            ))
+
+            tag <- tryCatch(
+              {
+                tag <- do.call(GeoPressureR::tag_label, c(
+                  list(tag = tag, quiet = TRUE),
+                  config$tag_label
+                ))
+
+                tag <- do.call(GeoPressureR::tag_set_map, c(
+                  list(tag = tag),
+                  config$tag_set_map
+                ))
+
+                tag # return the value
+              },
+              error = function(e) {
+                # Cheat to still keep tag_set_map information even without label and tag_set_map
+                tag$param$tag_set_map <- config$tag_set_map
+                tag # return the value
+              }
+            )
+
+            tag$param$bird_create <- config$bird_create
+
             return(tag)
           },
           .progress = list(

@@ -16,10 +16,14 @@ params2t <- function(params) {
     purrr::map(\(param) {
       t <- tibble::tibble(
         tag_id = param$id,
-        manufacturer = param$manufacturer,
-        scientific_name = param$graph_set_movement$bird$scientific_name,
+        manufacturer = param$tag_create$manufacturer,
+        scientific_name = param$bird_create$scientific_name,
         ring_number = NA_character_
       )
+
+      t$manufacturer[t$manufacturer == "soi"] <- "Swiss Ornithological Institue"
+      t$manufacturer[t$manufacturer == "migratetech"] <- "Migrate Technology"
+      t$manufacturer[t$manufacturer == "lund"] <- "Lund CAnMove"
 
       if ("soi_settings" %in% names(param)) {
         s <- param$soi_settings
@@ -29,6 +33,14 @@ params2t <- function(params) {
             firwmare = s$`FW Version`
           )
       }
+
+      if ("migratec_model" %in% names(param)) {
+        t <- t %>%
+          mutate(
+            model = param$migratec_model
+          )
+      }
+
       return(t)
     }) %>%
     purrr::list_rbind()
