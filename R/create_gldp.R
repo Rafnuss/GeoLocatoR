@@ -21,9 +21,9 @@
 #' @param contributors A list of contributors, where each contributor is a list with properties
 #' including at leas `title` but also optionally `givenName`, `familyName`, `path`, `email`,
 #' `roles`, and `organization`. See the
-#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#contributors) and the
-#' [Data Package specification ](https://datapackage.org/standard/data-package/#contributors).
-#' ](https://r-pkgs.org/description.html#sec-description-authors-at-r)
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#contributors), the
+#' [Data Package specification](https://datapackage.org/standard/data-package/#contributors) and the
+#' [R Packages](https://r-pkgs.org/description.html#sec-description-authors-at-r).
 #' @param id A globally unique identifier for the package, such as a UUID or DOI. Defaults to NULL.
 #' See the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#id) and the
 #' [Data Package specification](https://datapackage.org/standard/data-package/#id).

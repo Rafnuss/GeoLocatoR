@@ -33,9 +33,9 @@ and thw \href{https://datapackage.org/standard/data-package/#title}{Data Package
 \item{contributors}{A list of contributors, where each contributor is a list with properties
 including at leas \code{title} but also optionally \code{givenName}, \code{familyName}, \code{path}, \code{email},
 \code{roles}, and \code{organization}. See the
-\href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#contributors}{Geolocator DP} and the
-\href{https://datapackage.org/standard/data-package/#contributors}{Data Package specification }.
-](https://r-pkgs.org/description.html#sec-description-authors-at-r)}
+\href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#contributors}{Geolocator DP}, the
+\href{https://datapackage.org/standard/data-package/#contributors}{Data Package specification} and the
+\href{https://r-pkgs.org/description.html#sec-description-authors-at-r}{R Packages}.}
 
 \item{schema}{(optional) A URL to the JSON Table Schema that describes the data package. Defaults
 to the GeoLocator Data Package profile. See the \href{https://datapackage.org/standard/data-package/#dollar-schema}{Data Package specification }.}

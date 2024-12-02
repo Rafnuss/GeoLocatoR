@@ -8,6 +8,7 @@
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/Rafnuss/GeoLocatoR/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/R-CMD-check.yaml)
+[![pkgdown.yaml](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/pkgdown.yaml)
 [![lint](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/lint.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/lint.yaml)
 <!-- badges: end -->
 
@@ -72,17 +73,12 @@ pak::pkg_install("Rafnuss/GeoLocatoR")
 
 ## 📖 Usage
 
-GeoLocatoR makes it easy to work with your geolocator data. Here’s a
-quick example:
-
-For more detailed examples and use cases, check out the vignettes: -
-[Create from
-GeoPressureTemplate](vignettes/Create_from_GeoPressureTemplate.html) -
-[Create from SOI](vignettes/Create_from_SOI.html)
+Learn how to use GeoLocatoR with the dedicated part of the
+[GeoPressureManual](https://raphaelnussbaumer.com/GeoPressureManual/geolocator-intro.html)
 
 ## 📚 Citation
 
 If you use GeoLocatoR in your research, please cite it as follows:
 
-> Nussbaumer, R. (2021). GeoLocatoR: A package for managing geolocator
-> data. R package version 0.1.0.
+> Nussbaumer, R. (2024). GeoLocatoR: Facilitate the creation, use, and
+> sharing of your geolocator data. Zenodo.

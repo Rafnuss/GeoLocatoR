@@ -34,7 +34,9 @@ plot_pkg_coverage <- function(pkg) {
     summarize(has_data = sum(!is.na(.data$value)) > 0) %>% # Check if there is data (non-NA)
     ungroup()
 
-  o <- observations(pkg) %>% filter(.data$tag_id %in% unique(m$tag_id))
+  o <- observations(pkg) %>%
+    filter(!is.na(.data$datetime)) %>%
+    filter(.data$tag_id %in% unique(m$tag_id))
 
   ggplot2::ggplot(data = m, ggplot2::aes(x = .data$date, y = .data$sensor, fill = .data$has_data)) +
     ggplot2::geom_tile() +

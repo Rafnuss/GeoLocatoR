@@ -16,7 +16,7 @@ print.geolocatordp <- function(x, ...) {
   resources <- frictionless::resources(x)
   cat_line(
     format_inline(
-      "A GeoLocator Data Package with {length(resources)} resources{?s}{?./:/:}"
+      "A GeoLocator Data Package with {length(resources)} resource{?s}{?./:/:}"
     )
   )
   if (length(resources) > 0) {

@@ -517,6 +517,7 @@ check_gldp_coherence <- function(pkg) {
 
   # different scientific_name on the same ring_number
   t %>%
+    filter(!is.na(.data$ring_number)) %>%
     group_by(.data$ring_number) %>%
     filter(n_distinct(.data$scientific_name) > 1) %>%
     distinct(.data$ring_number) %>%
