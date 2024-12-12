@@ -305,10 +305,16 @@ add_gldp_geopressuretemplate <- function(
 
             tag <- tryCatch(
               {
-                tag <- do.call(GeoPressureR::tag_label, c(
-                  list(tag = tag, quiet = TRUE),
-                  config$tag_label
-                ))
+                GeoPressureR::tag_label_read(
+                  tag = tag,
+                  file = config$tag_label$file
+                )
+
+                GeoPressureR::tag_label_stap(
+                  tag = tag,
+                  quiet = TRUE,
+                  file = config$tag_label$file
+                )
 
                 tag <- do.call(GeoPressureR::tag_set_map, c(
                   list(tag = tag),
