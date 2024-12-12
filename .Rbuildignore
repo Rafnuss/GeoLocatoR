@@ -12,3 +12,4 @@
 ^\.lintr$
 ^vignettes/.quarto
 ^vignettes/*_files$
+^CITATION\.cff$
