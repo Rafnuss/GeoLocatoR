@@ -25,6 +25,7 @@ check_gldp <- function(pkg, quiet = FALSE) {
   checked <- check_gldp_profile(pkg)
   checked <- checked & check_gldp_resources(pkg)
   checked <- checked & check_gldp_coherence(pkg)
+  checked <- checked & check_gldp_observations(observations(pkg))
 
   if (checked) {
     cli_alert_success("Package is valid.")
@@ -522,7 +523,7 @@ check_gldp_coherence <- function(pkg) {
     filter(n_distinct(.data$scientific_name) > 1) %>%
     distinct(.data$ring_number) %>%
     pull(.data$ring_number) %>%
-    purrr::walk(~ cli::cli_alert_danger(
+    purrr::walk(~ cli_alert_danger(
       "Multiple scientific names used for ring_number {.strong {}}", .
     ))
 
@@ -560,7 +561,7 @@ check_gldp_coherence <- function(pkg) {
     filter(!is.na(.data$tag_id)) %>%
     anti_join(t, by = c("tag_id", "ring_number"))
   if (nrow(invalid_combinations) > 0) {
-    cli::cli_alert_danger(
+    cli_alert_danger(
       "The following {.field tag_id} and {.field ring_number} combinations in \\
       {.field observation} are not present in {.field tags}:"
     )
@@ -572,6 +573,150 @@ check_gldp_coherence <- function(pkg) {
     cli_alert_success("Package is internally coherent.")
   } else {
     cli_alert_danger("Package is not coherent.")
+  }
+
+  invisible(checked)
+}
+
+
+#' @noRd
+check_gldp_observations <- function(o) {
+  cli_h3("Check Observations Coherence")
+  checked <- TRUE
+
+  o <- o %>%
+    arrange(
+      .data$ring_number, .data$datetime,
+      factor(.data$observation_type,
+        levels = c("capture", "retrieval", "equipment", "sighting", "other")
+      )
+    )
+
+  # Check 1: tag_id is only associated with a single ring_number
+  inconsistent_tag_ids <- o %>%
+    filter(!is.na(.data$tag_id)) %>%
+    group_by(.data$tag_id) %>%
+    summarize(unique_ring_numbers = n_distinct(.data$ring_number)) %>%
+    filter(.data$unique_ring_numbers > 1)
+
+  if (nrow(inconsistent_tag_ids) > 0) {
+    cli_alert_danger("{nrow(inconsistent_tag_ids)} tag_id(s) are associated with multiple \\
+                     ring_numbers. Check: {inconsistent_tag_ids$tag_id}")
+    checked <- FALSE
+  }
+
+  # Check 2: equipment or retrieval must have a tag_id
+  missing_tag_id <- o %>%
+    filter(.data$observation_type %in% c("equipment", "retrieval") & is.na(.data$tag_id))
+
+  if (nrow(missing_tag_id) > 0) {
+    error_tag <- unique(missing_tag_id$tag_id) # nolint
+    cli_alert_danger("{length(error_tag)} equipment or retrieval observation{?s} {?is/are} \\
+                          missing a tag_id. Check: {.field {error_tag}}")
+    checked <- FALSE
+  }
+
+  # Check 3: equipment and retrieval can only have a device status present.
+  obs_equi_retrieval_without_present <- o %>%
+    filter(.data$observation_type %in% c("equipment", "retrieval") &
+      .data$device_status != "present")
+
+  if (nrow(obs_equi_retrieval_without_present) > 0) {
+    error_tag <- unique(obs_equi_retrieval_without_present$tag_id) # nolint
+    cli_alert_danger("{length(error_tag)} equipment or retrieval observation{?s} don't have a  \\
+                    device status 'present'. Check: {.field {error_tag}}")
+    checked <- FALSE
+  }
+
+  # Check 4: capture-missing and capture-present must have a tag_id
+  missing_tag_id <- o %>%
+    filter(.data$observation_type == "capture" & (.data$device_status %in% c("missing", "present")) &
+      is.na(.data$tag_id))
+
+  if (nrow(missing_tag_id) > 0) {
+    error_ring_number <- unique(missing_tag_id$ring_number) # nolint
+    cli_alert_danger(
+      "{length(error_ring_number)} capture observation{?s} with a device status missing or \\
+                    present {?is/are} missing a tag_id. Check: {.field {error_ring_number}}"
+    )
+    checked <- FALSE
+  }
+
+  # Check 5: No second tag_id attached without a prior retrieval (or capture with missing.)
+  multiple_tags_without_retrieval <- o %>%
+    group_by(.data$ring_number) %>%
+    filter((.data$observation_type %in% c("retrieval", "equipment")) |
+      (.data$observation_type == "capture" & .data$device_status == "missing")) %>%
+    filter((lag(.data$tag_id) != .data$tag_id) & !(lag(.data$observation_type) == "retrieval" |
+      lag(.data$device_status) == "missing"))
+
+  if (nrow(multiple_tags_without_retrieval) > 0) {
+    error_tag <- unique(multiple_tags_without_retrieval$tag_id) # nolint
+    cli_alert_danger(
+      "{length(error_tag)} instance{?s} where a second tag_id  is attached without a prior \\
+    retrieval or capture-missing. Check: {.field {error_tag}}"
+    )
+    checked <- FALSE
+  }
+
+  # Check 6: A tag_id must follow an equipment event
+  tag_without_equipment <- o %>%
+    group_by(.data$ring_number, .data$tag_id) %>%
+    filter(!is.na(.data$tag_id)) %>%
+    filter(!any(.data$observation_type == "equipment"))
+
+  if (nrow(tag_without_equipment) > 0) {
+    error_tag <- unique(tag_without_equipment$tag_id) # nolint
+    cli_alert_danger(
+      "{length(error_tag)} tag_id{?s} {?was/were} recorded without a preceding equipment event. \\
+      Check: {.field {error_tag}}"
+    )
+    checked <- FALSE
+  }
+
+  # Check 8: duplicate
+  duplicate_observations <- o %>%
+    group_by(.data$ring_number, .data$datetime, .data$observation_type) %>%
+    filter(n() > 1)
+
+  if (nrow(duplicate_observations) > 0) {
+    error_tag <- unique(duplicate_observations$tag_id) # nolint
+    cli_alert_danger(
+      "{length(error_tag)} duplicate observations found. Check: {.field {error_tag}}"
+    )
+    checked <- FALSE
+  }
+
+  # Check 9: Invalid transition
+  invalid_transitions <- o %>%
+    group_by(.data$ring_number) %>%
+    filter(.data$device_status != "unknown") %>%
+    mutate(
+      previous_status = lag(.data$device_status),
+      previous_type = lag(.data$observation_type)
+    ) %>%
+    filter(
+      (.data$device_status == "missing" & is.na(.data$previous_status)) |
+        (.data$device_status == "missing" & .data$previous_status == "none") |
+        (.data$device_status == "none" & .data$previous_status == "present" &
+          .data$previous_type != "retrieval") |
+        (.data$device_status == "present" & .data$previous_status == "none" &
+          .data$observation_type != "equipment")
+    )
+
+  if (nrow(invalid_transitions) > 0) {
+    error_ring_number <- unique(invalid_transitions$ring_number)
+    cli_alert_danger(
+      "{length(error_ring_number)} invalid device_status transitions found. \\
+      Check: {.field {error_ring_number}}"
+    )
+    checked <- FALSE
+  }
+
+  if (checked) {
+    cli_alert_success("{.field observations} table is coherent.")
+  } else {
+    cli_alert_danger("{.field observations} is not coherent.")
   }
 
   invisible(checked)
