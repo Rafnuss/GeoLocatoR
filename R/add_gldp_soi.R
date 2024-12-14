@@ -68,12 +68,22 @@ add_gldp_soi <- function(pkg,
       \(GDL_ID, directory) { # nolint
         tryCatch(
           {
-            GeoPressureR::tag_create(
-              id = GDL_ID,
-              directory = directory,
-              assert_pressure = FALSE, # Allow tag to not have pressure data
-              quiet = TRUE
-            )
+            if (grepl("\\.glf$", directory)) {
+              GeoPressureR::tag_create(
+                id = GDL_ID,
+                directory = dirname(directory),
+                light_file = basename(directory),
+                assert_pressure = FALSE, # Allow tag to not have pressure data
+                quiet = TRUE
+              )
+            } else {
+              GeoPressureR::tag_create(
+                id = GDL_ID,
+                directory = directory,
+                assert_pressure = FALSE, # Allow tag to not have pressure data
+                quiet = TRUE
+              )
+            }
           },
           error = function(e) {
             list() # Return empty list on error
@@ -181,8 +191,9 @@ add_gldp_soi <- function(pkg,
 #' @noRd
 add_gldp_soi_directory <- function(gdl, directory_data) {
   # Check if the required columns are present
-  assertthat::assert_that(all(c("OrderName", "GDL_ID") %in% colnames(gdl)),
-    msg = "The input tibble must contain 'OrderName' and 'GDL_ID' columns."
+  assertthat::assert_that(
+    all(c("OrderName", "GDL_ID") %in% colnames(gdl)),
+    msg = "The input tibble must contain {.field OrderName} and {.field GDL_ID} columns."
   )
   assertthat::assert_that(!any(is.na(gdl$OrderName) | gdl$OrderName == ""),
     msg = "The 'OrderName' column contains empty values."
@@ -195,12 +206,44 @@ add_gldp_soi_directory <- function(gdl, directory_data) {
   # Function to get the highest alphabetical directory path matching the GDL_ID pattern
   check_folder_exists <- function(order_name, gdl_id, base_dir) {
     order_dir <- file.path(base_dir, order_name)
-    folders <- list.dirs(order_dir, recursive = FALSE, full.names = FALSE)
 
+    # 1 find folder with tag_id name
+    folders <- list.dirs(order_dir, recursive = FALSE, full.names = FALSE)
     matching_folders <- sort(folders[grepl(glue::glue("^{gdl_id}"), folders)], decreasing = TRUE)
-    if (length(matching_folders) > 0) {
+    if (length(matching_folders) == 1) {
+      return(file.path(order_dir, matching_folders[1]))
+    } else if (length(matching_folders) > 1) {
+      print(matching_folders)
       return(file.path(order_dir, matching_folders[1]))
     }
+
+    # 2 find file with tag_id name
+    if (order_name == "Wallis") {
+      files <- c(
+        list.files(file.path(base_dir, "UpuEpoCH09/glf"),
+          recursive = FALSE, full.names = TRUE
+        ),
+        list.files(file.path(base_dir, "UpuEpoCH10/"), recursive = FALSE, full.names = TRUE)
+      )
+    } else {
+      files <- list.files(order_dir, recursive = FALSE, full.names = TRUE)
+    }
+
+    matching_files <- files[grepl(glue::glue("^{gdl_id}"), basename(files))]
+    # Check if there are matching files and prioritize .glf files
+    if (length(matching_files) > 0) {
+      # Look for a .glf file first
+      glf_files <- matching_files[grepl("\\.glf$", matching_files)]
+
+      # If there are .glf files, return the first one, otherwise return the first matching file
+      if (length(glf_files) > 0) {
+        return(glf_files[1])
+      } else {
+        return(matching_files[1])
+      }
+    }
+
+
     return(NA)
   }
 
