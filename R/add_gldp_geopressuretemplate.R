@@ -130,9 +130,14 @@ add_gldp_geopressuretemplate <- function(
       # Add twilights
       twl <- interim$tag %>%
         purrr::map(function(tag) {
-          tag$twilight %>%
-            mutate(tag_id = tag$param$id)
+          if ("twilight" %in% names(tag)) {
+            tag$twilight %>%
+              mutate(tag_id = tag$param$id)
+          } else {
+            NULL
+          }
         }) %>%
+        purrr::compact() %>% # Remove NULLs
         purrr::list_rbind()
 
       if (nrow(twl) > 0) {
@@ -142,9 +147,14 @@ add_gldp_geopressuretemplate <- function(
       # Add stap
       staps <- interim$tag %>%
         purrr::map(function(tag) {
-          tag$stap %>%
-            mutate(tag_id = tag$param$id)
+          if ("stap" %in% names(tag)) {
+            tag$stap %>%
+              mutate(tag_id = tag$param$id)
+          } else {
+            NULL
+          }
         }) %>%
+        purrr::compact() %>% # Remove NULLs
         purrr::list_rbind() %>%
         select(-any_of(c("duration", "nb_sample")))
 
