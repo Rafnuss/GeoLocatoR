@@ -116,46 +116,7 @@ write_geopressuretemplate_desc <- function(pkg) {
   d$set("Title", pkg$title)
   d$set("License", paste(purrr::map_chr(pkg$license, ~ .x$name), collapse = ", "))
 
-  # nolint start
-  role_mapping <- c(
-    "ContactPerson" = "ctr", # Contractor (assumed due to lack of clear match)
-    "Contributor" = "ctb", # Contributor
-    "DataCollector" = "dtc", # Data contributor
-    "DataCurator" = "dtc", # Data contributor (no closer match)
-    "DataManager" = "dtc", # Data contributor (no closer match)
-    "Distributor" = "ctr", # Contractor (assumed)
-    "Editor" = "rev", # Reviewer
-    "HostingInstitution" = "cph", # Copyright holder (legal entity)
-    "Producer" = "aut", # Author (substantial contribution)
-    "ProjectLeader" = "cre", # Creator (project leader matches)
-    "ProjectManager" = "cre", # Creator (manager of the project)
-    "ProjectMember" = "ctb", # Contributor (smaller contributions)
-    "RegistrationAgency" = "ctr", # Contractor (assumed)
-    "RegistrationAuthority" = "ctr", # Contractor (assumed)
-    "RelatedPerson" = "trl", # Translator (assumed)
-    "Researcher" = "aut", # Author
-    "ResearcherGroup" = "aut", # Author (group treated as authors)
-    "RightsHolder" = "cph", # Copyright holder
-    "Sponsor" = "fnd", # Funder
-    "Supervisor" = "ths", # Thesis advisor
-    "WorkPackageLeader" = "cre" # Creator (assumed leader role)
-  )
-  # nolint end
-
-  contributors <- pkg$contributors %>%
-    purrr::map(~ {
-      utils::person(
-        given = ifelse(is.null(.x$givenName) & !is.null(.x$title), .x$title, .x$givenName),
-        family = .x$familyName,
-        email = .x$email,
-        role = purrr::map_vec(.x$roles, ~ role_mapping[.x]),
-        comment = c(.x$path, .x$organization)
-      )
-    })
-
-  contributors <- do.call(c, Filter(Negate(is.null), contributors))
-
-  d$set_authors(contributors)
+  d$set_authors(contributors2persons(pkg$contributors))
 
   if ("name" %in% names(pkg)) {
     name <- gsub("([._-])([a-z])", "\\U\\2", pkg$name, perl = TRUE)
