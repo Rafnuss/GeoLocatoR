@@ -162,20 +162,6 @@ create_gldp <- function(
   assertthat::assert_that(assertthat::is.string(schema))
   assertthat::assert_that(grepl("^https?://[[:alnum:].-]+/?", schema))
 
-  if (is.null(name)) {
-    # Generate name from title
-    # Convert to lowercase
-    name <- tolower(title)
-    # Replace any characters that are not alphanumeric, ., -, or _
-    name <- gsub("[^a-z0-9._-]", "-", name)
-    # Remove leading or trailing non-alphanumeric characters
-    name <- gsub("^[^a-z0-9]+|[^a-z0-9]+$", "", name)
-    # Collapse multiple occurrences of ._- into a single -
-    name <- gsub("[._-]+", "-", name)
-  }
-  name <- tolower(name)
-  assertthat::assert_that(grepl("^[a-z0-9._-]+$", name))
-
   if (!is.null(id)) assertthat::assert_that(assertthat::is.string(id))
 
   assertthat::assert_that(is.list(licenses))

@@ -17,8 +17,7 @@
 #' @param pkg An object of class `"geolocatordp"` representing the GeoLocator Data Package to be
 #' validated.
 #' @param path A string specifying the path to the directory containing the `frictionless`
-#' executable.
-#'   Defaults to `"/Users/rafnuss/anaconda3/bin/"`.
+#' executable. Defaults to `"/Users/rafnuss/anaconda3/bin/"`.
 #' @param only_package A logical indicating whether to validate only the package metadata (TRUE) or
 #' the entire package including resources (FALSE). Defaults to `NULL`, in which case it is
 #' determined based on the presence of resources in the package.

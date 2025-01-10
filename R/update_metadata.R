@@ -34,14 +34,6 @@ update_metadata <- function(pkg) {
   return(sorted_pkg)
 }
 
-#' @noRd
-update_created <- function(pkg) {
-  check_gldp_pkg(pkg)
-  # Get current datetime in RFC3339 format
-  pkg$created <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ")
-  return(pkg)
-}
-
 #' Update temporal metadata
 #'
 #' Sets `pkg$temporal$start` to the earliest measurements datetime and `pkg$temporal$end` to the
@@ -172,7 +164,8 @@ update_number_tags <- function(pkg) {
   check_gldp_pkg(pkg)
 
   t <- tags(pkg)
-  m <- measurements(pkg)
+  m <- measurements(pkg) %>%
+    filter(label=="discard")
 
   if (nrow(t) == 0 || nrow(m) == 0) {
     pkg$numberTags <- NULL
@@ -181,14 +174,17 @@ update_number_tags <- function(pkg) {
 
   # Number of tags
   pkg$numberTags <- list(
-    equiped = length(unique(t$tag_id)),
+    tags = length(unique(t$tag_id)),
     measurements = length(unique(m$tag_id)),
+    # Type of measurements
     light = length(unique(m$tag_id[m$sensor == "light"])),
     pressure = length(unique(m$tag_id[m$sensor == "pressure"])),
-    activity = length(unique(m$tag_id[m$sensor == "activity"])),
+    activity = length(unique(m$tag_id[m$sensor == "activity" || m$sensor == "pitch"])),
     temperature_external = length(unique(m$tag_id[m$sensor == "temperature_external"])),
     temperature_internal = length(unique(m$tag_id[m$sensor == "temperature_internal"])),
-    magnetic = length(unique(m$tag_id[m$sensor == "magnetic_x"]))
+    magnetic = length(unique(m$tag_id[m$sensor == "magnetic_x"])),
+    wet_count = length(unique(m$tag_id[m$sensor == "wet_count"])),
+    conductivity = length(unique(m$tag_id[m$sensor == "conductivity"]))
   )
 
   if ("paths" %in% frictionless::resources(pkg)) {

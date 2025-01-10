@@ -41,3 +41,35 @@ contributors2persons <- function(contributors) {
 
   return(persons)
 }
+
+
+#' @noRd
+cast_table <- function(data, schema) {
+
+  schema_fields <- sapply(schema$fields, \(x) x$name)
+  schema_types <- sapply(schema$fields, \(x) x$type)
+
+  for (i in seq_along(schema_fields)) {
+    field <- schema_fields[i]
+    type <- schema_types[i]
+
+    if (field %in% names(data)) {
+      if (type == "string") {
+        data[[field]] <- as.character(data[[field]])
+      } else if (type == "number") {
+        data[[field]] <- as.numeric(data[[field]])
+      } else if (type == "integer") {
+        data[[field]] <- as.integer(data[[field]])
+      } else if (type == "boolean") {
+        data[[field]] <- as.logical(data[[field]])
+      } else if (type == "date") {
+        data[[field]] <- as.Date(data[[field]])
+      } else if (type == "datetime") {
+        data[[field]] <- as.POSIXct(data[[field]])
+      } else {
+        cli::cli_warn("No casting for {.field {field}} of type {.val {type}}")
+      }
+    }
+  }
+  return(data)
+}

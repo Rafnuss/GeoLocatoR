@@ -7,42 +7,39 @@
 #' `"geolocatordp"` to the datapackage read.
 #'
 #' @param file A string specifying the path to the JSON file containing the GeoLocator Data Package
-#' metadata. Defaults to `"datapackage.json"`.
+#' metadata. Defaults to `"datapackage.json"`. Can also be a url.
+#' @param force_read Logical to force the reading of the data fomr path/url to memory.
 #'
-#' @return An object of class `"geolocatordp"` containing the metadata from the GeoLocator Data
-#' Package.
+#' @return A GeoLocator Data Package object created from a file/url
 #'
 #' @examples
 #' # Read a datapackage.json file
-#' package <- read_gldp("https://zenodo.org/records/14099115/files/datapackage.json")
+#' pkg <- read_gldp("https://zenodo.org/records/14099115/files/datapackage.json")
 #'
-#' package
-#'
-#' # Access the Data Package properties
-#' package$name
-#' package$created
+#' pkg
 #' @export
-read_gldp <- function(file = "datapackage.json") {
-  package <- frictionless::read_package(file)
+read_gldp <- function(file = "datapackage.json", force_read = TRUE) {
+  pkg <- frictionless::read_package(file)
 
-  package$resources <- purrr::map(package$resources, ~ {
-    resource <- frictionless:::get_resource(package, .x$name)
-    if (resource$read_from == "path" || resource$read_from == "url") {
-      .x$data <- frictionless:::read_from_path(package, .x$name, col_select = NULL)
-      .x$path <- NULL
-    }
-    return(.x)
-  })
+  # Force the read of the data as
+  if (force_read){
+    pkg$resources <- purrr::map(pkg$resources, \(r) {
+      resource <- frictionless:::get_resource(pkg, r$name)
+      if (resource$read_from == "path" || resource$read_from == "url") {
+        r$data <- frictionless:::read_from_path(pkg, r$name, col_select = NULL)
+        r$data <- cast_table(r$data, r$schema)
+        r$path <- NULL
+      }
+      return(r)
+    })
+  }
 
   # Add class
-  class(x) <- c("geolocatordp", class(x))
+  class(pkg) <- c("geolocatordp", class(pkg))
 
-  # Update temporal and spatial scope in metadata
-  x <- x %>%
-    update_temporal() %>%
-    update_spatial() %>%
-    update_taxonomic() %>%
-    update_number_tags()
+  if (!grepl("geolocator-dp-profile\\.json$", pkg$`$schema`)){
+    cli::cli_warn("The datapackage provided does not seems to be a Geolocator Data Package.")
+  }
 
-  return(x)
+  return(pkg)
 }

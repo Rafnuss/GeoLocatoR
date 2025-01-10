@@ -55,7 +55,7 @@ add_gldp_resource <- function(package,
   # https://github.com/frictionlessdata/frictionless-r/issues/254
 
   schema_fields <- sapply(schema$fields, \(x) x$name)
-  schema_type <- sapply(schema$fields, \(x) x$type)
+  schema_types <- sapply(schema$fields, \(x) x$type)
   # schema_required <- sapply(schema$fields, \(x) x$constraints$required)
   # data_fields <- names(data)
 
@@ -90,7 +90,7 @@ add_gldp_resource <- function(package,
     for (i in seq_along(schema_fields)) {
       # Check if column already exists
       if (!(schema_fields[i] %in% names(data))) {
-        na_type <- switch(schema_type[i],
+        na_type <- switch(schema_types[i],
           string = NA_character_,
           number = NA_real_,
           integer = NA_integer_,
@@ -114,7 +114,7 @@ add_gldp_resource <- function(package,
   data <- data %>% select(all_of(schema_fields))
 
   if (cast_type) {
-    data <- add_gldp_resource_cast(data, schema_fields, schema_type)
+    data <- cast_table(data, schema)
   }
 
   package <- frictionless::add_resource(
@@ -127,31 +127,4 @@ add_gldp_resource <- function(package,
   )
 
   return(package)
-}
-
-#' @noRd
-add_gldp_resource_cast <- function(data, schema_fields, schema_types) {
-  for (i in seq_along(schema_fields)) {
-    field <- schema_fields[i]
-    type <- schema_types[i]
-
-    if (field %in% names(data)) {
-      if (type == "string") {
-        data[[field]] <- as.character(data[[field]])
-      } else if (type == "number") {
-        data[[field]] <- as.numeric(data[[field]])
-      } else if (type == "integer") {
-        data[[field]] <- as.integer(data[[field]])
-      } else if (type == "bolean") {
-        data[[field]] <- as.logical(data[[field]])
-      } else if (type == "date") {
-        data[[field]] <- as.Date(data[[field]])
-      } else if (type == "datetime") {
-        data[[field]] <- as.POSIXct(data[[field]])
-      } else {
-        cli::cli_warn("No casting for {.field {field}} of type {.val {type}}")
-      }
-    }
-  }
-  return(data)
 }

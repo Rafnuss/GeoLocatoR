@@ -98,14 +98,7 @@ check_gldp_resources <- function(pkg) {
         "tags", "observations", "measurements", "staps", "twilights", "paths",
         "edges", "pressurepaths"
       ))) {
-      schema <- jsonlite::fromJSON(
-        glue::glue(
-          "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/refs/heads/main/{resource$name}",
-          "-table-schema.json"
-        ),
-        simplifyVector = FALSE
-      )
-      checked <- checked & check_gldp_table(resource$data, schema)
+      checked <- checked & check_gldp_table(resource$data, resource$schema)
     } else {
       cli_h2("Check GeoLocator DataPackage Resources {.field {resource$name}}")
       cli_alert_warning("Could not check {.field {resource$name}}")
@@ -637,8 +630,8 @@ check_gldp_observations <- function(o) {
   if (nrow(missing_tag_id) > 0) {
     error_ring_number <- unique(missing_tag_id$ring_number) # nolint
     cli_alert_danger(
-      "{length(error_ring_number)} capture observation{?s} with a device status missing or \\
-                    present {?is/are} missing a tag_id. Check: {.field {error_ring_number}}"
+      "{length(error_ring_number)} {.var ring_number} with a device status {.val missing} or \\
+                    {.val present} {?is/are} missing a {.var tag_id}. Check: {.field {error_ring_number}}"
     )
     checked <- FALSE
   }

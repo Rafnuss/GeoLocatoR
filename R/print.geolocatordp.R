@@ -97,12 +97,7 @@ print.geolocatordp <- function(x, ...) {
   cli::cli_h3("{length(x$resources)} resource{?s}{?./:/:}")
 
   if (length(x$resources) > 0) {
-    purrr::walk(
-      x$resources,
-      function(resources) {
-        cat_bullet(format_inline("{resources}"))
-      }
-    )
+    purrr::walk(x$resources, ~ cat_bullet(format_inline("{.x$name}")))
   }
 
   # Provide help
