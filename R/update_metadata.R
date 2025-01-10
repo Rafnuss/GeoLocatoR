@@ -200,3 +200,26 @@ update_number_tags <- function(pkg) {
 
   return(pkg)
 }
+
+#' Update the bibliographicCitation
+#'
+#' Sets `pkg$bibliographicCitation` to the formatted bibentry of the current pacakge.
+#'
+#' @inheritParams update_metadata
+#' @return `pkg` with updated taxonomic metadata.
+#' @noRd
+update_bibliographicCitation <- function(pkg) {
+  check_gldp_pkg(pkg)
+
+  bib <- utils::bibentry(
+    "Misc", # should be "dataset" but not available
+    author = contributors2persons(pkg$contributors),
+    doi = pkg$id,
+    publisher = ifelse(grepl("zenodo", pkg$id, ignore.case = TRUE), "Zenodo", NULL),
+    title = pkg$title,
+    year = format(as.Date(pkg$created), "%Y"),
+    url = pkg$homepage
+  )
+
+  pkg$bibliographicCitation <- format(bib)
+}
