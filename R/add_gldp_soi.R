@@ -98,6 +98,10 @@ add_gldp_soi <- function(pkg,
   # Create measurement tibble
   m <- tags2m(dtags)
 
+  if (nrow(m) > 0) {
+    pkg <- add_gldp_resource(pkg, "measurements", m, replace = replace)
+  }
+
   # Adding tag resource
   t <- gdl %>%
     rowwise() %>%
@@ -142,11 +146,6 @@ add_gldp_soi <- function(pkg,
     )
 
   pkg <- add_gldp_resource(pkg, "tags", t, replace = replace)
-
-  # Adding measurement resource
-  if (nrow(m) > 0) {
-    pkg <- add_gldp_resource(pkg, "measurements", m, replace = replace)
-  }
 
   # Adding sensor resource
   o <- bind_rows(
