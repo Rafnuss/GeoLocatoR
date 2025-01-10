@@ -131,11 +131,6 @@ write_geopressuretemplate_desc <- function(pkg) {
   if ("version" %in% names(pkg)) {
     d$set_version(pkg$version)
   }
-  if ("homepage" %in% names(pkg)) {
-    d$set_urls(pkg$homepage)
-  } else {
-    d$clear_urls()
-  }
 
   d$normalize()
   d$write()

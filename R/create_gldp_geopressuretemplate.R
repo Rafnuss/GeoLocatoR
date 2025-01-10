@@ -78,16 +78,12 @@ create_gldp_geopressuretemplate <- function(directory = ".") {
 
     # Create package
     pkg <- create_gldp(
-      name = as.character(d$get("Package")),
       title = d$get("Title"),
       contributors = contributors,
       description = d$get("Description"),
       # id = ,
-      licenses = list(list(
-        name = as.character(d$get("License"))
-      )),
-      homepage = if (is.na(d$get("url"))) NULL else d$get("url"),
-      # image = ,
+      # Code license is not the same as the data license.
+      # licenses = list(list(name = as.character(d$get("License")))),
       version = as.character(d$get_version()), # default
       # keywords =
     )

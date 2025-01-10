@@ -12,7 +12,6 @@
 #' @export
 measurements <- function(x) {
   check_gldp_pkg(x)
-  # pluck(x, "data", "measurements")
   frictionless::read_resource(x, resource_name = "measurements")
 }
 
@@ -26,7 +25,6 @@ measurements <- function(x) {
     )
   }
 
-  # pluck(x, "data", "measurements") <- as_tibble(value)
   x <- add_gldp_resource(
     package = x,
     resource_name = "measurements",

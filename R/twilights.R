@@ -12,7 +12,6 @@
 #' @export
 twilights <- function(x) {
   check_gldp_pkg(x)
-  # pluck(x, "data", "twilights")
   frictionless::read_resource(x, resource_name = "twilights")
 }
 
@@ -26,11 +25,11 @@ twilights <- function(x) {
     )
   }
 
-  # pluck(x, "data", "twilights") <- as_tibble(value)
   x <- add_gldp_resource(
     package = x,
     resource_name = "twilights",
     data = value,
+    cast_type = TRUE,
     replace = "twilights" %in% frictionless::resources(x)
   )
 

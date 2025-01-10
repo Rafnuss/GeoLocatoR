@@ -1,7 +1,6 @@
 #' @noRd
-contributors2persons <- function(contributors){
-
-# nolint start
+contributors2persons <- function(contributors) {
+  # nolint start
   role_mapping <- c(
     "contactperson" = "ctr", # Contractor (assumed due to lack of clear match)
     "contributor" = "ctb", # Contributor
@@ -25,20 +24,20 @@ contributors2persons <- function(contributors){
     "supervisor" = "ths", # Thesis advisor
     "workpackageleader" = "cre" # Creator (assumed leader role)
   )
-# nolint end
+  # nolint end
 
-persons <- contributors %>%
-  purrr::map(~ {
-    utils::person(
-      given = ifelse(is.null(.x$givenName) & !is.null(.x$title), .x$title, .x$givenName),
-      family = .x$familyName,
-      email = .x$email,
-      role = purrr::map_vec(.x$roles, ~ dplyr::coalesce(role_mapping[tolower(.x)], "ctb")),
-      comment = c(.x$path, .x$organization)
-    )
-  })
+  persons <- contributors %>%
+    purrr::map(~ {
+      utils::person(
+        given = ifelse(is.null(.x$givenName) & !is.null(.x$title), .x$title, .x$givenName),
+        family = .x$familyName,
+        email = .x$email,
+        role = purrr::map_vec(.x$roles, ~ dplyr::coalesce(role_mapping[tolower(.x)], "ctb")),
+        comment = c(.x$path, .x$organization)
+      )
+    })
 
-persons <- do.call(c, Filter(Negate(is.null), persons))
+  persons <- do.call(c, Filter(Negate(is.null), persons))
 
-return(persons)
+  return(persons)
 }

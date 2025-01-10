@@ -12,7 +12,6 @@
 #' @export
 pressurepaths <- function(x) {
   check_gldp_pkg(x)
-  # pluck(x, "data", "pressurepaths")
   frictionless::read_resource(x, resource_name = "pressurepaths")
 }
 
@@ -25,12 +24,12 @@ pressurepaths <- function(x) {
       "{.arg value} must be a data.frame, not {.type {value}}."
     )
   }
-  # pluck(x, "data", "pressurepaths") <- as_tibble(value)
 
   x <- add_gldp_resource(
     package = x,
     resource_name = "pressurepaths",
     data = value,
+    cast_type = TRUE,
     replace = "pressurepaths" %in% frictionless::resources(x)
   )
 

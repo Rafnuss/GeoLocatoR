@@ -15,8 +15,18 @@ An object of class \code{"geolocatordp"} containing the metadata from the GeoLoc
 Package.
 }
 \description{
-This function reads a GeoLocator Data Package from a specified JSON file. The file should conform
-to the GeoLocator Data Package format. The function utilizes the \code{frictionless} package to read
-the package metadata and then assigns the class \code{"geolocatordp"} to the resulting object for
-proper identification and handling.
+This function reads a GeoLocator Data Package from a \code{"datapackage.json"}, file that describes
+the Data Package metadata and its Data Resources. The function wraps the function
+\href{https://docs.ropensci.org/frictionless/reference/read_package.html}{\code{frictionless::read_package} } and assigns the class
+\code{"geolocatordp"} to the datapackage read.
+}
+\examples{
+# Read a datapackage.json file
+package <- read_gldp("https://zenodo.org/records/14099115/files/datapackage.json")
+
+package
+
+# Access the Data Package properties
+package$name
+package$created
 }

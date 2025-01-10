@@ -10,8 +10,8 @@ reference:
     contents:
       - create_gldp
       - add_gldp_resource
+      - write_gldp
       - read_gldp
-      - update_gldp
   - title: GeoPressureTemplate
     contents:
       - create_gldp_geopressuretemplate
@@ -19,7 +19,6 @@ reference:
       - write_geopressuretemplate
   - title: SOI
     contents:
-      - read_gdl
       - add_gldp_soi
   - title: Accessor (and assignment) functions
     contents:
@@ -33,9 +32,8 @@ reference:
       - pressurepaths
   - title: Check and validate
     contents:
-      - validate_gldp
       - check_gldp
-      - check_gldp_pkg
+      - validate_gldp
   - title: Miscellaneous functions
     contents:
       - print.geolocatordp
@@ -43,6 +41,7 @@ reference:
       - tags2m
       - params2t
       - params2o
+      - read_gdl
       - version
 
 navbar:

@@ -1,99 +1,153 @@
 #' Create a GeoLocator Data Package
 #'
-#' This function create a [Data package](https://datapackage.org/standard/data-package/) for
-#' GeoLocator data. This function is a wrapper of [`create_package()`] with additional
-#' constrains following GeoLocatorDP. The arguments of the functions correspond to the [standard
-#' Data Package properties](https://datapackage.org/standard/data-package/#properties).
+#' @description
+#' This function create a geolocator data package R object. The arguments of the functions
+#' correspond to the [standard geolocator Data Package
+#' properties](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/).
 #'
-#' In addition, to the metadata entered as argument,
 #'
-#' You can find more information about how to enter these meta-data information in the [R package
-#' description](https://r-pkgs.org/description.html#the-description-file).
+#' This function initiate a Geolocator Data Package R object. This function is similar to
+#' [`frictionless::create_package()`] but required specific metadata provided as arguments to the
+#' function rather than the list `descriptor`. These arguments correspond to field of
+#' [`datapackage.json`](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/).
+#'
+#' A geolocator data package is also a Data Package object created by
+#' [`frictionless::create_package()`
+#' ](https://docs.ropensci.org/frictionless/reference/create_package.html) and most (all?) functions
+#' from the frictionless package should work.
+#'
+#' Note that this function does not add any data resources, it returns an empty shell with only
+#' project level metadata.
 #'
 #' @param title A string providing a title or one sentence description for this package. It should
 #' be plain text (no markup), capitalised like a title, NOT end in a period and less than 65
 #' characters. See [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#title)
 #' and thw [Data Package specification](https://datapackage.org/standard/data-package/#title).
-#' @param description A markdown-formatted string describing the package. You can
-#' (and should!) use multiple sentences, but limited to a single paragraph. See the
-#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#description) and the
-#' [Data Package specification](https://datapackage.org/standard/data-package/#description).
 #' @param contributors A list of contributors, where each contributor is a list with properties
 #' including at leas `title` but also optionally `givenName`, `familyName`, `path`, `email`,
 #' `roles`, and `organization`. See the
 #' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#contributors), the
 #' [Data Package specification](https://datapackage.org/standard/data-package/#contributors) and the
 #' [R Packages](https://r-pkgs.org/description.html#sec-description-authors-at-r).
-#' @param id A globally unique identifier for the package, such as a UUID or DOI. Defaults to NULL.
-#' See the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#id) and the
-#' [Data Package specification](https://datapackage.org/standard/data-package/#id).
-#' @param licenses A list of licenses under which the package is provided. Each license is a list
-#' with properties `name` and `path` and optionally `title`. Defaults is a CC-BY-4.0 license. See
-#' the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#licenses) and the
+#' @param embargo End date of the embargo. Default to `"1970-01-01"`. See the
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#embargo) and the
+#' [Data Package specification](https://datapackage.org/standard/data-package/#embargo).
+#' @param licenses A list of licenses under which the data is provided.  Usually, a single license
+#' if sufficient and prefered. If you're not sure, checkout the [Creative Commons License Chooser
+#' ](https://chooser-beta.creativecommons.org/) and the [Open Data Commons
+#' ](https://opendatacommons.org/). `name` or `path` must be provided. Defaults is a CC-BY-4.0
+#' license. See the [Geolocator DP
+#' ](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#licenses) and the
 #' [Data Package specification](https://datapackage.org/standard/data-package/#licenses).
-#' @param homepage (optional) A URL for the home on the web related to this data package.
-#' See the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#homepage) and
-#' the [Data Package specification](https://datapackage.org/standard/data-package/#homepage).
-#' @param image (optional) A URL or path pointing to the location of an image representing the data
-#' package. See the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#image)
-#' and the [Data Package specification](https://datapackage.org/standard/data-package/#image).
+#' @param id A globally unique identifier for the package, typically the DOI link of the
+#' corresponding Zenodo repository which [can be reserved prior to publication
+#' ](https://help.zenodo.org/docs/deposit/describe-records/reserve-doi/#reserve-doi). Default to
+#' `NULL`. See the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#id) and
+#' the [Data Package specification](https://datapackage.org/standard/data-package/#id).
+#' @param description A markdown-formatted string describing the package. You can
+#' (and should!) use multiple sentences, but limited to a single paragraph. See the
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#description) and the
+#' [Data Package specification](https://datapackage.org/standard/data-package/#description).
 #' @param version (optional) A version string identifying the version of the package, following
 #' Semantic Versioning. Defaults to "1.0.0". See
 #' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#version) and the
 #' [Data Package specification](https://datapackage.org/standard/data-package/#version) and [Data
 #' Package Version recipe](https://datapackage.org/recipes/data-package-version/).
-#' @param embargo End date of the embargo. Default to `"1970-01-01"`. See the
-#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#embargo) and the
-#' [Data Package specification](https://datapackage.org/standard/data-package/#embargo).
-#' @param keywords (optional) A list of keywords to assist users in searching for the package.
-#' See the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#keywords) and
-#' the [Data Package specification](https://datapackage.org/standard/data-package/#keywords).
-#' @param schema (optional) A URL to the JSON Table Schema that describes the data package. Defaults
-#' to the GeoLocator Data Package profile. See the [Data Package specification
-#' ](https://datapackage.org/standard/data-package/#dollar-schema).
-#' @param name (optional) A string providing a name for the package. Defaults to a slugified version
-#' of the title. See the
-#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#name) and the
-#' [Data Package specification](https://datapackage.org/standard/data-package/#name).
-#' @param citation (optional) A string providing a citation for the package. See the
-#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#citation) and the
-#' [Data Package specification](https://datapackage.org/standard/data-package/#citation).
-#' @param grants (optional) A list of grants that funded the creation of the package. See the
-#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#grants) and the
-#' [Data Package specification](https://datapackage.org/standard/data-package/#grants).
-#' @param related_identifiers (optional) A list of related identifiers for the package. Each related
+#' @param relatedIdentifiers (optional) A list of related identifiers for the package. Each related
 #' identifier is a list with properties `relationType` and `relatedIdentifier`. See the
 #' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#relatedIdentifiers) and
 #' the [Camtrap DP specification
 #' ](https://camtrap-dp.tdwg.org/metadata/#relatedIdentifiers).
-#' @param references (optional) List of references related to the package (e.g. references cited in
-#' package.description). References preferably include a DOI. See the
-#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#references) and the
-#' [Camtrap DP specification](https://camtrap-dp.tdwg.org/metadata/#references).
+#' @param grants (optional) A list of grants that funded the creation of the package. See the
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#grants) and the
+#' [Data Package specification](https://datapackage.org/standard/data-package/#grants).
+#' @param keywords (optional) A list of keywords to assist users in searching for the package.
+#' See the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#keywords) and
+#' the [Data Package specification](https://datapackage.org/standard/data-package/#keywords).
+#' @param created Datetime on which this was created. See the
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#created) and the
+#' [Data Package specification](https://datapackage.org/standard/data-package/#created).
+#' @param bibliographicCitation (optional) A string providing a citation for the package. See the
+#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#citation) and the
+#' [Data Package specification](https://datapackage.org/standard/data-package/#citation).
+#' @param schema (optional) A URL to the JSON Table Schema that describes the data package. Defaults
+#' to the GeoLocator Data Package profile. See the [Data Package specification
+#' ](https://datapackage.org/standard/data-package/#dollar-schema).
 #'
-#' @return A list containing the descriptor for the data package.
+#' @return A Geolocator Data Package object containing only metadata.
+#'
+#' @examples
+#' # Create a Data Package with, at minimum a title and a list of contributors.
+#' pkg <- create_gldp(
+#'   title = "Geolocator Data Package example",
+#'   contributors = list(
+#'     list(
+#'       title = "Raphaël Nussbaumer",
+#'       roles = c("ContactPerson", "DataCurator", "ProjectLeader")
+#'     ),
+#'     list(
+#'       title = "Yann Rime",
+#'       roles = c("Researcher")
+#'     )
+#'   )
+#' )
+#'
+#' pkg
+#'
+#' # See the structure of the (empty) Data Package
+#' str(pkg)
+#'
+#' # Create a Data Package with all possible metadata
+#' pkg <- create_gldp(
+#'   title = "Geolocator Data Package example",
+#'   contributors = list(
+#'     list(
+#'       title = "Raphaël Nussbaumer",
+#'       roles = c("ContactPerson", "DataCurator", "ProjectLeader")
+#'     ),
+#'     list(
+#'       title = "Yann Rime",
+#'       roles = c("Researcher")
+#'     )
+#'   ),
+#'   embargo = "2025-01-01",
+#'   id = "https://doi.org/10.5281/zenodo.13829929",
+#'   version = "1.0.1",
+#'   relatedIdentifiers = list(
+#'     list(
+#'       relationType = "IsPartOf",
+#'       relatedIdentifier = "10.5281/zenodo.11207081",
+#'       relatedIdentifierType = "DOI"
+#'     ),
+#'     list(
+#'       relationType = "IsSupplementTo",
+#'       relatedIdentifier = "",
+#'       relatedIdentifierType = "DOI"
+#'     )
+#'   ),
+#'   grants = c("Swiss National Fundation grant no. 354251"),
+#'   keywords = c("Woodland Kingfisher", "intra-african", "multi-sensor geolocator")
+#' )
+#'
 #' @export
 create_gldp <- function(
     title,
     contributors,
-    schema = NULL,
-    name = NULL,
     id = NULL,
+    embargo = "1970-01-01",
     licenses = list(list(
       name = "CC-BY-4.0",
       title = "Creative Commons Attribution 4.0",
       path = "https://creativecommons.org/licenses/by/4.0/"
     )),
     description = NULL,
-    homepage = NULL,
-    image = NULL,
     version = NULL,
-    embargo = "1970-01-01",
-    keywords = NULL,
-    citation = NULL,
+    relatedIdentifiers = NULL,
     grants = NULL,
-    related_identifiers = NULL,
-    references = NULL) {
+    keywords = NULL,
+    created = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ"),
+    bibliographicCitation = NULL,
+    schema = NULL) {
   # Assertions to check input validity
   assertthat::assert_that(assertthat::is.string(title))
   assertthat::assert_that(is.list(contributors))
@@ -101,7 +155,7 @@ create_gldp <- function(
 
   if (is.null(schema) || is.na(schema)) {
     schema <- glue::glue(
-      "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/main/",
+      "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/v0.2/",
       "geolocator-dp-profile.json"
     )
   }
@@ -133,23 +187,18 @@ create_gldp <- function(
 
   if (is.null(description) || description == "") description <- NULL
   if (!is.null(description)) assertthat::assert_that(assertthat::is.string(description))
-  if (!is.null(homepage)) {
-    assertthat::assert_that(assertthat::is.string(homepage))
-    assertthat::assert_that(grepl("^https?://[[:alnum:].-]+/?", homepage))
-  }
-  if (!is.null(image)) assertthat::assert_that(assertthat::is.string(image))
   if (!is.null(version)) assertthat::assert_that(assertthat::is.string(version))
   if (!is.null(keywords)) assertthat::assert_that(is.character(keywords))
-  if (!is.null(citation)) assertthat::assert_that(assertthat::is.string(citation))
+  if (!is.null(bibliographicCitation))
+    assertthat::assert_that(assertthat::is.string(bibliographicCitation))
   if (!is.null(grants)) assertthat::assert_that(is.character(grants))
-  if (!is.null(related_identifiers)) {
-    assertthat::assert_that(is.list(related_identifiers))
+  if (!is.null(relatedIdentifiers)) {
+    assertthat::assert_that(is.list(relatedIdentifiers))
     assertthat::assert_that(all(sapply(
-      related_identifiers,
+      relatedIdentifiers,
       \(x) is.list(x) && !is.null(x$relationType) && !is.null(x$relatedIdentifier)
     )))
   }
-  if (!is.null(references)) assertthat::assert_that(is.character(references))
   assertthat::assert_that(assertthat::is.date(as.Date(embargo)))
 
   # Create the descriptor list
@@ -162,17 +211,13 @@ create_gldp <- function(
   )
 
   # Conditionally add optional elements
-  if (!is.null(name)) descriptor$name <- name
   if (!is.null(id)) descriptor$id <- id
   if (!is.null(description)) descriptor$description <- description
-  if (!is.null(homepage)) descriptor$homepage <- homepage
   if (!is.null(version)) descriptor$version <- version
-  if (!is.null(image)) descriptor$image <- image
   if (!is.null(keywords)) descriptor$keywords <- keywords
-  if (!is.null(citation)) descriptor$citation <- citation
+  if (is.null(bibliographicCitation)) descriptor$bibliographicCitation <- bibliographicCitation
   if (!is.null(grants)) descriptor$grants <- grants
-  if (!is.null(related_identifiers)) descriptor$relatedIdentifiers <- related_identifiers
-  if (!is.null(references)) descriptor$references <- references
+  if (!is.null(relatedIdentifiers)) descriptor$relatedIdentifiers <- relatedIdentifiers
 
   # Create frictionless package
   package <- frictionless::create_package(descriptor = descriptor)
@@ -182,5 +227,7 @@ create_gldp <- function(
   # version on Gihub). Not to be confused with the version of the data pacakge being created.
   attr(package, "version") <- version(package)
 
-  return(package)
+  pkg <- package %>% update_bibliographicCitation()
+
+  return(pkg)
 }

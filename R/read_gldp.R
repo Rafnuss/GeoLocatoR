@@ -1,9 +1,10 @@
 #' Read a GeoLocator Data Package
 #'
-#' This function reads a GeoLocator Data Package from a specified JSON file. The file should conform
-#' to the GeoLocator Data Package format. The function utilizes the `frictionless` package to read
-#' the package metadata and then assigns the class `"geolocatordp"` to the resulting object for
-#' proper identification and handling.
+#' This function reads a GeoLocator Data Package from a `"datapackage.json"`, file that describes
+#' the Data Package metadata and its Data Resources. The function wraps the function
+#' [`frictionless::read_package`
+#' ](https://docs.ropensci.org/frictionless/reference/read_package.html) and assigns the class
+#' `"geolocatordp"` to the datapackage read.
 #'
 #' @param file A string specifying the path to the JSON file containing the GeoLocator Data Package
 #' metadata. Defaults to `"datapackage.json"`.
@@ -11,9 +12,17 @@
 #' @return An object of class `"geolocatordp"` containing the metadata from the GeoLocator Data
 #' Package.
 #'
+#' @examples
+#' # Read a datapackage.json file
+#' package <- read_gldp("https://zenodo.org/records/14099115/files/datapackage.json")
+#'
+#' package
+#'
+#' # Access the Data Package properties
+#' package$name
+#' package$created
 #' @export
 read_gldp <- function(file = "datapackage.json") {
-  # Read package (metadata)
   package <- frictionless::read_package(file)
 
   package$resources <- purrr::map(package$resources, ~ {

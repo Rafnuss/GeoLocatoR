@@ -12,7 +12,6 @@
 #' @export
 observations <- function(x) {
   check_gldp_pkg(x)
-  # pluck(x, "data", "observations")
   frictionless::read_resource(x, resource_name = "observations")
 }
 
@@ -25,7 +24,6 @@ observations <- function(x) {
       "{.arg value} must be a data.frame, not {.type {value}}."
     )
   }
-  # pluck(x, "data", "observations") <- as_tibble(value)
 
   x <- add_gldp_resource(
     package = x,

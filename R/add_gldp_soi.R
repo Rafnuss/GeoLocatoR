@@ -1,12 +1,16 @@
 #' Add GLDP SOI Data to a Package
 #'
+#' @description
 #' This function adds data from the Swiss Ornithological Institute (SOI) to a package. It includes
 #' tags, measurements, and observations based on the provided data frame and directory of data. The
 #' function also handles missing directories and updates the package accordingly.
 #'
+#' See an example of use [with this tutorial](https://rpubs.com/rafnuss/geolocator_create_from_soi).
+#'
 #' @param pkg The package object to which the data will be added.
 #' @param gdl A data frame containing the SOI data. Must include columns like `OrderName`,
-#' `GDL_ID`, and other relevant fields for tags, measurements, and observations.
+#' `GDL_ID`, and other relevant fields for tags, measurements, and observations. See [`read_gdl`]
+#' for more information.
 #' @param directory_data A character string specifying the path to the directory where data files
 #' are located. This directory is used to locate and match GDL_IDs to their corresponding
 #' directories.
@@ -18,32 +22,13 @@
 #' @details
 #' The function performs the following steps:
 #' \itemize{
-#'   \item Validates the input package and the data frame.
-#'   \item Checks and retrieves the directory information for each GDL_ID.
-#'   \item Creates tag data, measurements, and observations based on the provided data.
-#'   \item Adds these resources to the package, with options to replace existing resources.
-#'   \item Updates the package metadata.
+#'   \item Checks and retrieves the directory information for each GDL_ID/tag_id.
+#'   \item Creates GeoPressureR tag data for each of them when possible
+#'   \item Extract measurements and add them as resources to pkg
+#'   \item Compute tags.csv and observations.csv from `gdl` and add them as resources too.
 #' }
 #'
 #' @return The updated package object with the added resources.
-#'
-#' @examples
-#' \dontrun{
-#' my_package <- some_package_function()
-#' my_gdl <- data.frame(
-#'   OrderName = c("A", "B"),
-#'   GDL_ID = c("001", "002"),
-#'   # Additional required columns...
-#' )
-#' updated_package <- add_gldp_soi(
-#'   pkg = my_package,
-#'   gdl = my_gdl,
-#'   directory_data = "/path/to/data",
-#'   allow_empty_o = TRUE,
-#'   contributors = list("John Doe" = c("aut", "DataCollector")),
-#'   replace = TRUE
-#' )
-#' }
 #'
 #' @export
 add_gldp_soi <- function(pkg,
@@ -95,7 +80,7 @@ add_gldp_soi <- function(pkg,
       )
     )
 
-  # Create measurement tibble
+  # Adding measurement resource
   m <- tags2m(dtags)
 
   if (nrow(m) > 0) {

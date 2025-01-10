@@ -7,7 +7,7 @@
 #' You can find more information on the use of this function in the [GeoPressureManual
 #' ](https://raphaelnussbaumer.com/GeoPressureManual/geolocator-create.html)
 #'
-#' @param pkg A GLDP package object.
+#' @param pkg A GeoLocator Data Package object.
 #' @param directory A character string specifying the geopressuretemplate directory.
 #' @param from A character string specifying the source of the data files. Can be "raw-tag" (for
 #' creating `tag` based on the data in `data/raw-tag/`) or

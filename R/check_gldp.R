@@ -50,7 +50,7 @@ check_gldp <- function(pkg, quiet = FALSE) {
 #'
 #' @return The validated GeoLocator Data Package object (invisible).
 #'
-#' @export
+#' @noRd
 check_gldp_pkg <- function(pkg) {
   frictionless::check_package(pkg)
 
@@ -630,7 +630,8 @@ check_gldp_observations <- function(o) {
 
   # Check 4: capture-missing and capture-present must have a tag_id
   missing_tag_id <- o %>%
-    filter(.data$observation_type == "capture" & (.data$device_status %in% c("missing", "present")) &
+    filter(.data$observation_type == "capture" &
+      (.data$device_status %in% c("missing", "present")) &
       is.na(.data$tag_id))
 
   if (nrow(missing_tag_id) > 0) {

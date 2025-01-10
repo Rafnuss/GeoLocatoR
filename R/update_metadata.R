@@ -36,7 +36,7 @@ update_metadata <- function(pkg) {
 
 #' @noRd
 update_created <- function(pkg) {
-  check_gldp_pkg(x)
+  check_gldp_pkg(pkg)
   # Get current datetime in RFC3339 format
   pkg$created <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ")
   return(pkg)
@@ -174,7 +174,7 @@ update_number_tags <- function(pkg) {
   t <- tags(pkg)
   m <- measurements(pkg)
 
-  if (nrow(t) == 0 | nrow(m) == 0) {
+  if (nrow(t) == 0 || nrow(m) == 0) {
     pkg$numberTags <- NULL
     return(pkg)
   }
@@ -208,7 +208,7 @@ update_number_tags <- function(pkg) {
 #' @inheritParams update_metadata
 #' @return `pkg` with updated taxonomic metadata.
 #' @noRd
-update_bibliographicCitation <- function(pkg) {
+update_bibliographicCitation <- function(pkg) { # nolint
   check_gldp_pkg(pkg)
 
   bib <- utils::bibentry(
@@ -222,4 +222,6 @@ update_bibliographicCitation <- function(pkg) {
   )
 
   pkg$bibliographicCitation <- format(bib)
+
+  return(pkg)
 }
