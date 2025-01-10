@@ -16,7 +16,18 @@ read_gldp <- function(file = "datapackage.json") {
   # Read package (metadata)
   package <- frictionless::read_package(file)
 
-  class(package) <- c("geolocatordp", class(package))
+  package$resources <- purrr::map(package$resources, ~ {
+    resource <- frictionless:::get_resource(package, .x$name)
+    if (resource$read_from == "path" || resource$read_from == "url") {
+      .x$data <- frictionless:::read_from_path(package, .x$name, col_select = NULL)
+      .x$path <- NULL
+    }
+    return(.x)
+  })
+
+  # Add class
+  class(x) <- c("geolocatordp", class(x))
+
   # Update temporal and spatial scope in metadata
   x <- x %>%
     update_temporal() %>%
