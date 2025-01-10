@@ -34,5 +34,9 @@ paths <- function(x) {
     replace = "paths" %in% frictionless::resources(x)
   )
 
+  x <- x %>%
+    update_spatial() %>%
+    update_number_tags()
+
   return(x)
 }

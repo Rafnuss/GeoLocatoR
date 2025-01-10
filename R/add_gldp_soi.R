@@ -181,8 +181,6 @@ add_gldp_soi <- function(pkg,
     pkg <- add_gldp_resource(pkg, "observations", o, replace = replace)
   }
 
-  pkg <- update_gldp(pkg)
-
   return(pkg)
 }
 

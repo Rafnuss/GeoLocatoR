@@ -34,5 +34,9 @@ tags <- function(x) {
     replace = "tags" %in% frictionless::resources(x)
   )
 
+  x <- x %>%
+    update_taxonomic() %>%
+    update_number_tags()
+
   return(x)
 }

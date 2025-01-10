@@ -34,5 +34,9 @@ pressurepaths <- function(x) {
     replace = "pressurepaths" %in% frictionless::resources(x)
   )
 
+  x <- x %>%
+    update_spatial() %>%
+    update_number_tags()
+
   return(x)
 }

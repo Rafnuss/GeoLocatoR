@@ -35,5 +35,9 @@ measurements <- function(x) {
     replace = "measurements" %in% frictionless::resources(x)
   )
 
+  x <- x %>%
+    update_temporal() %>%
+    update_number_tags()
+
   return(x)
 }

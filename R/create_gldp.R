@@ -177,9 +177,6 @@ create_gldp <- function(
   # Create frictionless package
   package <- frictionless::create_package(descriptor = descriptor)
 
-  # Add other field automatically
-  package <- update_gldp(package)
-
   class(package) <- c("geolocatordp", class(package))
   # This is the the version of the GeoLocator Data Package standard (as defined by the release
   # version on Gihub). Not to be confused with the version of the data pacakge being created.

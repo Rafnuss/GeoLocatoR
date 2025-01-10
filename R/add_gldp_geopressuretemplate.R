@@ -1,10 +1,14 @@
-#' Add GLDP Geopressure Template
+#' Add Geolocator DP resources from a Geopressure Template
 #'
-#' This function adds geopressuretemplates to a GLDP package by reading data from specified
-#' directories and files.
+#' @description
+#' This function adds all possible resources to a Geolocator Data Package by reading data from
+#' a [GeoPressureTemplate](https://github.com/Rafnuss/GeoPressureTemplate) directories and files.
+#'
+#' You can find more information on the use of this function in the [GeoPressureManual
+#' ](https://raphaelnussbaumer.com/GeoPressureManual/geolocator-create.html)
 #'
 #' @param pkg A GLDP package object.
-#' @param directory A character string specifying the directory where the data files are located.
+#' @param directory A character string specifying the geopressuretemplate directory.
 #' @param from A character string specifying the source of the data files. Can be "raw-tag" (for
 #' creating `tag` based on the data in `data/raw-tag/`) or
 #' "interim" for data in `data/interim`. If `NULL` (default), the function will determine the
@@ -18,18 +22,15 @@
 #' 1. Reads the "tags.csv" and "observations.csv" files from the "./data" directory if they exist
 #' and adds them to the GLDP package.
 #' 3. Determines the source of the data files ("data" or "interim") if the `from` parameter is NULL.
-#' 4. Reads all ".RData" files from the specified source directory and processes them.
+#' 4. If `interim`, reads all interim ".RData" files, extract all resources possibles and add them
+#' to the package.
+#' 5. If `raw-data`, create GeoPressureR `tag` object from the `data/raw-data/`, compute the `tags`
+#' and `observations` resources and add them to the package.
 #'
 #' You can exclude interim file to be included in the package by starting the file name with an `_`.
 #'
 #' It is not possible to do a mix of some `tag` read from `from="data"` and some `tag` read from
 #' `from="interim"`.
-#'
-#' @examples
-#' \dontrun{
-#' pkg <- create_gldp_package()
-#' pkg <- add_gldp_geopressuretemplate(pkg, directory = "path/to/data")
-#' }
 #'
 #' @export
 add_gldp_geopressuretemplate <- function(
@@ -360,7 +361,7 @@ add_gldp_geopressuretemplate <- function(
       }
     }
 
-    pkg <- update_gldp(pkg)
+    return(pkg)
   })
 
   return(pkg)

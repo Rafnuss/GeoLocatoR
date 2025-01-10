@@ -35,5 +35,8 @@ observations <- function(x) {
     replace = "observations" %in% frictionless::resources(x)
   )
 
+  x <- x %>%
+    update_spatial()
+
   return(x)
 }
