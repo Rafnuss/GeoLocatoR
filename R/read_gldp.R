@@ -24,5 +24,5 @@ read_gldp <- function(file = "datapackage.json") {
     update_taxonomic() %>%
     update_number_tags()
 
-  return(package)
+  return(x)
 }
