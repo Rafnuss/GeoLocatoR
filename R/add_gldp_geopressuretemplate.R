@@ -37,8 +37,8 @@ add_gldp_geopressuretemplate <- function(
     directory = ".",
     from = c("raw-tag", "interim"),
     replace = FALSE) {
-  check_gldp_pkg(pkg)
-
+  # Check input
+  check_gldp(pkg)
   # Check if the directory exists
   if (!dir.exists(directory)) {
     cli_abort(

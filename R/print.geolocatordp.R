@@ -12,7 +12,7 @@
 print.geolocatordp <- function(x, ...) {
   # check_geolocatordp() not necessary: print only triggered for geolocatordp object
 
-  check_gldp_pkg(x)
+  check_gldp(x)
 
   cli::cli_h3("A GeoLocator Data Package")
 

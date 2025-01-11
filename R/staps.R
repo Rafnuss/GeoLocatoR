@@ -11,7 +11,7 @@
 #' @return [tibble::tibble()] data frame with staps
 #' @export
 staps <- function(x) {
-  check_gldp_pkg(x)
+  check_gldp(x)
   frictionless::read_resource(x, resource_name = "staps")
 }
 

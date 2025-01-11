@@ -11,7 +11,7 @@
 #' @return [tibble::tibble()] data frame with pressurepaths
 #' @export
 pressurepaths <- function(x) {
-  check_gldp_pkg(x)
+  check_gldp(x)
   frictionless::read_resource(x, resource_name = "pressurepaths")
 }
 
@@ -34,8 +34,8 @@ pressurepaths <- function(x) {
   )
 
   x <- x %>%
-    update_spatial() %>%
-    update_number_tags()
+    update_gldp_spatial() %>%
+    update_gldp_number_tags()
 
   return(x)
 }

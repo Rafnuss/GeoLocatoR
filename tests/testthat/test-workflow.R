@@ -19,4 +19,7 @@ test_that("read_gldp correctly reads and processes GeoLocator Data Package", {
   paths(pkg) <- paths(pkg)
   edges(pkg) <- edges(pkg)
   pressurepaths(pkg) <- pressurepaths(pkg)
+
+  # Update
+  pkg <- pkg %>% GeoLocatoR:::update_gldp()
 })

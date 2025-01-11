@@ -31,7 +31,8 @@ add_gldp_resource <- function(package,
                               cast_type = FALSE,
                               replace = FALSE,
                               delim = ",") {
-  check_gldp_pkg(package)
+  pkg <- package
+  check_gldp(pkg)
 
   # Validate resource_name
   r <- purrr::detect(pkg$resources, ~ .x$name == resource_name)
@@ -111,8 +112,8 @@ add_gldp_resource <- function(package,
     data <- cast_table(data, schema)
   }
 
-  package <- frictionless::add_resource(
-    package = package,
+  pkg <- frictionless::add_resource(
+    package = pkg,
     resource_name = resource_name,
     data = data,
     schema = schema,
@@ -120,5 +121,5 @@ add_gldp_resource <- function(package,
     delim = delim
   )
 
-  return(package)
+  return(pkg)
 }

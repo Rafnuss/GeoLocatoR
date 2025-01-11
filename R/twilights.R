@@ -11,7 +11,7 @@
 #' @return [tibble::tibble()] data frame with twilights
 #' @export
 twilights <- function(x) {
-  check_gldp_pkg(x)
+  check_gldp(x)
   frictionless::read_resource(x, resource_name = "twilights")
 }
 

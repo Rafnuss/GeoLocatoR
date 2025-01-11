@@ -11,7 +11,7 @@
 #' @return [tibble::tibble()] data frame with observations
 #' @export
 observations <- function(x) {
-  check_gldp_pkg(x)
+  check_gldp(x)
   frictionless::read_resource(x, resource_name = "observations")
 }
 
@@ -34,7 +34,7 @@ observations <- function(x) {
   )
 
   x <- x %>%
-    update_spatial()
+    update_gldp_spatial()
 
   return(x)
 }

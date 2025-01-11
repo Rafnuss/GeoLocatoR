@@ -175,8 +175,9 @@ create_gldp <- function(
   if (!is.null(description)) assertthat::assert_that(assertthat::is.string(description))
   if (!is.null(version)) assertthat::assert_that(assertthat::is.string(version))
   if (!is.null(keywords)) assertthat::assert_that(is.character(keywords))
-  if (!is.null(bibliographicCitation))
+  if (!is.null(bibliographicCitation)) {
     assertthat::assert_that(assertthat::is.string(bibliographicCitation))
+  }
   if (!is.null(grants)) assertthat::assert_that(is.character(grants))
   if (!is.null(relatedIdentifiers)) {
     assertthat::assert_that(is.list(relatedIdentifiers))
@@ -206,14 +207,14 @@ create_gldp <- function(
   if (!is.null(relatedIdentifiers)) descriptor$relatedIdentifiers <- relatedIdentifiers
 
   # Create frictionless package
-  package <- frictionless::create_package(descriptor = descriptor)
+  pkg <- frictionless::create_package(descriptor = descriptor)
 
-  class(package) <- c("geolocatordp", class(package))
+  class(pkg) <- c("geolocatordp", class(pkg))
   # This is the the version of the GeoLocator Data Package standard (as defined by the release
   # version on Gihub). Not to be confused with the version of the data pacakge being created.
-  attr(package, "version") <- version(package)
+  attr(pkg, "version") <- version(pkg)
 
-  pkg <- package %>% update_bibliographicCitation()
+  pkg <- pkg %>% update_gldp()
 
   return(pkg)
 }

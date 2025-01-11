@@ -36,7 +36,7 @@ add_gldp_soi <- function(pkg,
                          directory_data,
                          allow_empty_o = FALSE,
                          replace = FALSE) {
-  check_gldp_pkg(pkg)
+  check_gldp(pkg)
   assertthat::assert_that(is.data.frame(gdl))
 
 
