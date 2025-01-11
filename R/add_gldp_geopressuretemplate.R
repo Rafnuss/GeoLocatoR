@@ -9,10 +9,9 @@
 #'
 #' @param pkg A GeoLocator Data Package object.
 #' @param directory A character string specifying the geopressuretemplate directory.
-#' @param from A character string specifying the source of the data files. Can be "raw-tag" (for
-#' creating `tag` based on the data in `data/raw-tag/`) or
-#' "interim" for data in `data/interim`. If `NULL` (default), the function will determine the
-#' source based on the presence of at least one file in the "interim" directory.
+#' @param from A character vector specifying the source of the data files. Either or both of
+#' `"raw-tag"` (for creating `tag` based on the data in `data/raw-tag/`) and `"interim"` for data
+#' in `data/interim`.
 #' @inheritParams add_gldp_resource
 #'
 #' @return The updated GLDP package object with added geopressure templates.
@@ -36,7 +35,7 @@
 add_gldp_geopressuretemplate <- function(
     pkg,
     directory = ".",
-    from = NULL, # "raw-tag", "interim", ????"config"
+    from = c("raw-tag", "interim"),
     replace = FALSE) {
   check_gldp_pkg(pkg)
 
@@ -46,41 +45,19 @@ add_gldp_geopressuretemplate <- function(
       message = "The specified directory does not exist: {.file {directory}}."
     )
   }
+  assertthat::assert_that(all(from %in% c("interim", "raw-tag")))
+  assertthat::assert_that(is.logical(replace))
+
+  # Initiate empty resources to be able to merge interim and raw-tag as necessary
+  t <- NULL
+  o <- NULL
+  m <- NULL
 
   # Change working directory to the specified directory so that GeoPressureR can work with default
   # value: setwd(directory)
   pkg <- withr::with_dir(directory, {
-    # Read tags and observations files if present
-    if (file.exists("./data/tags.xlsx")) {
-      t <- readxl::read_excel("./data/tags.xlsx")
-      pkg <- add_gldp_resource(pkg, "tags", t, replace = replace, cast_type = TRUE)
-    } else if (file.exists("./data/tags.csv")) {
-      t <- readr::read_csv("./data/tags.csv", show_col_types = FALSE)
-      pkg <- add_gldp_resource(pkg, "tags", t, replace = replace, cast_type = TRUE)
-    }
-
-    if (file.exists("./data/observations.xlsx")) {
-      o <- readxl::read_excel("./data/observations.xlsx")
-      pkg <- add_gldp_resource(pkg, "observations", o, replace = replace, cast_type = TRUE)
-    } else if (file.exists("./data/observations.csv")) {
-      o <- readr::read_csv("./data/observations.csv", show_col_types = FALSE)
-      pkg <- add_gldp_resource(pkg, "observations", o, replace = replace, cast_type = TRUE)
-    }
-
-
-    if (is.null(from)) {
-      if (length(list.files(path = "./data/interim/", pattern = "\\.RData$", full.names = TRUE))
-      > 0) {
-        from <- "interim"
-      } else {
-        from <- "raw-tag"
-      }
-    }
-    assertthat::assert_that(from %in% c("interim", "raw-tag"))
-
-
-
-    if (from == "interim") {
+    # STEP 1: Read all interim file available
+    if ("interim" %in% from) {
       all_files <- list.files(path = "./data/interim/", pattern = "\\.RData$", full.names = TRUE)
       # Exclude folder starting with _
       all_files <- all_files[!grepl("^_", basename(all_files))]
@@ -109,7 +86,6 @@ add_gldp_geopressuretemplate <- function(
       # Loop through files and populate the result lists
       for (i in seq_along(all_files)) {
         save_list <- load(all_files[i])
-
         for (var in var_names) {
           if (var %in% save_list) {
             interim[[var]][[i]] <- get(var)
@@ -117,16 +93,14 @@ add_gldp_geopressuretemplate <- function(
         }
       }
 
-      # Adding measurements resource
+      # Crete tag resource
+      t <- params2t(interim$param)
+
+      # Create observations resource
+      o <- params2o(interim$param)
+
+      # Create measurements resource
       m <- tags2m(interim$tag)
-      pkg <- add_gldp_resource(pkg, "measurements", m, replace = replace)
-
-
-      # Adding tag resource
-      if (!("tags" %in% frictionless::resources(pkg))) {
-        t <- params2t(interim$param)
-        pkg <- add_gldp_resource(pkg, "tags", t, replace = replace)
-      }
 
       # Add twilights
       twl <- interim$tag %>%
@@ -243,126 +217,192 @@ add_gldp_geopressuretemplate <- function(
       if (nrow(pressurepaths) > 0) {
         pkg <- add_gldp_resource(pkg, "pressurepaths", pressurepaths, replace = replace)
       }
+    }
 
-      # Adding tag resource if not present as csv or xlsx
-      if (!("tags" %in% frictionless::resources(pkg))) {
-        t <- interim$param %>% params2t()
-        pkg <- add_gldp_resource(pkg, "tags", t, replace = replace)
-      }
-
-      # Adding observations resource if not present as csv or xlsx
-      if (!("observations" %in% frictionless::resources(pkg))) {
-        o <- interim$param %>% params2o()
-        pkg <- add_gldp_resource(pkg, "observations", o, replace = replace)
-      }
-    } else if (from == "raw-tag") {
-      # OPTION 1: Read from directory:
+    # STEP 2: Read raw tag data for the file not in interim
+    if ("raw-tag" %in% from) {
       # Read tag data
       all_dirs <- list.dirs(path = "data/raw-tag", recursive = FALSE)
       # Exclude folder starting with _
       all_dirs <- all_dirs[!grepl("^_", basename(all_dirs))]
-
+      # Get the list of tag_id
       list_id <- basename(all_dirs)
 
-      if (length(list_id) == 0) {
+      # Remove tag_id already present in t
+      list_id <- list_id[!(list_id %in% t$tag_id)]
+
+      # Not sure about this warning
+      if (length(list_id) == 0 && FALSE) {
         cli::cli_warn(
           "We did not find any tag data in {.file {file.path(directory, 'data/raw-tag')}}."
         )
       }
 
-      display_config_error <- TRUE # nolint
       dtags <- list_id %>%
-        purrr::map(
-          \(id) {
-            config <- tryCatch(
-              {
-                GeoPressureR::geopressuretemplate_config(id,
-                  tag_create = list(assert_pressure = FALSE)
-                )
-              },
-              error = function(e) {
-                if (display_config_error) {
-                  # Warn that the configuration file could not be read and display the error
-                  cli::cli_warn(c(
-                    "i" = "Configuration file {.file config.yml} could not be read to build the
-                datapackage.",
-                    ">" = "Create the tag with default value wit
-                    {.fun GeoPressureR::param_create}.",
-                    "!" = "Error: {e$message}"
-                  ))
-                  display_config_error <- FALSE
-                }
-                GeoPressureR::param_create(id,
-                  default = TRUE,
-                  tag_create = list(assert_pressure = FALSE)
-                )
-              }
-            )
+        purrr::map(rawtagid2tag, .progress = list(type = "tasks"))
 
-            tag <- do.call(GeoPressureR::tag_create, c(
-              list(id = id, quiet = TRUE),
-              config$tag_create
-            ))
-
-            tag <- tryCatch(
-              {
-                GeoPressureR::tag_label_read(
-                  tag = tag,
-                  file = config$tag_label$file
-                )
-
-                GeoPressureR::tag_label_stap(
-                  tag = tag,
-                  quiet = TRUE,
-                  file = config$tag_label$file
-                )
-
-                tag <- do.call(GeoPressureR::tag_set_map, c(
-                  list(tag = tag),
-                  config$tag_set_map
-                ))
-
-                tag # return the value
-              },
-              error = function(e) {
-                # Cheat to still keep tag_set_map information even without label and tag_set_map
-                tag$param$tag_set_map <- config$tag_set_map
-                tag # return the value
-              }
-            )
-
-            tag$param$bird_create <- config$bird_create
-
-            return(tag)
-          },
-          .progress = list(
-            type = "tasks"
-          )
-        )
-
-      # Adding measurements resource if not present as csv or xlsx
-      m <- tags2m(dtags)
-      pkg <- add_gldp_resource(pkg, "measurements", m, replace = replace)
+      # Adding measurements resource
+      m <- bind_rows(m, tags2m(dtags))
 
       # Adding tag resource
-      if (!("tags" %in% frictionless::resources(pkg))) {
-        t <- dtags %>%
+      t <- bind_rows(
+        t,
+        dtags %>%
           purrr::map(~ .x$param) %>%
           params2t()
-        pkg <- add_gldp_resource(pkg, "tags", t, replace = replace, cast_type = TRUE)
-      }
+      )
 
-      # Adding observations resource if not present as csv or xlsx
-      if (!("observations" %in% frictionless::resources(pkg))) {
-        o <- dtags %>%
+      # Adding observations resource
+      o <- bind_rows(
+        o,
+        dtags %>%
           purrr::map(~ .x$param) %>%
           params2o()
-        pkg <- add_gldp_resource(pkg, "observations", o, replace = replace, cast_type = TRUE)
+      )
+    }
+
+    # STEP 3: Overwrite tags and observations if csv/xlsx files present
+    col_types_t <- c(
+      tag_id = "text",
+      ring_number = "text",
+      scientific_name = "text",
+      manufacturer = "text",
+      model = "text",
+      firmware = "text",
+      weight = "numeric",
+      attachment_type = "text",
+      readout_method = "text",
+      tag_comments = "text"
+    )
+    file <- "./data/tags.xlsx"
+    if (file.exists(file)) {
+      tf <- readxl::read_excel(file, col_types = col_types_t)
+    } else {
+      file <- "./data/tags.csv"
+      if (file.exists(file)) {
+        tf <- readr::read_csv(file, col_types = col_types_t)
       }
     }
+
+    # Check that all tag_id are in tf
+    if (!all(t$tag_id %in% tf$tag_id)) {
+      cli::cli_warn(c(
+        "!" = "Not all {.var tag_id} in {.file {file}} are present in the interim/raw data.",
+        "i" = "We will proceed with a merge of the two.",
+        ">" = "Please, fix {.file {file}}"
+      ))
+      t <- bind_rows(
+        filter(t, !(.data$tag_id %in% tf$tag_id)),
+        filter(tf, .data$tag_id %in% t$tag_id)
+      )
+    } else {
+      t <- tf
+    }
+
+
+    col_types_o <- c(
+      ring_number = "text", # ring_number: character
+      tag_id = "text", # tag_id: character
+      observation_type = "text", # observation_type: character
+      datetime = "date", # datetime: date-time (ISO 8601 format)
+      latitude = "numeric", # latitude: numeric
+      longitude = "numeric", # longitude: numeric
+      location_name = "text", # location_name: character
+      device_status = "text", # device_status: character
+      observer = "text", # observer: character
+      catching_method = "text", # catching_method: character
+      age_class = "text", # age_class: character
+      sex = "text", # sex: character
+      condition = "text", # condition: character
+      mass = "numeric", # mass: numeric
+      wing_length = "numeric", # wing_length: numeric
+      additional_metric = "text", # additional_metric: character
+      observation_comments = "text" # observation_comments: character
+    )
+    if (file.exists("./data/observations.xlsx")) {
+      o <- readxl::read_excel("./data/observations.xlsx", col_types = col_types_o)
+    } else if (file.exists("./data/observations.csv")) {
+      o <- readr::read_csv("./data/observations.csv", col_types = col_types_o)
+    }
+
+    # Use add_gldp_resource instead of tags() <- to avoid update
+    pkg <- add_gldp_resource(pkg, "tags", t, replace = replace)
+    pkg <- add_gldp_resource(pkg, "observations", o, replace = replace)
+    pkg <- add_gldp_resource(pkg, "measurements", m, replace = replace)
+
+    pkg <- pkg %>%
+      update_gldp_taxonomic() %>%
+      update_gldp_number_tags() %>%
+      update_gldp_spatial() %>%
+      update_gldp_temporal()
 
     return(pkg)
   })
 
   return(pkg)
+}
+
+#' @noRd
+rawtagid2tag <- function(id, display_config_error = TRUE) {
+  config <- tryCatch(
+    {
+      GeoPressureR::geopressuretemplate_config(
+        id,
+        tag_create = list(assert_pressure = FALSE)
+      )
+    },
+    error = function(e) {
+      if (display_config_error) {
+        # Warn that the configuration file could not be read and display the error
+        cli::cli_warn(c(
+          "i" = "Configuration file {.file config.yml} could not be read to build the
+                datapackage.",
+          ">" = "Create the tag with default value wit
+                    {.fun GeoPressureR::param_create}.",
+          "!" = "Error: {e$message}"
+        ))
+        display_config_error <- FALSE
+      }
+      GeoPressureR::param_create(id,
+        default = TRUE,
+        tag_create = list(assert_pressure = FALSE)
+      )
+    }
+  )
+
+  tag <- do.call(GeoPressureR::tag_create, c(
+    list(id = id, quiet = TRUE),
+    config$tag_create
+  ))
+
+  tag <- tryCatch(
+    {
+      GeoPressureR::tag_label_read(
+        tag = tag,
+        file = config$tag_label$file
+      )
+
+      GeoPressureR::tag_label_stap(
+        tag = tag,
+        quiet = TRUE,
+        file = config$tag_label$file
+      )
+
+      tag <- do.call(GeoPressureR::tag_set_map, c(
+        list(tag = tag),
+        config$tag_set_map
+      ))
+
+      tag # return the value
+    },
+    error = function(e) {
+      # Cheat to still keep tag_set_map information even without label and tag_set_map
+      tag$param$tag_set_map <- config$tag_set_map
+      tag # return the value
+    }
+  )
+
+  tag$param$bird_create <- config$bird_create
+
+  return(tag)
 }
