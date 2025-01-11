@@ -45,7 +45,6 @@ contributors2persons <- function(contributors) {
 
 #' @noRd
 cast_table <- function(data, schema) {
-
   schema_fields <- sapply(schema$fields, \(x) x$name)
   schema_types <- sapply(schema$fields, \(x) x$type)
 

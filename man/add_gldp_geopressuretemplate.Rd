@@ -7,7 +7,7 @@
 add_gldp_geopressuretemplate(
   pkg,
   directory = ".",
-  from = NULL,
+  from = c("raw-tag", "interim"),
   replace = FALSE
 )
 }
@@ -16,10 +16,9 @@ add_gldp_geopressuretemplate(
 
 \item{directory}{A character string specifying the geopressuretemplate directory.}
 
-\item{from}{A character string specifying the source of the data files. Can be "raw-tag" (for
-creating \code{tag} based on the data in \verb{data/raw-tag/}) or
-"interim" for data in \code{data/interim}. If \code{NULL} (default), the function will determine the
-source based on the presence of at least one file in the "interim" directory.}
+\item{from}{A character vector specifying the source of the data files. Either or both of
+\code{"raw-tag"} (for creating \code{tag} based on the data in \verb{data/raw-tag/}) and \code{"interim"} for data
+in \code{data/interim}.}
 
 \item{replace}{If \code{TRUE}, the added resource will replace an existing
 resource with the same name.}

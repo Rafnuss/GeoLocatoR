@@ -4,15 +4,16 @@
 \alias{read_gldp}
 \title{Read a GeoLocator Data Package}
 \usage{
-read_gldp(file = "datapackage.json")
+read_gldp(file = "datapackage.json", force_read = TRUE)
 }
 \arguments{
 \item{file}{A string specifying the path to the JSON file containing the GeoLocator Data Package
-metadata. Defaults to \code{"datapackage.json"}.}
+metadata. Defaults to \code{"datapackage.json"}. Can also be a url.}
+
+\item{force_read}{Logical to force the reading of the data fomr path/url to memory.}
 }
 \value{
-An object of class \code{"geolocatordp"} containing the metadata from the GeoLocator Data
-Package.
+A GeoLocator Data Package object created from a file/url
 }
 \description{
 This function reads a GeoLocator Data Package from a \code{"datapackage.json"}, file that describes
@@ -22,11 +23,7 @@ the Data Package metadata and its Data Resources. The function wraps the functio
 }
 \examples{
 # Read a datapackage.json file
-package <- read_gldp("https://zenodo.org/records/14099115/files/datapackage.json")
+pkg <- read_gldp("https://zenodo.org/records/14099115/files/datapackage.json")
 
-package
-
-# Access the Data Package properties
-package$name
-package$created
+pkg
 }

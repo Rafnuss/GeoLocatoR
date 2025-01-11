@@ -22,7 +22,7 @@ read_gldp <- function(file = "datapackage.json", force_read = TRUE) {
   pkg <- frictionless::read_package(file)
 
   # Force the read of the data as
-  if (force_read){
+  if (force_read) {
     pkg$resources <- purrr::map(pkg$resources, \(r) {
       resource <- frictionless:::get_resource(pkg, r$name)
       if (resource$read_from == "path" || resource$read_from == "url") {
@@ -37,7 +37,7 @@ read_gldp <- function(file = "datapackage.json", force_read = TRUE) {
   # Add class
   class(pkg) <- c("geolocatordp", class(pkg))
 
-  if (!grepl("geolocator-dp-profile\\.json$", pkg$`$schema`)){
+  if (!grepl("geolocator-dp-profile\\.json$", pkg$`$schema`)) {
     cli::cli_warn("The datapackage provided does not seems to be a Geolocator Data Package.")
   }
 

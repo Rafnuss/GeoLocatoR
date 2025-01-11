@@ -37,7 +37,7 @@ test_that("create_gldp creates a valid GeoLocator Data Package", {
     version = "1.0.1",
     embargo = "2025-01-01",
     keywords = c("Woodland Kingfisher", "intra-african", "multi-sensor geolocator"),
-    bibliographicCitation   = "Nussbaumer, R.(2024). Woodland Kingfisher (v1.1). Zenodo",
+    bibliographicCitation = "Nussbaumer, R.(2024). Woodland Kingfisher (v1.1). Zenodo",
     grants = c("Swiss National Fundation grant no. 354251"),
     relatedIdentifiers = list(
       list(
@@ -68,5 +68,4 @@ test_that("create_gldp handles invalid inputs", {
     contributors = list(list(title = "Raphaël Nussbaumer")),
     schema = "invalid_schema_url"
   ))
-
 })
