@@ -34,17 +34,26 @@ add_gldp_resource <- function(package,
   pkg <- package
   check_gldp(pkg)
 
-  # Validate resource_name
-  r <- purrr::detect(pkg$resources, ~ .x$name == resource_name)
+  # Retrieve full schema (pkg$resources) does not have schema at first
+  pkg_schema <- jsonlite::fromJSON(
+    package$`$schema`,
+    simplifyDataFrame = FALSE, simplifyVector = TRUE
+  )
+  possible_resources <-
+    pkg_schema$allOf[[2]]$properties$resources$items$oneOf[[1]]$properties$name$enum
 
-  if (is.null(r)) {
+  if (!resource_name %in% possible_resources) {
     cli::cli_abort(c(
       "x" = "{.val {resource_name}} is not a valid resource.",
-      "i" = "Possible resources are: {.val {purrr::map_chr(pkg$resources, ~.x$name)}}."
+      "i" = "Possible resources are: {.val {possible_resources}}."
     ))
   }
 
-  schema <- r$schema
+  # Retrieve the resource schema
+  schema <- jsonlite::fromJSON(glue::glue(
+    "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/{version(package)}/{resource_name}",
+    "-table-schema.json"
+  ), simplifyDataFrame = FALSE, simplifyVector = TRUE)
 
   # We need to massage a bit the data to make it adequate for add_resource in v1.
   # https://github.com/frictionlessdata/frictionless-r/issues/254
