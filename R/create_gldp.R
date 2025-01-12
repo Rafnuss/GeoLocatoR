@@ -145,7 +145,7 @@ create_gldp <- function(
     relatedIdentifiers = NULL,
     grants = NULL,
     keywords = NULL,
-    created = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ"),
+    created = format(as.POSIXct(Sys.time(), tz = "UTC"), "%Y-%m-%dT%H:%M:%SZ"),
     bibliographicCitation = NULL,
     schema = NULL) {
   # Assertions to check input validity
@@ -164,6 +164,8 @@ create_gldp <- function(
 
   if (!is.null(id)) assertthat::assert_that(assertthat::is.string(id))
 
+  embargo_date <- as.Date(embargo)
+  assertthat::assert_that(assertthat::is.date(embargo_date))
   assertthat::assert_that(is.list(licenses))
   assertthat::assert_that(all(sapply(
     licenses, function(x) {
@@ -186,7 +188,19 @@ create_gldp <- function(
       \(x) is.list(x) && !is.null(x$relationType) && !is.null(x$relatedIdentifier)
     )))
   }
-  assertthat::assert_that(assertthat::is.date(as.Date(embargo)))
+  created_time <- as.POSIXct(created,
+    tryFormats = c(
+      "%Y-%m-%dT%H:%M:%SZ",
+      "%Y-%m-%d %H:%M:%OS",
+      "%Y/%m/%d %H:%M:%OS",
+      "%Y-%m-%d %H:%M",
+      "%Y/%m/%d %H:%M",
+      "%Y-%m-%d",
+      "%Y/%m/%d"
+    ),
+    tz = "UTC"
+  )
+  assertthat::assert_that(assertthat::is.time(created_time))
 
   # Create the descriptor list
   descriptor <- list(
@@ -194,7 +208,8 @@ create_gldp <- function(
     licenses = licenses,
     title = title,
     contributors = contributors,
-    embargo = embargo
+    embargo = format(embargo_date, "%Y-%m-%d"),
+    created = format(created_time, "%Y-%m-%dT%H:%M:%SZ"),
   )
 
   # Conditionally add optional elements
