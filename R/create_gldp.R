@@ -133,13 +133,13 @@
 create_gldp <- function(
     title,
     contributors,
-    id = NULL,
     embargo = "1970-01-01",
     licenses = list(list(
       name = "CC-BY-4.0",
       title = "Creative Commons Attribution 4.0",
       path = "https://creativecommons.org/licenses/by/4.0/"
     )),
+    id = NULL,
     description = NULL,
     version = NULL,
     relatedIdentifiers = NULL,
@@ -152,18 +152,6 @@ create_gldp <- function(
   assertthat::assert_that(assertthat::is.string(title))
   assertthat::assert_that(is.list(contributors))
   assertthat::assert_that(all(sapply(contributors, function(x) is.list(x) && !is.null(x$title))))
-
-  if (is.null(schema) || is.na(schema)) {
-    schema <- glue::glue(
-      "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/v0.2/",
-      "geolocator-dp-profile.json"
-    )
-  }
-  assertthat::assert_that(assertthat::is.string(schema))
-  assertthat::assert_that(grepl("^https?://[[:alnum:].-]+/?", schema))
-
-  if (!is.null(id)) assertthat::assert_that(assertthat::is.string(id))
-
   embargo_date <- as.Date(embargo)
   assertthat::assert_that(assertthat::is.date(embargo_date))
   assertthat::assert_that(is.list(licenses))
@@ -172,15 +160,10 @@ create_gldp <- function(
       is.list(x) && (assertthat::is.string(x$name) || assertthat::is.string(x$path))
     }
   )))
-
+  if (!is.null(id)) assertthat::assert_that(assertthat::is.string(id))
   if (is.null(description) || description == "") description <- NULL
   if (!is.null(description)) assertthat::assert_that(assertthat::is.string(description))
   if (!is.null(version)) assertthat::assert_that(assertthat::is.string(version))
-  if (!is.null(keywords)) assertthat::assert_that(is.character(keywords))
-  if (!is.null(bibliographicCitation)) {
-    assertthat::assert_that(assertthat::is.string(bibliographicCitation))
-  }
-  if (!is.null(grants)) assertthat::assert_that(is.character(grants))
   if (!is.null(relatedIdentifiers)) {
     assertthat::assert_that(is.list(relatedIdentifiers))
     assertthat::assert_that(all(sapply(
@@ -188,6 +171,8 @@ create_gldp <- function(
       \(x) is.list(x) && !is.null(x$relationType) && !is.null(x$relatedIdentifier)
     )))
   }
+  if (!is.null(grants)) assertthat::assert_that(is.character(grants))
+  if (!is.null(keywords)) assertthat::assert_that(is.character(keywords))
   created_time <- as.POSIXct(created,
     tryFormats = c(
       "%Y-%m-%dT%H:%M:%SZ",
@@ -201,15 +186,27 @@ create_gldp <- function(
     tz = "UTC"
   )
   assertthat::assert_that(assertthat::is.time(created_time))
+  if (!is.null(bibliographicCitation)) {
+    assertthat::assert_that(assertthat::is.string(bibliographicCitation))
+  }
+  if (is.null(schema) || is.na(schema)) {
+    schema <- glue::glue(
+      "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/v0.2/",
+      "geolocator-dp-profile.json"
+    )
+  }
+  assertthat::assert_that(assertthat::is.string(schema))
+  assertthat::assert_that(grepl("^https?://[[:alnum:].-]+/?", schema))
+
 
   # Create the descriptor list
   descriptor <- list(
-    "$schema" = schema,
-    licenses = licenses,
     title = title,
     contributors = contributors,
     embargo = format(embargo_date, "%Y-%m-%d"),
+    licenses = licenses,
     created = format(created_time, "%Y-%m-%dT%H:%M:%SZ"),
+    "$schema" = schema
   )
 
   # Conditionally add optional elements

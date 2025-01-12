@@ -70,10 +70,10 @@ validate_gldp_resources <- function(pkg) {
     resource <- pkg$resources[[i]]
 
     if (resource$profile == "tabular-data-resource" &&
-        (resource$name %in% c(
-          "tags", "observations", "measurements", "staps", "twilights", "paths",
-          "edges", "pressurepaths"
-        ))) {
+      (resource$name %in% c(
+        "tags", "observations", "measurements", "staps", "twilights", "paths",
+        "edges", "pressurepaths"
+      ))) {
       valid <- valid & validate_gldp_table(resource$data, resource$schema)
     } else {
       cli_h2("Check GeoLocator DataPackage Resources {.field {resource$name}}")
@@ -557,7 +557,7 @@ validate_gldp_observations <- function(o) {
     arrange(
       .data$ring_number, .data$datetime,
       factor(.data$observation_type,
-             levels = c("capture", "retrieval", "equipment", "sighting", "other")
+        levels = c("capture", "retrieval", "equipment", "sighting", "other")
       )
     )
 
@@ -588,7 +588,7 @@ validate_gldp_observations <- function(o) {
   # Check 3: equipment and retrieval can only have a device status present.
   obs_equi_retrieval_without_present <- o %>%
     filter(.data$observation_type %in% c("equipment", "retrieval") &
-             .data$device_status != "present")
+      .data$device_status != "present")
 
   if (nrow(obs_equi_retrieval_without_present) > 0) {
     error_tag <- unique(obs_equi_retrieval_without_present$tag_id) # nolint
@@ -600,8 +600,8 @@ validate_gldp_observations <- function(o) {
   # Check 4: capture-missing and capture-present must have a tag_id
   missing_tag_id <- o %>%
     filter(.data$observation_type == "capture" &
-             (.data$device_status %in% c("missing", "present")) &
-             is.na(.data$tag_id))
+      (.data$device_status %in% c("missing", "present")) &
+      is.na(.data$tag_id))
 
   if (nrow(missing_tag_id) > 0) {
     error_ring_number <- unique(missing_tag_id$ring_number) # nolint
@@ -616,9 +616,9 @@ validate_gldp_observations <- function(o) {
   multiple_tags_without_retrieval <- o %>%
     group_by(.data$ring_number) %>%
     filter((.data$observation_type %in% c("retrieval", "equipment")) |
-             (.data$observation_type == "capture" & .data$device_status == "missing")) %>%
+      (.data$observation_type == "capture" & .data$device_status == "missing")) %>%
     filter((lag(.data$tag_id) != .data$tag_id) & !(lag(.data$observation_type) == "retrieval" |
-                                                     lag(.data$device_status) == "missing"))
+      lag(.data$device_status) == "missing"))
 
   if (nrow(multiple_tags_without_retrieval) > 0) {
     error_tag <- unique(multiple_tags_without_retrieval$tag_id) # nolint
@@ -669,9 +669,9 @@ validate_gldp_observations <- function(o) {
       (.data$device_status == "missing" & is.na(.data$previous_status)) |
         (.data$device_status == "missing" & .data$previous_status == "none") |
         (.data$device_status == "none" & .data$previous_status == "present" &
-           .data$previous_type != "retrieval") |
+          .data$previous_type != "retrieval") |
         (.data$device_status == "present" & .data$previous_status == "none" &
-           .data$observation_type != "equipment")
+          .data$observation_type != "equipment")
     )
 
   if (nrow(invalid_transitions) > 0) {
@@ -722,9 +722,9 @@ validate_gldp_observations <- function(o) {
 #'
 #' @export
 validate_gldp_py <- function(pkg,
-                          path = "/Users/rafnuss/anaconda3/bin/",
-                          only_package = NULL,
-                          pkg_dir = tempdir()) {
+                             path = "/Users/rafnuss/anaconda3/bin/",
+                             only_package = NULL,
+                             pkg_dir = tempdir()) {
   if (is.null(only_package)) {
     only_package <- length(pkg$resources) == 0
   }

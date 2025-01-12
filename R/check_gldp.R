@@ -22,4 +22,3 @@ check_gldp <- function(pkg) {
   }
   invisible(pkg)
 }
-
