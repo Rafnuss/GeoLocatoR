@@ -21,6 +21,7 @@
 #' `update_gldp` performs all of the the functions mentioned above.
 #'
 #' @param pkg A GeoLocator Data Package object
+#' @param ... overwrite parameters for `utils::bibentry()`
 #'
 #' @return An updated GeoLocator Data Package object with modified metadata.
 #'
@@ -160,19 +161,26 @@ update_gldp_number_tags <- function(pkg) {
 
 #' @rdname update_gldp
 #' @export
-update_gldp_bibliographic_citation <- function(pkg) {
+update_gldp_bibliographic_citation <- function(pkg, ...) {
   check_gldp(pkg)
 
-  bib <- utils::bibentry(
+  default <- list(
     "Misc", # should be "dataset" but not available
     author = contributors2persons(pkg$contributors),
     doi = pkg$id,
     publisher = ifelse(grepl("zenodo", pkg$id, ignore.case = TRUE), "Zenodo", NULL),
     title = pkg$title,
     year = format(as.Date(pkg$created), "%Y"),
-    url = pkg$homepage
+    publisher = "Zenodo"
   )
 
+  # Merge the defaults with the overrides
+  bib_args <- utils::modifyList(default, list(...))
+
+  # Create the bibentry object
+  bib <- do.call(utils::bibentry, bib_args)
+
+  # Update the bibliographic citation in the package
   pkg$bibliographicCitation <- format(bib)
 
   return(pkg)
@@ -185,8 +193,8 @@ update_gldp_reference_location <- function(pkg) {
   if ("observations" %in% frictionless::resources(pkg)) {
     pkg$referenceLocation <- observations(pkg) %>%
       summarise(
-        lat = median(.data$latitude, na.rm = TRUE),
-        lon = median(.data$longitude, na.rm = TRUE)
+        lat = stats::median(.data$latitude, na.rm = TRUE),
+        lon = stats::median(.data$longitude, na.rm = TRUE)
       ) %>%
       as.list()
   } else {
