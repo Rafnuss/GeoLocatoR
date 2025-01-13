@@ -139,9 +139,15 @@ validate_gldp_object <- function(obj, required, properties, name = "") {
         validate_gldp_item(obj[[field]], properties[[field]], glue::glue("{name}{field}"))
 
       if (properties[[field]]$type == "object") {
-        valid <- valid & validate_gldp_object(
-          obj[[field]], properties[[field]]$required, properties[[field]]$properties, field
-        )
+        if ("$ref" %in% names(properties[[field]])) {
+          # Not easy to implement as rely on more complex schema with anyOf, allOf etc...
+          # prop <- jsonlite::fromJSON(properties[[field]]$`$ref`, simplifyVector = FALSE)
+          cli_alert_warning("{.field {field}} cannot be validated (external schema).")
+        } else {
+          valid <- valid & validate_gldp_object(
+            obj[[field]], properties[[field]]$required, properties[[field]]$properties, field
+          )
+        }
       }
 
       if (properties[[field]]$type == "array") {
