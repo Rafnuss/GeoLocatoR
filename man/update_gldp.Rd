@@ -21,7 +21,7 @@ update_gldp_taxonomic(pkg)
 
 update_gldp_number_tags(pkg)
 
-update_gldp_bibliographic_citation(pkg)
+update_gldp_bibliographic_citation(pkg, ...)
 
 update_gldp_reference_location(pkg)
 

@@ -7,16 +7,16 @@
 create_gldp(
   title,
   contributors,
-  id = NULL,
   embargo = "1970-01-01",
   licenses = list(list(name = "CC-BY-4.0", title = "Creative Commons Attribution 4.0",
     path = "https://creativecommons.org/licenses/by/4.0/")),
+  id = NULL,
   description = NULL,
   version = NULL,
   relatedIdentifiers = NULL,
   grants = NULL,
   keywords = NULL,
-  created = format(Sys.time(), "\%Y-\%m-\%dT\%H:\%M:\%SZ"),
+  created = format(as.POSIXct(Sys.time(), tz = "UTC"), "\%Y-\%m-\%dT\%H:\%M:\%SZ"),
   bibliographicCitation = NULL,
   schema = NULL
 )
@@ -34,11 +34,6 @@ including at leas \code{title} but also optionally \code{givenName}, \code{famil
 \href{https://datapackage.org/standard/data-package/#contributors}{Data Package specification} and the
 \href{https://r-pkgs.org/description.html#sec-description-authors-at-r}{R Packages}.}
 
-\item{id}{A globally unique identifier for the package, typically the DOI link of the
-corresponding Zenodo repository which \href{https://help.zenodo.org/docs/deposit/describe-records/reserve-doi/#reserve-doi}{can be reserved prior to publication }. Default to
-\code{NULL}. See the \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#id}{Geolocator DP} and
-the \href{https://datapackage.org/standard/data-package/#id}{Data Package specification}.}
-
 \item{embargo}{End date of the embargo. Default to \code{"1970-01-01"}. See the
 \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#embargo}{Geolocator DP} and the
 \href{https://datapackage.org/standard/data-package/#embargo}{Data Package specification}.}
@@ -47,6 +42,11 @@ the \href{https://datapackage.org/standard/data-package/#id}{Data Package specif
 if sufficient and prefered. If you're not sure, checkout the \href{https://chooser-beta.creativecommons.org/}{Creative Commons License Chooser } and the \href{https://opendatacommons.org/}{Open Data Commons }. \code{name} or \code{path} must be provided. Defaults is a CC-BY-4.0
 license. See the \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#licenses}{Geolocator DP } and the
 \href{https://datapackage.org/standard/data-package/#licenses}{Data Package specification}.}
+
+\item{id}{A globally unique identifier for the package, typically the DOI link of the
+corresponding Zenodo repository which \href{https://help.zenodo.org/docs/deposit/describe-records/reserve-doi/#reserve-doi}{can be reserved prior to publication }. Default to
+\code{NULL}. See the \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#id}{Geolocator DP} and
+the \href{https://datapackage.org/standard/data-package/#id}{Data Package specification}.}
 
 \item{description}{A markdown-formatted string describing the package. You can
 (and should!) use multiple sentences, but limited to a single paragraph. See the

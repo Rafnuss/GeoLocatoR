@@ -4,7 +4,7 @@
 \alias{add_gldp_soi}
 \title{Add GLDP SOI Data to a Package}
 \usage{
-add_gldp_soi(pkg, gdl, directory_data, allow_empty_o = FALSE, replace = FALSE)
+add_gldp_soi(pkg, gdl, directory_data, generate_observations = TRUE)
 }
 \arguments{
 \item{pkg}{The package object to which the data will be added.}
@@ -17,11 +17,8 @@ for more information.}
 are located. This directory is used to locate and match GDL_IDs to their corresponding
 directories.}
 
-\item{allow_empty_o}{A logical value indicating whether to allow observations with missing
-datetime values. Default is \code{FALSE}.}
-
-\item{replace}{A logical value indicating whether to replace existing resources in the package
-with the new data. Default is \code{FALSE}.}
+\item{generate_observations}{A logical value indicating whether to create pre-filled
+observations with missing values (date, locations, etc... assuming equipment and retrieval.}
 }
 \value{
 The updated package object with the added resources.
