@@ -295,7 +295,7 @@ write_geopressuretemplate_config <- function(pkg) {
           location_name = .data$location_name,
           device_status = .data$device_status,
           condition = .data$condition,
-          life_stage = .data$life_stage,
+          age_class = .data$age_class,
           sex = .data$sex,
           observation_comments = .data$observation_comments
         )
@@ -317,8 +317,8 @@ write_geopressuretemplate_config <- function(pkg) {
       if (all(is.na(k$condition) | k$condition == "" | k$condition == "unknown")) {
         rm_col <- c(rm_col, "condition")
       }
-      if (all(is.na(k$life_stage) | k$life_stage == "" | k$life_stage == 0 | k$life_stage == "0")) {
-        rm_col <- c(rm_col, "life_stage")
+      if (all(is.na(k$age_class) | k$age_class == "" | k$age_class == 0 | k$age_class == "0")) {
+        rm_col <- c(rm_col, "age_class")
       }
       if (all(is.na(k$observation_comments) | k$observation_comments == "")) {
         rm_col <- c(rm_col, "observation_comments")

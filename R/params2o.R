@@ -22,7 +22,7 @@ params2o <- function(params) {
         location_name = NA_character_,
         longitude = NA_real_,
         latitude = NA_real_,
-        life_stage = "0",
+        age_class = "0",
         sex = "U",
         observation_comments = "Automatically computed with `params2o()`"
       )
