@@ -63,10 +63,18 @@ zenodoRecord2gldp <- function(zenodo_record,
   })
 
   # Extract grants
-  grants <- purrr::map_chr(z$metadata$funding, ~ .x$funder$name)
+  grants <- if (length(z$metadata$funding) == 0) {
+    NULL
+  } else {
+    purrr::map_chr(z$metadata$funding, ~ .x$funder$name)
+  }
 
   # Extract keywords
-  keywords <- purrr::map_chr(z$metadata$subjects, "subject")
+  keywords <- if (length(z$metadata$subjects) == 0) {
+    NULL
+  } else {
+    purrr::map_chr(z$metadata$subjects, "subject")
+  }
 
   if (!is.null(pkg)) {
     check_gldp(pkg)
