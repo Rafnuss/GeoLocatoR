@@ -14,10 +14,8 @@
 #' @param directory_data A character string specifying the path to the directory where data files
 #' are located. This directory is used to locate and match GDL_IDs to their corresponding
 #' directories.
-#' @param allow_empty_o A logical value indicating whether to allow observations with missing
-#' datetime values. Default is \code{FALSE}.
-#' @param replace A logical value indicating whether to replace existing resources in the package
-#' with the new data. Default is \code{FALSE}.
+#' @param generate_observations A logical value indicating whether to create pre-filled
+#' observations with missing values (date, locations, etc... assuming equipment and retrieval.
 #'
 #' @details
 #' The function performs the following steps:
@@ -34,8 +32,7 @@
 add_gldp_soi <- function(pkg,
                          gdl,
                          directory_data,
-                         allow_empty_o = FALSE,
-                         replace = FALSE) {
+                         generate_observations = TRUE) {
   check_gldp(pkg)
   assertthat::assert_that(is.data.frame(gdl))
 
@@ -43,6 +40,23 @@ add_gldp_soi <- function(pkg,
   # Retrieve directory of all data and display warning message if absent
   if (!("directory" %in% names(gdl))) {
     gdl <- add_gldp_soi_directory(gdl, directory_data)
+  }
+
+  # Do not add any data if same id already presents in measurements
+  if ("measurements" %in% frictionless::resources(pkg)) {
+    m <- measurements(pkg)
+    gdl <- gdl %>% filter(!(.data$GDL_ID %in% unique(m$tag_id)))
+  } else {
+    m <- NULL
+  }
+
+  # Error for duplicate
+  duplicates <- gdl$GDL_ID[duplicated(gdl$GDL_ID)]
+  if (length(duplicates) > 0) {
+    cli::cli_abort(c(
+      "x" = "Duplicate {.var GDL_ID} found in {.arg gdl}: {unique(duplicates)}",
+      "i" = "{.var GDL_ID} (or {.var tag_id}) needs to be unique."
+    ))
   }
 
   # Read tag data
@@ -81,60 +95,90 @@ add_gldp_soi <- function(pkg,
     )
 
   # Adding measurement resource
-  m <- tags2m(dtags)
+  m <- bind_rows(m, tags2m(dtags))
 
   if (nrow(m) > 0) {
-    pkg <- add_gldp_resource(pkg, "measurements", m, replace = replace)
+    pkg <- add_gldp_resource(pkg, "measurements", m, replace = TRUE)
   }
 
-  # Adding tag resource
-  t <- gdl %>%
-    rowwise() %>%
-    mutate(
-      attachment_type = paste0(
-        c(
-          if (!is.na(.data[["Harness_data"]])) .data[["Harness_data"]],
-          if (!is.na(.data[["HarnessMaterial_data"]])) {
-            glue::glue("material:{.data[['HarnessMaterial_data']]}")
-          },
-          if (!is.na(.data[["HarnessAttachement_data"]])) {
-            glue::glue("attachement:{.data[['HarnessAttachement_data']]}")
-          },
-          if (!is.na(.data[["HarnessThickness"]])) {
-            glue::glue("thickness:{.data[['HarnessThickness']]}")
-          },
-          if (!is.na(.data[["LegHarnessDiameter"]])) {
-            glue::glue("legDiameter:{.data[['LegHarnessDiameter']]}")
-          },
-          if (!is.na(.data[["BreastHarnessDiameterHead"]])) {
-            glue::glue("BreastDiameterHead:{.data[['BreastHarnessDiameterHead']]}")
-          },
-          if (!is.na(.data[["BreastHarnessDiameterTail"]])) {
-            glue::glue("BreastDiameterTail:{.data[['BreastHarnessDiameterTail']]}")
-          }
-        ),
-        collapse = "|"
-      )
-    ) %>%
-    ungroup() %>%
-    transmute(
-      tag_id = .data$GDL_ID,
-      manufacturer = "Swiss Ornithological Institute",
-      model = glue::glue("{.data$GDL_Type}-{.data$HardwareVersion}"),
-      firmware = .data$FirmwareVersion,
-      weight = .data$TotalWeight,
-      attachment_type = .data$attachment_type,
-      # readout_method = "tag-retrieval",
-      scientific_name = .data$Species,
-      ring_number = .data$RingNumber,
-      tag_comments = .data$Remarks,
-    )
 
-  pkg <- add_gldp_resource(pkg, "tags", t, replace = replace)
+  # Only add tags and observations data to the tag_id not yet present in tag
+  if ("tags" %in% frictionless::resources(pkg)) {
+    t <- tags(pkg)
+    o <- observations(pkg)
+    gdl_to <- gdl %>% filter(!(GDL_ID %in% t$tag_id))
+  } else {
+    t <- NULL
+    o <- NULL
+    gdl_to <- gdl
+  }
+
+  # Compute tags.csv from gdl table
+  t_gdl <- if (nrow(gdl_to) == 0) {
+    tibble(
+      tag_id = character(),
+      manufacturer = character(),
+      model = character(),
+      firmware = character(),
+      weight = numeric(),
+      attachment_type = character(),
+      scientific_name = character(),
+      ring_number = character(),
+      tag_comments = character()
+    )
+  } else {
+    gdl_to %>%
+      rowwise() %>%
+      mutate(
+        attachment_type = paste0(
+          c(
+            if (!is.na(.data[["Harness_data"]])) .data[["Harness_data"]],
+            if (!is.na(.data[["HarnessMaterial_data"]])) {
+              glue::glue("material:{.data[['HarnessMaterial_data']]}")
+            },
+            if (!is.na(.data[["HarnessAttachement_data"]])) {
+              glue::glue("attachement:{.data[['HarnessAttachement_data']]}")
+            },
+            if (!is.na(.data[["HarnessThickness"]])) {
+              glue::glue("thickness:{.data[['HarnessThickness']]}")
+            },
+            if (!is.na(.data[["LegHarnessDiameter"]])) {
+              glue::glue("legDiameter:{.data[['LegHarnessDiameter']]}")
+            },
+            if (!is.na(.data[["BreastHarnessDiameterHead"]])) {
+              glue::glue("BreastDiameterHead:{.data[['BreastHarnessDiameterHead']]}")
+            },
+            if (!is.na(.data[["BreastHarnessDiameterTail"]])) {
+              glue::glue("BreastDiameterTail:{.data[['BreastHarnessDiameterTail']]}")
+            }
+          ),
+          collapse = "|"
+        )
+      ) %>%
+      ungroup() %>%
+      transmute(
+        tag_id = .data$GDL_ID,
+        manufacturer = "Swiss Ornithological Institute",
+        model = glue::glue("{.data$GDL_Type}-{.data$HardwareVersion}"),
+        firmware = .data$FirmwareVersion,
+        weight = .data$TotalWeight,
+        attachment_type = .data$attachment_type,
+        scientific_name = .data$Species,
+        ring_number = .data$RingNumber,
+        tag_comments = .data$Remarks
+      )
+  }
+
+
+  t <- bind_rows(t, t_gdl)
+
+  if (nrow(t) > 0) {
+    pkg <- add_gldp_resource(pkg, "tags", t, replace = TRUE)
+  }
 
   # Adding sensor resource
-  o <- bind_rows(
-    gdl %>% transmute(
+  o_gdl <- bind_rows(
+    gdl_to %>% transmute(
       ring_number = .data$RingNumber,
       tag_id = .data$GDL_ID,
       datetime = .data$UTC_Attached,
@@ -142,28 +186,37 @@ add_gldp_soi <- function(pkg,
       longitude = .data$LongitudeAttached,
       latitude = .data$LatitudeAttached,
       observation_type = "equipment",
-      life_stage = "0",
+      age_class = "0",
       sex = "U",
     ),
-    gdl %>% transmute(
+    gdl_to %>% transmute(
       ring_number = .data$RingNumber,
       tag_id = .data$GDL_ID,
       datetime = .data$UTC_Removed,
       longitude = .data$LongitudeRemoved,
       latitude = .data$LatitudeRemoved,
       observation_type = "retrieval",
-      life_stage = "0",
+      age_class = "0",
       sex = "U",
     )
   )
 
-  if (!allow_empty_o) {
-    o <- o %>% filter(!is.na(.data$datetime))
+  if (!generate_observations) {
+    o_gdl <- o_gdl %>% filter(!is.na(.data$datetime))
   }
 
+  o <- bind_rows(o, o_gdl)
+
   if (nrow(o) > 0) {
-    pkg <- add_gldp_resource(pkg, "observations", o, replace = replace)
+    pkg <- add_gldp_resource(pkg, "observations", o, replace = TRUE)
   }
+
+  # Update metadata
+  pkg <- pkg %>%
+    update_gldp_taxonomic() %>%
+    update_gldp_number_tags() %>%
+    update_gldp_spatial() %>%
+    update_gldp_temporal()
 
   return(pkg)
 }
@@ -240,7 +293,7 @@ add_gldp_soi_directory <- function(gdl, directory_data) {
     filter(is.na(.data$directory)) %>%
     pull(.data$GDL_ID)
 
-  if (length(gdl_id_na_dir) > 0) {
+  if (length(gdl_id_na_dir) > 0 & FALSE) {
     cli::cli_warn("We could not find the data directory for {length(gdl_id_na_dir)} tags (out of \
                       {nrow(gdl)}). GDL_IDs: {.field {gdl_id_na_dir}}. These will not be imported.")
   }
