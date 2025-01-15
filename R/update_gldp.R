@@ -84,11 +84,20 @@ update_gldp_spatial <- function(pkg) {
       )
     }
 
+    # Check for valid (non-NA) latitude and longitude values
+    valid_latitude <- spatial$latitude[!is.na(spatial$latitude)]
+    valid_longitude <- spatial$longitude[!is.na(spatial$longitude)]
+
+    if (length(valid_longitude) == 0 || length(valid_latitude) == 0) {
+      pkg$spatial <- NULL
+      return(pkg)
+    }
+
     # Compute the min and max
-    lat_min <- min(spatial$latitude)
-    lat_max <- max(spatial$latitude)
-    long_min <- min(spatial$longitude)
-    long_max <- max(spatial$longitude)
+    lat_min <- min(valid_latitude)
+    lat_max <- max(valid_latitude)
+    long_min <- min(valid_longitude)
+    long_max <- max(valid_longitude)
 
     pkg$spatial <- list(
       type = "Polygon",
