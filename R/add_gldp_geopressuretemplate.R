@@ -262,26 +262,38 @@ add_gldp_geopressuretemplate <- function(
     }
 
     # STEP 3: Overwrite tags and observations if csv/xlsx files present
-    col_types_t <- c(
-      tag_id = "text",
-      ring_number = "text",
-      scientific_name = "text",
-      manufacturer = "text",
-      model = "text",
-      firmware = "text",
-      weight = "numeric",
-      attachment_type = "text",
-      readout_method = "text",
-      tag_comments = "text"
-    )
-    file <- "./data/tags.xlsx"
-    if (file.exists(file)) {
-      tf <- readxl::read_excel(file, col_types = col_types_t)
-    } else {
-      file <- "./data/tags.csv"
-      if (file.exists(file)) {
-        tf <- readr::read_csv(file, col_types = col_types_t)
-      }
+    if (file.exists("./data/tags.xlsx")) {
+      tf <- readxl::read_excel(
+        "./data/tags.xlsx",
+        col_types = c(
+          tag_id = "text",
+          ring_number = "text",
+          scientific_name = "text",
+          manufacturer = "text",
+          model = "text",
+          firmware = "text",
+          weight = "numeric",
+          attachment_type = "text",
+          readout_method = "text",
+          tag_comments = "text"
+        )
+      )
+    } else if (file.exists("./data/tags.csv")) {
+      tf <- readr::read_csv(
+        "./data/tags.csv",
+        col_types = readr::cols(
+          tag_id = "c",
+          ring_number = "c",
+          scientific_name = "c",
+          manufacturer = "c",
+          model = "c",
+          firmware = "c",
+          weight = "d",
+          attachment_type = "c",
+          readout_method = "c",
+          tag_comments = "c"
+        )
+      )
     }
 
     # Check that all tag_id are in tf
@@ -300,29 +312,52 @@ add_gldp_geopressuretemplate <- function(
     }
 
 
-    col_types_o <- c(
-      ring_number = "text", # ring_number: character
-      tag_id = "text", # tag_id: character
-      observation_type = "text", # observation_type: character
-      datetime = "date", # datetime: date-time (ISO 8601 format)
-      latitude = "numeric", # latitude: numeric
-      longitude = "numeric", # longitude: numeric
-      location_name = "text", # location_name: character
-      device_status = "text", # device_status: character
-      observer = "text", # observer: character
-      catching_method = "text", # catching_method: character
-      age_class = "text", # age_class: character
-      sex = "text", # sex: character
-      condition = "text", # condition: character
-      mass = "numeric", # mass: numeric
-      wing_length = "numeric", # wing_length: numeric
-      additional_metric = "text", # additional_metric: character
-      observation_comments = "text" # observation_comments: character
-    )
     if (file.exists("./data/observations.xlsx")) {
-      o <- readxl::read_excel("./data/observations.xlsx", col_types = col_types_o)
+      o <- readxl::read_excel(
+        "./data/observations.xlsx",
+        col_types = c(
+          ring_number = "text", # ring_number: character
+          tag_id = "text", # tag_id: character
+          observation_type = "text", # observation_type: character
+          datetime = "date", # datetime: date-time (ISO 8601 format)
+          latitude = "numeric", # latitude: numeric
+          longitude = "numeric", # longitude: numeric
+          location_name = "text", # location_name: character
+          device_status = "text", # device_status: character
+          observer = "text", # observer: character
+          catching_method = "text", # catching_method: character
+          age_class = "text", # age_class: character
+          sex = "text", # sex: character
+          condition = "text", # condition: character
+          mass = "numeric", # mass: numeric
+          wing_length = "numeric", # wing_length: numeric
+          additional_metric = "text", # additional_metric: character
+          observation_comments = "text" # observation_comments: character
+        )
+      )
     } else if (file.exists("./data/observations.csv")) {
-      o <- readr::read_csv("./data/observations.csv", col_types = col_types_o)
+      o <- readr::read_csv(
+        "./data/observations.csv",
+        col_types = readr::cols(
+          ring_number = "c",
+          tag_id = "c",
+          observation_type = "c",
+          datetime = "T", # ISO 8601 format
+          latitude = "d",
+          longitude = "d",
+          location_name = "c",
+          device_status = "c",
+          observer = "c",
+          catching_method = "c",
+          age_class = "c",
+          sex = "c",
+          condition = "c",
+          mass = "d",
+          wing_length = "d",
+          additional_metric = "c",
+          observation_comments = "c"
+        )
+      )
     }
 
     # Use add_gldp_resource instead of tags() <- to avoid update
