@@ -8,10 +8,10 @@
 #'
 #' @param access_file A string specifying the path to an Access file containing both the GDL data
 #' and order information.
-#' If provided, it takes precedence over `file_data` and `file_order`. Defaults to `NA`.  §
-#' @param file_data A string specifying the path to the GDL data file. Required if `access_file`
+#' If provided, it takes precedence over `data_file` and `order_file`. Defaults to `NA`.  §
+#' @param data_file A string specifying the path to the GDL data file. Required if `access_file`
 #' is not provided. Defaults to `NA`.
-#' @param file_order A string specifying the path to the GDL order file. Required if `access_file`
+#' @param order_file A string specifying the path to the GDL order file. Required if `access_file`
 #' is not provided. Defaults to `NA`.
 #' @param filter_col A logical value or a character vector. If `TRUE`, only a predefined set of
 #' columns is selected.
@@ -40,23 +40,38 @@
 #'
 #' @export
 read_gdl <- function(access_file = NA,
-                     file_data = NA,
-                     file_order = NA,
+                     data_file = NA,
+                     order_file = NA,
                      filter_col = TRUE) {
   if (!is.na(access_file)) {
-    data_file_order <- read_gdl_access(access_file)
-    file_data <- data_file_order[[1]]
-    file_order <- data_file_order[[2]]
+    data_order_file <- read_gdl_access(access_file)
+    data_file <- data_order_file[[1]]
+    order_file <- data_order_file[[2]]
+    if (!is.na(data_file) || !is.na(order_file)) {
+      cli_warn("Both {.arg access_file} and {.arg data_file} and {.arg order_file} were provided\\
+                     . We'll use {.arg access_file}")
+    }
   } else {
-    if (is.na(file_data) || is.na(file_order)) {
-      cli_abort("Either {.var access_file} or both {.var file_data} and {.var file_order} need\
+    if (is.na(data_file) || is.na(order_file)) {
+      cli_abort("Either {.arg access_file} or both {.arg data_file} and {.arg order_file} need\\
                      to be provided.")
     }
   }
 
-  d <- read_gdl_data(file_data)
+  if (is.data.frame(data_file)){
+    d <- data_file
+  } else {
+    d <- read_gdl_data(data_file)
+  }
 
-  o <- read_gdl_orders(file_order) %>%
+  if (is.data.frame(order_file)){
+    o <- order_file
+  } else {
+    o <- read_gdl_data(order_file)
+  }
+
+
+  o <- o %>%
     group_by(.data$OrderName) %>%
     summarize(
       NumberOrdered = sum(.data$NumberOrdered),
@@ -110,9 +125,9 @@ read_gdl <- function(access_file = NA,
 
 #' @rdname read_gdl
 #' @export
-read_gdl_orders <- function(file_order) {
+read_gdl_orders <- function(order_file) {
   o <- readr::read_csv(
-    file_order,
+    order_file,
     col_types = readr::cols(
       OrderID = readr::col_integer(),
       OrderName = readr::col_character(),
@@ -188,9 +203,9 @@ read_gdl_orders <- function(file_order) {
 
 #' @rdname read_gdl
 #' @export
-read_gdl_data <- function(file_data) {
+read_gdl_data <- function(data_file) {
   d <- readr::read_csv(
-    file_data,
+    data_file,
     col_types = readr::cols(
       DataID = readr::col_integer(),
       OrderName = readr::col_character(),
@@ -278,8 +293,8 @@ read_gdl_data <- function(file_data) {
 #' @rdname read_gdl
 #' @export
 read_gdl_access <- function(access_file,
-                            file_data = tempfile("GDL_Data", fileext = "csv"),
-                            file_order = tempfile("GDL_Orders", fileext = "csv")) {
+                            data_file = tempfile("GDL_Data", fileext = ".csv"),
+                            order_file = tempfile("GDL_Orders", fileext = ".csv")) {
   # Check Acess file
   if (!file.exists(access_file)) {
     cli_abort("The access file {.file {access_file}} does not exist.")
@@ -288,20 +303,32 @@ read_gdl_access <- function(access_file,
     cli_abort("The acess file {.file {access_file}} does not have a {.val .accdb} extension.")
   }
 
-  # Export data
-  system(glue::glue("mdb-export {access_file} GDL_Data > {file_data}"))
+  if (.Platform$OS.type=="unix"){
+    # Export data
+    system(glue::glue("mdb-export {access_file} GDL_Data > {data_file}"))
 
-  if (!file.exists(file_data)) {
-    cli_abort("The file {.file {file_data}} does not exist. \\
+    if (!file.exists(data_file)) {
+      cli_abort("The file {.file {data_file}} does not exist. \\
                      There has been an issue in creating the data file")
-  }
+    }
 
-  # Export orders
-  system(glue::glue("mdb-export {access_file} GDL_Orders > {file_order}"))
-  if (!file.exists(file_order)) {
-    cli_abort("The file {.file {file_order}} does not exist. \\
+    # Export orders
+    system(glue::glue("mdb-export {access_file} GDL_Orders > {order_file}"))
+    if (!file.exists(order_file)) {
+      cli_abort("The file {.file {order_file}} does not exist. \\
                      There has been an issue in creating the order file")
+    }
+  } else if (.Platform$OS.type=="windows"){
+
+    con <- dbConnect(odbc::odbc(),
+                     .connection_string = paste0(
+                       "Driver={Microsoft Access Driver (*.mdb, *.accdb)};",
+                       "Dbq=", access_file, ";"
+                     ))
+    data <- dbReadTable(con, table)
+    write.csv(data, paste0(table, ".csv"), row.names = FALSE)
   }
 
-  invisible(c(file_data, file_order))
+
+  invisible(c(data_file, order_file))
 }
