@@ -2,8 +2,8 @@
 #'
 #' @description
 #' This function update the metadata of a [GeoLocator Data Package
-#' ](https://datapackage.org/standard/data-package/) based on an `zen4R` ZenodoRecord provided. If no
-#' package is provided (`pkg = NULL`), a new data package is created.
+#' ](https://datapackage.org/standard/data-package/) based on an `zen4R` ZenodoRecord provided. If
+#' no package is provided (`pkg = NULL`), a new data package is created.
 #'
 #' All metadata are retrieved with the Zenodo API through the R package
 #' [zen4R](https://github.com/eblondel/zen4R).

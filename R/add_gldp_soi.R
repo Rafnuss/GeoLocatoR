@@ -105,11 +105,9 @@ add_gldp_soi <- function(pkg,
   # Only add tags and observations data to the tag_id not yet present in tag
   if ("tags" %in% frictionless::resources(pkg)) {
     t <- tags(pkg)
-    o <- observations(pkg)
-    gdl_to <- gdl %>% filter(!(GDL_ID %in% t$tag_id))
+    gdl_to <- gdl %>% filter(!(.data$GDL_ID %in% t$tag_id))
   } else {
     t <- NULL
-    o <- NULL
     gdl_to <- gdl
   }
 
@@ -173,7 +171,15 @@ add_gldp_soi <- function(pkg,
   t <- bind_rows(t, t_gdl)
 
   if (nrow(t) > 0) {
-    pkg <- add_gldp_resource(pkg, "tags", t, replace = TRUE)
+    pkg <- add_gldp_resource(pkg, "tags", t,
+      replace = "tags" %in% frictionless::resources(pkg)
+    )
+  }
+
+  if ("observations" %in% frictionless::resources(pkg)) {
+    o <- observations(pkg)
+  } else {
+    o <- NULL
   }
 
   # Adding sensor resource
@@ -208,7 +214,9 @@ add_gldp_soi <- function(pkg,
   o <- bind_rows(o, o_gdl)
 
   if (nrow(o) > 0) {
-    pkg <- add_gldp_resource(pkg, "observations", o, replace = TRUE)
+    pkg <- add_gldp_resource(pkg, "observations", o,
+      replace = "observations" %in% frictionless::resources(pkg)
+    )
   }
 
   # Update metadata
@@ -293,7 +301,7 @@ add_gldp_soi_directory <- function(gdl, directory_data) {
     filter(is.na(.data$directory)) %>%
     pull(.data$GDL_ID)
 
-  if (length(gdl_id_na_dir) > 0 & FALSE) {
+  if (length(gdl_id_na_dir) > 0 && FALSE) {
     cli::cli_warn("We could not find the data directory for {length(gdl_id_na_dir)} tags (out of \
                       {nrow(gdl)}). GDL_IDs: {.field {gdl_id_na_dir}}. These will not be imported.")
   }

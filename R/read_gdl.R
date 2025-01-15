@@ -44,13 +44,13 @@ read_gdl <- function(access_file = NA,
                      order_file = NA,
                      filter_col = TRUE) {
   if (!is.na(access_file)) {
-    data_order_file <- read_gdl_access(access_file)
-    data_file <- data_order_file[[1]]
-    order_file <- data_order_file[[2]]
     if (!is.na(data_file) || !is.na(order_file)) {
       cli_warn("Both {.arg access_file} and {.arg data_file} and {.arg order_file} were provided\\
                      . We'll use {.arg access_file}")
     }
+    data_order_file <- read_gdl_access(access_file)
+    data_file <- data_order_file[[1]]
+    order_file <- data_order_file[[2]]
   } else {
     if (is.na(data_file) || is.na(order_file)) {
       cli_abort("Either {.arg access_file} or both {.arg data_file} and {.arg order_file} need\\
@@ -58,13 +58,13 @@ read_gdl <- function(access_file = NA,
     }
   }
 
-  if (is.data.frame(data_file)){
+  if (is.data.frame(data_file)) {
     d <- data_file
   } else {
     d <- read_gdl_data(data_file)
   }
 
-  if (is.data.frame(order_file)){
+  if (is.data.frame(order_file)) {
     o <- order_file
   } else {
     o <- read_gdl_data(order_file)
@@ -303,7 +303,7 @@ read_gdl_access <- function(access_file,
     cli_abort("The acess file {.file {access_file}} does not have a {.val .accdb} extension.")
   }
 
-  if (.Platform$OS.type=="unix"){
+  if (.Platform$OS.type == "unix") {
     # Export data
     system(glue::glue("mdb-export {access_file} GDL_Data > {data_file}"))
 
@@ -318,7 +318,7 @@ read_gdl_access <- function(access_file,
       cli_abort("The file {.file {order_file}} does not exist. \\
                      There has been an issue in creating the order file")
     }
-  } else if (.Platform$OS.type=="windows"){
+  } else if (.Platform$OS.type == "windows") {
     con <- DBI::dbConnect(odbc::odbc(),
       .connection_string = paste0(
         "Driver={Microsoft Access Driver (*.mdb, *.accdb)};",
