@@ -319,14 +319,14 @@ read_gdl_access <- function(access_file,
                      There has been an issue in creating the order file")
     }
   } else if (.Platform$OS.type=="windows"){
-
-    con <- dbConnect(odbc::odbc(),
-                     .connection_string = paste0(
-                       "Driver={Microsoft Access Driver (*.mdb, *.accdb)};",
-                       "Dbq=", access_file, ";"
-                     ))
-    data <- dbReadTable(con, table)
-    write.csv(data, paste0(table, ".csv"), row.names = FALSE)
+    con <- DBI::dbConnect(odbc::odbc(),
+      .connection_string = paste0(
+        "Driver={Microsoft Access Driver (*.mdb, *.accdb)};",
+        "Dbq=", access_file, ";"
+      )
+    )
+    write.csv(DBI::dbReadTable(con, "GDL_Orders"), order_file, row.names = FALSE)
+    write.csv(DBI::dbReadTable(con, "GDL_Data"), data_file, row.names = FALSE)
   }
 
 
