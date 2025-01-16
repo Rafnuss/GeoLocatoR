@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # GeoLocatoR 🕊️📦 <a href="https://github.com/rafnuss/geolocator"><img src="man/figures/logo.png" align="right" height="139" alt="GeoLocatoR website" /></a>
 
 <!-- badges: start -->
+
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![R-CMD-check](https://github.com/Rafnuss/GeoLocatoR/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/R-CMD-check.yaml)
 [![pkgdown.yaml](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/pkgdown.yaml)
@@ -32,9 +33,9 @@ GeoLocatoR is designed to help you create and work with the [GeoLocator Data Pac
 ## 🦅 Main Features
 
 - **Creates a GeoLocator Data Package**: Create a geolocator datapackage object, add resources (data), and write the data package to your preferred directory. Or, read an existing data package from a directory or from Zenodo.
-- **Works Seamlessly with GeoPressureTemplate**: GeoLocatoR is compatible with [GeoPressureTemplate](https://github.com/Rafnuss/GeoPressureTemplate) — a template repository for analyzing geolocator data using GeoPressureR. Use both together to streamline your analysis and maintain a standardized project structure. 
-- **Supports Swiss Ornithological Institute Data**: Special functions have been designed to deal with internal SOI data. [See this vignette](https://rpubs.com/rafnuss/geolocator_create_from_soi). 
-- **Built on frictionless-r**: This package is built using the [`frictionless-r`](https://docs.ropensci.org/frictionless/) package, adhering to the Frictionless Data standards for open data. 
+- **Works Seamlessly with GeoPressureTemplate**: GeoLocatoR is compatible with [GeoPressureTemplate](https://github.com/Rafnuss/GeoPressureTemplate) — a template repository for analyzing geolocator data using GeoPressureR. Use both together to streamline your analysis and maintain a standardized project structure.
+- **Supports Swiss Ornithological Institute Data**: Special functions have been designed to deal with internal SOI data. [See this vignette](https://rpubs.com/rafnuss/geolocator_create_from_soi).
+- **Built on frictionless-r**: This package is built using the [`frictionless-r`](https://docs.ropensci.org/frictionless/) package, adhering to the Frictionless Data standards for open data.
 
 ## 📦 What is a Data Package?
 
@@ -47,7 +48,7 @@ You can install GeoLocatoR from GitHub:
 ```r
 # install.packages("pak")
 pak::pkg_install("Rafnuss/GeoLocatoR")
-````
+```
 
 ## 📖 Usage
 
@@ -55,16 +56,15 @@ Learn how to use GeoLocatoR with the dedicated part of the [GeoPressureManual](h
 
 ## Functions mapping
 
-| [frictionless-r](https://docs.ropensci.org/frictionless/)                                  | Basic GeolocatoR                                                                                   | GeoPressureTemplate                                                                                                            | SOI                                                                                      |
-| ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| [`create_package()`](https://docs.ropensci.org/frictionless/reference/create_package.html) | [`create_gdlp()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/create_gldp.html)             | [`create_gldp_geopressuretemplate()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/create_gldp_geopressuretemplate.html) |                                                                                          |
-| [`add_resource()`](https://docs.ropensci.org/frictionless/reference/add_resource.html)     | [`add_gdlp_resource()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/add_gldp_resource.html) | [`add_gldp_geopressuretemplate()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/add_gldp_geopressuretemplate.html)       | [`add_gldp_soi()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/add_gldp_soi.html) |
-| [`write_package()`](https://docs.ropensci.org/frictionless/reference/write_package.html)   | [`write_gdlp()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/write_gdlp.html)               | [`write_geopressuretemplate()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/write_geopressuretemplate.html)             |                                                                                          |
-| [`read_package()`](https://docs.ropensci.org/frictionless/reference/read_package.html)     | [`read_gdlp()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/read_gldp.html)                 |                                                                                                                                |                                                                                          |                                                                                    |
+| [frictionless-r](https://docs.ropensci.org/frictionless/)                                  | Basic GeolocatoR                                                                                   | GeoPressureTemplate                                                                                                            |
+| ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| [`create_package()`](https://docs.ropensci.org/frictionless/reference/create_package.html) | [`create_gdlp()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/create_gldp.html)             | [`create_gldp_geopressuretemplate()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/create_gldp_geopressuretemplate.html) |
+| [`add_resource()`](https://docs.ropensci.org/frictionless/reference/add_resource.html)     | [`add_gdlp_resource()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/add_gldp_resource.html) | [`add_gldp_geopressuretemplate()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/add_gldp_geopressuretemplate.html)       |
+| [`write_package()`](https://docs.ropensci.org/frictionless/reference/write_package.html)   |                                                                                                    | [`write_geopressuretemplate()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/write_geopressuretemplate.html)             |
+| [`read_package()`](https://docs.ropensci.org/frictionless/reference/read_package.html)     | [`read_gdlp()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/read_gldp.html)                 |                                                                                                                                |
 
 ## 📚 Citation
 
 If you use GeoLocatoR in your research, please cite it as follows:
 
-> Nussbaumer, R. (2024). GeoLocatoR: Facilitate the creation, use, and sharing of your geolocator data. Zenodo. 
-
+> Nussbaumer, R. (2024). GeoLocatoR: R package for GeoLocator Data Package. https://github.com/rafnuss/geolocator
