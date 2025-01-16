@@ -7,6 +7,7 @@
 <url><loc>https://github.com/rafnuss/geolocator/reference/add_gldp_geopressuretemplate.html</loc></url>
 <url><loc>https://github.com/rafnuss/geolocator/reference/add_gldp_resource.html</loc></url>
 <url><loc>https://github.com/rafnuss/geolocator/reference/add_gldp_soi.html</loc></url>
+<url><loc>https://github.com/rafnuss/geolocator/reference/create_geopressuretemplate.html</loc></url>
 <url><loc>https://github.com/rafnuss/geolocator/reference/create_gldp.html</loc></url>
 <url><loc>https://github.com/rafnuss/geolocator/reference/create_gldp_geopressuretemplate.html</loc></url>
 <url><loc>https://github.com/rafnuss/geolocator/reference/edges.html</loc></url>
@@ -31,7 +32,6 @@
 <url><loc>https://github.com/rafnuss/geolocator/reference/validate_gldp.html</loc></url>
 <url><loc>https://github.com/rafnuss/geolocator/reference/validate_gldp_py.html</loc></url>
 <url><loc>https://github.com/rafnuss/geolocator/reference/version.html</loc></url>
-<url><loc>https://github.com/rafnuss/geolocator/reference/write_geopressuretemplate.html</loc></url>
 <url><loc>https://github.com/rafnuss/geolocator/reference/zenodoRecord2gldp.html</loc></url>
 </urlset>
 
