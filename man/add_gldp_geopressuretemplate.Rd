@@ -2,24 +2,23 @@
 % Please edit documentation in R/add_gldp_geopressuretemplate.R
 \name{add_gldp_geopressuretemplate}
 \alias{add_gldp_geopressuretemplate}
-\title{Add GLDP Geopressure Template}
+\title{Add Geolocator DP resources from a Geopressure Template}
 \usage{
 add_gldp_geopressuretemplate(
   pkg,
   directory = ".",
-  from = NULL,
+  from = c("raw-tag", "interim"),
   replace = FALSE
 )
 }
 \arguments{
-\item{pkg}{A GLDP package object.}
+\item{pkg}{A GeoLocator Data Package object.}
 
-\item{directory}{A character string specifying the directory where the data files are located.}
+\item{directory}{A character string specifying the geopressuretemplate directory.}
 
-\item{from}{A character string specifying the source of the data files. Can be "raw-tag" (for
-creating \code{tag} based on the data in \verb{data/raw-tag/}) or
-"interim" for data in \code{data/interim}. If \code{NULL} (default), the function will determine the
-source based on the presence of at least one file in the "interim" directory.}
+\item{from}{A character vector specifying the source of the data files. Either or both of
+\code{"raw-tag"} (for creating \code{tag} based on the data in \verb{data/raw-tag/}) and \code{"interim"} for data
+in \code{data/interim}.}
 
 \item{replace}{If \code{TRUE}, the added resource will replace an existing
 resource with the same name.}
@@ -28,8 +27,10 @@ resource with the same name.}
 The updated GLDP package object with added geopressure templates.
 }
 \description{
-This function adds geopressuretemplates to a GLDP package by reading data from specified
-directories and files.
+This function adds all possible resources to a Geolocator Data Package by reading data from
+a \href{https://github.com/Rafnuss/GeoPressureTemplate}{GeoPressureTemplate} directories and files.
+
+You can find more information on the use of this function in the \href{https://raphaelnussbaumer.com/GeoPressureManual/geolocator-create.html}{GeoPressureManual }
 }
 \details{
 The function performs the following steps:
@@ -37,18 +38,14 @@ The function performs the following steps:
 \item Reads the "tags.csv" and "observations.csv" files from the "./data" directory if they exist
 and adds them to the GLDP package.
 \item Determines the source of the data files ("data" or "interim") if the \code{from} parameter is NULL.
-\item Reads all ".RData" files from the specified source directory and processes them.
+\item If \code{interim}, reads all interim ".RData" files, extract all resources possibles and add them
+to the package.
+\item If \code{raw-data}, create GeoPressureR \code{tag} object from the \verb{data/raw-data/}, compute the \code{tags}
+and \code{observations} resources and add them to the package.
 }
 
 You can exclude interim file to be included in the package by starting the file name with an \verb{_}.
 
 It is not possible to do a mix of some \code{tag} read from \code{from="data"} and some \code{tag} read from
 \code{from="interim"}.
-}
-\examples{
-\dontrun{
-pkg <- create_gldp_package()
-pkg <- add_gldp_geopressuretemplate(pkg, directory = "path/to/data")
-}
-
 }

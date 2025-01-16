@@ -9,7 +9,7 @@
 #' ](https://raphaelnussbaumer.com/GeoPressureR/reference/param_create.html) for more information.
 #'
 #' @return A tibble with columns `tag_id`, `manufacturer`, `scientific_name`, `ring_number`,
-#' `model`, and `firwmare` (if `soi_settings` is present).
+#' `model`, and `firmware` (if `soi_settings` is present).
 #'
 #' @export
 params2o <- function(params) {
@@ -22,7 +22,7 @@ params2o <- function(params) {
         location_name = NA_character_,
         longitude = NA_real_,
         latitude = NA_real_,
-        life_stage = "0",
+        age_class = "0",
         sex = "U",
         observation_comments = "Automatically computed with `params2o()`"
       )

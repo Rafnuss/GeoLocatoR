@@ -2,7 +2,7 @@
 % Please edit documentation in R/add_gldp_resource.R
 \name{add_gldp_resource}
 \alias{add_gldp_resource}
-\title{Add a Resource with Schema to a Package}
+\title{Add a Geolocator Data Resource}
 \usage{
 add_gldp_resource(
   package,
@@ -37,28 +37,14 @@ Will be set as \code{delimiter} in the resource Table Dialect, so read functions
 The updated package object with the new resource added.
 }
 \description{
-This function adds a resource to a package and ensures that the data conforms to the schema
-defined for that resource. The schema is used to validate and potentially modify the data frame
-before adding it to the package.
-}
-\details{
-The schema for the resource is fetched from a JSON file located in a specified directory.
-The function adjusts the data frame according to the schema's \code{fieldsMatch} property:
-\itemize{
-\item \code{"equal"}: The data frame must have exactly the same fields as defined in the
-schema.
-\item \code{"subset"}: The data frame must have at least the fields defined in the schema,
-but may have additional fields. Fields not present in the schema are added to the schema.
-\item \code{"superset"}: The data frame may have fields not present in the schema, but must
-include all fields defined in the schema.
-\item \code{"partial"}: The data frame must have at least one field defined in the schema.
-}
-}
-\examples{
-\dontrun{
-my_package <- some_package_function()
-my_data <- data.frame(a = 1:5, b = letters[1:5])
-updated_package <- add_gldp_resource(my_package, "my_resource", my_data)
-}
+This function adds a resource to a geolocator data package and ensures that the data conforms to
+the schema defined for that resource. It is a wrapper of \href{https://docs.ropensci.org/frictionless/reference/add_resource.html}{\code{frictionless::add_resource} } where it first validate
+against the schema and potentially modify the data frame \code{data} before adding it to the package.
 
+More specifically, the function adjusts the data frame according to the schema's
+\href{https://datapackage.org/standard/table-schema/#fieldsMatch}{\code{fieldsMatch}} property and also
+cast the type/class of the columns provided according to. \code{cast_type}.
+
+Note that this function is generally not recommended to be used as all resources can be added or
+modified with their respective \href{https://bit.ly/41HruRs}{accessors functions}.
 }

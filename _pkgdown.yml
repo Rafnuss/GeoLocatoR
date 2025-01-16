@@ -12,15 +12,6 @@ reference:
       - add_gldp_resource
       - read_gldp
       - update_gldp
-  - title: GeoPressureTemplate
-    contents:
-      - create_gldp_geopressuretemplate
-      - add_gldp_geopressuretemplate
-      - write_geopressuretemplate
-  - title: SOI
-    contents:
-      - read_gdl
-      - add_gldp_soi
   - title: Accessor (and assignment) functions
     contents:
       - tags
@@ -31,19 +22,39 @@ reference:
       - paths
       - edges
       - pressurepaths
-  - title: Check and validate
+  - title: GeoPressureTemplate
     contents:
-      - validate_gldp
-      - check_gldp
-      - check_gldp_pkg
+      - create_gldp_geopressuretemplate
+      - add_gldp_geopressuretemplate
+      - write_geopressuretemplate
+  - title: SOI
+    contents:
+      - add_gldp_soi
+      - read_gdl
+  - title: SOI
+    contents:
+      - add_gldp_soi
+      - read_gdl
+  - title: Zenodo
+    contents:
+      - gldp2zenodo
+      - zenodo2gldp
+      - create_zendo_gldp
+      - add_gldp
+      - add_gldp_geopressuretemplate
+      - write_gldp_zendo
   - title: Miscellaneous functions
     contents:
       - print.geolocatordp
       - plot.geolocatordp
+      - version
+      - validate_gldp
+      - validate_gldp_py
       - tags2m
       - params2t
       - params2o
-      - version
+
+
 
 navbar:
   structure:

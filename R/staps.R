@@ -11,8 +11,7 @@
 #' @return [tibble::tibble()] data frame with staps
 #' @export
 staps <- function(x) {
-  check_gldp_pkg(x)
-  # pluck(x, "data", "staps")
+  check_gldp(x)
   frictionless::read_resource(x, resource_name = "staps")
 }
 
@@ -25,12 +24,12 @@ staps <- function(x) {
       "{.arg value} must be a data.frame, not {.type {value}}."
     )
   }
-  # pluck(x, "data", "staps") <- as_tibble(value)
 
   x <- add_gldp_resource(
     package = x,
     resource_name = "staps",
     data = value,
+    cast_type = TRUE,
     replace = "staps" %in% frictionless::resources(x)
   )
 

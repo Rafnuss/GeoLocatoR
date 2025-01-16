@@ -4,10 +4,6 @@ linters: linters_with_defaults(
     brace_linter = NULL,
     indentation_linter = NULL,
     cyclocomp_linter = cyclocomp_linter(100),
-    object_length_linter = object_length_linter(35)
-  )
-exclusions: list(
-    "vignettes/check_GDL_data.qmd",
-    "vignettes/create-from-soi.qmd",
-    "vignettes/create-from-geopressuretemplate.qmd"
+    object_length_linter = object_length_linter(35),
+    object_name_linter = object_name_linter(styles = c("snake_case", "symbols", "camelCase"))
   )

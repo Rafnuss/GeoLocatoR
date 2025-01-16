@@ -1,8 +1,17 @@
-#' Add a Resource with Schema to a Package
+#' Add a Geolocator Data Resource
 #'
-#' This function adds a resource to a package and ensures that the data conforms to the schema
-#' defined for that resource. The schema is used to validate and potentially modify the data frame
-#' before adding it to the package.
+#' @description
+#' This function adds a resource to a geolocator data package and ensures that the data conforms to
+#' the schema defined for that resource. It is a wrapper of [`frictionless::add_resource`
+#' ](https://docs.ropensci.org/frictionless/reference/add_resource.html) where it first validate
+#' against the schema and potentially modify the data frame `data` before adding it to the package.
+#'
+#' More specifically, the function adjusts the data frame according to the schema's
+#' [`fieldsMatch`](https://datapackage.org/standard/table-schema/#fieldsMatch) property and also
+#' cast the type/class of the columns provided according to. `cast_type`.
+#'
+#' Note that this function is generally not recommended to be used as all resources can be added or
+#' modified with their respective [accessors functions](https://bit.ly/41HruRs).
 #'
 #' @param package The package object to which the resource will be added.
 #' @param resource_name A character string specifying the name of the resource. This name is used
@@ -13,27 +22,7 @@
 #' specified in the schema. Defaults to `FALSE`.
 #' @inheritParams frictionless::add_resource
 #'
-#' @details
-#' The schema for the resource is fetched from a JSON file located in a specified directory.
-#' The function adjusts the data frame according to the schema's `fieldsMatch` property:
-#' \itemize{
-#'   \item \code{"equal"}: The data frame must have exactly the same fields as defined in the
-#'   schema.
-#'   \item \code{"subset"}: The data frame must have at least the fields defined in the schema,
-#'   but may have additional fields. Fields not present in the schema are added to the schema.
-#'   \item \code{"superset"}: The data frame may have fields not present in the schema, but must
-#'   include all fields defined in the schema.
-#'   \item \code{"partial"}: The data frame must have at least one field defined in the schema.
-#' }
-#'
 #' @return The updated package object with the new resource added.
-#'
-#' @examples
-#' \dontrun{
-#' my_package <- some_package_function()
-#' my_data <- data.frame(a = 1:5, b = letters[1:5])
-#' updated_package <- add_gldp_resource(my_package, "my_resource", my_data)
-#' }
 #'
 #' @export
 add_gldp_resource <- function(package,
@@ -42,16 +31,35 @@ add_gldp_resource <- function(package,
                               cast_type = FALSE,
                               replace = FALSE,
                               delim = ",") {
-  schema_url <- glue::glue(
-    "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/main/{resource_name}-table-schema.json"
+  pkg <- package
+  check_gldp(pkg)
+
+  # Retrieve full schema (pkg$resources) does not have schema at first
+  pkg_schema <- jsonlite::fromJSON(
+    package$`$schema`,
+    simplifyDataFrame = FALSE, simplifyVector = TRUE
   )
+  possible_resources <-
+    pkg_schema$allOf[[2]]$properties$resources$items$oneOf[[1]]$properties$name$enum
 
-  schema <- jsonlite::fromJSON(schema_url, simplifyDataFrame = FALSE, simplifyVector = TRUE)
+  if (!resource_name %in% possible_resources) {
+    cli::cli_abort(c(
+      "x" = "{.val {resource_name}} is not a valid resource.",
+      "i" = "Possible resources are: {.val {possible_resources}}."
+    ))
+  }
 
+  # Retrieve the resource schema
+  schema <- jsonlite::fromJSON(glue::glue(
+    "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/{version(package)}/{resource_name}",
+    "-table-schema.json"
+  ), simplifyDataFrame = FALSE, simplifyVector = TRUE)
+
+  # We need to massage a bit the data to make it adequate for add_resource in v1.
   # https://github.com/frictionlessdata/frictionless-r/issues/254
 
   schema_fields <- sapply(schema$fields, \(x) x$name)
-  schema_type <- sapply(schema$fields, \(x) x$type)
+  schema_types <- sapply(schema$fields, \(x) x$type)
   # schema_required <- sapply(schema$fields, \(x) x$constraints$required)
   # data_fields <- names(data)
 
@@ -86,7 +94,7 @@ add_gldp_resource <- function(package,
     for (i in seq_along(schema_fields)) {
       # Check if column already exists
       if (!(schema_fields[i] %in% names(data))) {
-        na_type <- switch(schema_type[i],
+        na_type <- switch(schema_types[i],
           string = NA_character_,
           number = NA_real_,
           integer = NA_integer_,
@@ -110,11 +118,11 @@ add_gldp_resource <- function(package,
   data <- data %>% select(all_of(schema_fields))
 
   if (cast_type) {
-    data <- add_gldp_resource_cast(data, schema_fields, schema_type)
+    data <- cast_table(data, schema)
   }
 
-  package <- frictionless::add_resource(
-    package = package,
+  pkg <- frictionless::add_resource(
+    package = pkg,
     resource_name = resource_name,
     data = data,
     schema = schema,
@@ -122,32 +130,5 @@ add_gldp_resource <- function(package,
     delim = delim
   )
 
-  return(package)
-}
-
-#' @noRd
-add_gldp_resource_cast <- function(data, schema_fields, schema_types) {
-  for (i in seq_along(schema_fields)) {
-    field <- schema_fields[i]
-    type <- schema_types[i]
-
-    if (field %in% names(data)) {
-      if (type == "string") {
-        data[[field]] <- as.character(data[[field]])
-      } else if (type == "number") {
-        data[[field]] <- as.numeric(data[[field]])
-      } else if (type == "integer") {
-        data[[field]] <- as.integer(data[[field]])
-      } else if (type == "bolean") {
-        data[[field]] <- as.logical(data[[field]])
-      } else if (type == "date") {
-        data[[field]] <- as.Date(data[[field]])
-      } else if (type == "datetime") {
-        data[[field]] <- as.POSIXct(data[[field]])
-      } else {
-        cli::cli_warn("No casting for {.field {field}} of type {.val {type}}")
-      }
-    }
-  }
-  return(data)
+  return(pkg)
 }

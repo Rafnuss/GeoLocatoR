@@ -12,7 +12,7 @@ generated during the GeoPressure worflow. See \href{https://raphaelnussbaumer.co
 }
 \value{
 A tibble with columns \code{tag_id}, \code{manufacturer}, \code{scientific_name}, \code{ring_number},
-\code{model}, and \code{firwmare} (if \code{soi_settings} is present).
+\code{model}, and \code{firmware} (if \code{soi_settings} is present).
 }
 \description{
 This function converts a list of parameters into a single \code{observations} tibble according to the

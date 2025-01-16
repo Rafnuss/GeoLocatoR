@@ -11,8 +11,7 @@
 #' @return [tibble::tibble()] data frame with measurements
 #' @export
 measurements <- function(x) {
-  check_gldp_pkg(x)
-  # pluck(x, "data", "measurements")
+  check_gldp(x)
   frictionless::read_resource(x, resource_name = "measurements")
 }
 
@@ -26,7 +25,6 @@ measurements <- function(x) {
     )
   }
 
-  # pluck(x, "data", "measurements") <- as_tibble(value)
   x <- add_gldp_resource(
     package = x,
     resource_name = "measurements",
@@ -34,6 +32,10 @@ measurements <- function(x) {
     cast_type = TRUE,
     replace = "measurements" %in% frictionless::resources(x)
   )
+
+  x <- x %>%
+    update_gldp_temporal() %>%
+    update_gldp_number_tags()
 
   return(x)
 }
