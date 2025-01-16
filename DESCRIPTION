@@ -33,6 +33,7 @@ Imports:
     zen4R,
     zip
 Suggests: 
+    covr,
     knitr,
     quarto,
     readxl,

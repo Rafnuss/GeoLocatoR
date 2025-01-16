@@ -10,6 +10,8 @@ stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://
 [![R-CMD-check](https://github.com/Rafnuss/GeoLocatoR/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/R-CMD-check.yaml)
 [![pkgdown.yaml](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/pkgdown.yaml)
 [![lint](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/lint.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/lint.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/Rafnuss/GeoLocatoR/graph/badge.svg)](https://app.codecov.io/gh/Rafnuss/GeoLocatoR)
 <!-- badges: end -->
 
 **GeoLocatoR** is an R package that helps you create, use, and share
