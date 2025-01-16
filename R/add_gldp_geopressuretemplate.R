@@ -62,13 +62,6 @@ add_gldp_geopressuretemplate <- function(
       # Exclude folder starting with _
       all_files <- all_files[!grepl("^_", basename(all_files))]
 
-      if (length(all_files) == 0) {
-        cli::cli_warn(
-          "We did not find any interim .Rdata file in {.file
-          {file.path(directory, 'data/interim')}}."
-        )
-      }
-
       # List of variable names to be processed
       var_names_required <- c("marginal", "tag", "param")
       var_names_path <- c("path_simulation", "path_geopressureviz", "path_tag", "path_most_likely")
