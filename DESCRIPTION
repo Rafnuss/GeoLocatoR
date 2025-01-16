@@ -10,11 +10,11 @@ License: MIT + file LICENSE
 Imports: 
     assertthat,
     cli,
-    curl,
     desc,
     dplyr,
     frictionless,
     GeoPressureR,
+    gert,
     glue,
     ggplot2,
     jsonlite,
@@ -22,6 +22,7 @@ Imports:
     magrittr,
     purrr,
     readr,
+    rvest,
     rlang,
     rstudioapi,
     stringr,
@@ -30,8 +31,7 @@ Imports:
     usethis,
     withr,
     yaml,
-    zen4R,
-    zip
+    zen4R
 Suggests: 
     covr,
     knitr,
@@ -40,8 +40,7 @@ Suggests:
     rmarkdown,
     spelling,
     testthat (>= 3.0.0),
-    tidyverse,
-    writexl
+    tidyverse
 Remotes: 
   rafnuss/GeoPressureR
 Config/testthat/edition: 3

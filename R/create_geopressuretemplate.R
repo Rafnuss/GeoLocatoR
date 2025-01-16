@@ -6,14 +6,9 @@
 #' This function sets up the project directory and ensures that all necessary components are in
 #' place for a geopressure analysis project.
 #'
-#' @param pkg A list containing package metadata, including `name`, `title`, `description`,
-#' `version`, `licenses`, and `contributors`.
-#' @param destdir A character string specifying the destination directory where the project will
-#' be created. Default is the current directory (`"."`).
-#' @param project_name A character string that sets the name of the project. Default is derived
-#' from `pkg$name`.
-#' @param overwrite A logical value indicating whether to overwrite an existing directory with the
-#' same name. Default is `FALSE`.
+#' @param path A character string specifying the destination directory where the project will
+#' be created. The last folder will give the name to the project.
+#' @param pkg A GeoLocatoR Datapackage object (optional)
 #' @param open If `TRUE`, the package is opened in a new RStudio session.
 #'
 #' @return The path to the created project directory.
@@ -28,108 +23,91 @@
 #' }
 #'
 #' @export
-write_geopressuretemplate <- function(pkg,
-                                      destdir = ".",
-                                      project_name = pkg$name,
-                                      overwrite = FALSE,
-                                      open = rlang::is_interactive()) {
-  # Create a geopressuretemplate directory
-  project_dir <- write_geopressuretemplate_create(
-    destdir = destdir,
-    project_name = project_name,
-    overwrite = overwrite
+create_geopressuretemplate <- function(path,
+                                       pkg = NULL,
+                                       open = rlang::is_interactive()) {
+  path <- gert::git_clone("https://github.com/Rafnuss/GeoPressureTemplate/",
+    path = path, verbose = FALSE
+  )
+  cli::cli_bullets(c(
+    "v" = "Cloning repo from {.url https://github.com/Rafnuss/GeoPressureTemplate/} \\
+    into {.path {path}}."
+  ))
+  project_name <- basename(path)
+
+  file.rename(
+    from = file.path(path, "GeoPressureTemplate.Rproj"),
+    to = file.path(path, glue::glue("{project_name}.Rproj"))
   )
 
-  # setwd(project_dir)
-  withr::with_dir(project_dir, {
-    # Update the description file
-    write_geopressuretemplate_desc(pkg)
+  # setwd(path)
+  withr::with_dir(path, {
+    d <- desc::desc()
+    d$set("Package", gsub("[^a-zA-Z0-9\\.]", "", project_name))
+    d$write()
 
-    # Update the README file
-    write_geopressuretemplate_readme(pkg)
+    # delete existing data
+    unlink(list.files("./data/raw-tag/", full.names = TRUE), recursive = TRUE)
+    unlink(list.files("./data/tag-label/", full.names = TRUE), recursive = TRUE)
+    unlink(list.files("./data/twilight-label/", full.names = TRUE), recursive = TRUE)
 
-    # Update the LICENSE file
-    write_geopressuretemplate_licences(pkg$licenses)
+    # Remove example in config
+    default_yaml <- readLines("config.yml")
+    writeLines(default_yaml[1:(grep("18LX:", default_yaml)[1] - 1)], "config.yml")
 
-    # Add data
-    write_geopressuretemplate_data(pkg)
+    if (!is.null(pkg)) {
+      check_gldp(pkg)
 
-    write_geopressuretemplate_config(pkg)
+      # Update the description file
+      try({
+        create_geopressuretemplate_desc(pkg)
+      })
+
+
+      # Update the README file
+      try({
+        create_geopressuretemplate_readme(pkg)
+      })
+
+      # Update the LICENSE file
+      try({
+        create_geopressuretemplate_licences(pkg$licenses)
+      })
+
+      # Add data
+      try({
+        create_geopressuretemplate_data(pkg)
+      })
+
+      # Set config file
+      try({
+        create_geopressuretemplate_config(pkg)
+      })
+    }
   })
 
   if (open) {
-    rstudioapi::openProject(project_dir, newSession = TRUE)
+    rstudioapi::openProject(path, newSession = TRUE)
   }
 
-  return(project_dir)
+  return(path)
 }
 
 #' @noRd
-write_geopressuretemplate_create <- function(destdir, project_name, overwrite) {
-  if (!dir.exists(destdir)) {
-    dir.create(destdir, recursive = TRUE)
-    cli::cli_alert_warning("Created directory: {destdir}")
-  }
-
-  if (dir.exists(file.path(destdir, project_name))) {
-    if (overwrite) {
-      unlink(file.path(destdir, project_name), recursive = TRUE)
-    } else {
-      cli::cli_abort(c(
-        x = "Directory already exists: {project_name}",
-        ">" = "Use {.code overwrite = TRUE} to overwrite the existing directory."
-      ))
-    }
-  }
-
-  # usethis::create_from_github
-  repo_url <- "https://github.com/Rafnuss/GeoPressureTemplate/archive/refs/heads/main.zip"
-  temp_zip <- tempfile(fileext = ".zip")
-
-  # Download the ZIP file
-  curl::curl_download(repo_url, temp_zip)
-
-  # Unzip the file
-  zip::unzip(temp_zip, exdir = destdir)
-
-  # Clean up temporary file
-  unlink(temp_zip)
-
-  project_dir <- file.path(destdir, project_name)
-  file.rename(
-    from = file.path(destdir, "GeoPressureTemplate-main"),
-    to = project_dir
-  )
-
-  file.rename(
-    from = file.path(project_dir, "GeoPressureTemplate.Rproj"),
-    to = file.path(project_dir, glue::glue("{project_name}.Rproj"))
-  )
-
-  return(project_dir)
-}
-
-#' @noRd
-write_geopressuretemplate_desc <- function(pkg) {
+create_geopressuretemplate_desc <- function(pkg) {
   d <- desc::description$new()
 
-  d$set("Title", pkg$title)
-  d$set("License", paste(purrr::map_chr(pkg$license, ~ .x$name), collapse = ", "))
-
+  d$set("Title", pkg$title, check = FALSE)
+  d$set("License", paste(purrr::map_chr(pkg$license, ~ .x$name), collapse = ", "), check = FALSE)
   d$set_authors(contributors2persons(pkg$contributors))
-
-  if ("name" %in% names(pkg)) {
-    name <- gsub("([._-])([a-z])", "\\U\\2", pkg$name, perl = TRUE)
-    name <- gsub("[^A-Za-z0-9.]", "", name)
-    d$set("Package", name)
-  }
 
   # Optional fields
   if ("description" %in% names(pkg)) {
-    d$set("Description", pkg$description)
+    d$set("Description", rvest::html_text(rvest::read_html(pkg$description)), check = FALSE)
   }
+
   if ("version" %in% names(pkg)) {
-    d$set_version(pkg$version)
+    d$set_version(gsub("^v", "", pkg$version))
   }
 
   d$normalize()
@@ -137,10 +115,15 @@ write_geopressuretemplate_desc <- function(pkg) {
 }
 
 #' @noRd
-write_geopressuretemplate_readme <- function(pkg) {
+create_geopressuretemplate_readme <- function(pkg) {
+  check_gldp(pkg)
+
   content <- paste(
     "# ", pkg$title, "\n\n",
-    if (!is.null(pkg$description)) paste(pkg$description, "\n\n") else "",
+    if (!is.null(pkg$description)) paste(pkg$description, "\n") else "",
+    if (!is.null(pkg$keywords)) {
+      paste("**Keywords:** ", paste(pkg$keywords, collapse = ", "), "\n")
+    }, "\n",
     "## Contributors\n\n",
     paste(sapply(pkg$contributors, function(c) {
       paste0(
@@ -154,12 +137,8 @@ write_geopressuretemplate_readme <- function(pkg) {
     "**Created:** ", pkg$created, "\n",
     "**Temporal coverage:** ", pkg$temporal$start, " - ", pkg$temporal$end, "\n",
     "**Taxonomic coverage:** ", paste(pkg$taxonomic, collapse = ", "), "\n",
-    if (!is.null(pkg$embargo)) paste("**Embargo until:** ", pkg$embargo, "\n") else "",
-    if (!is.null(pkg$keywords)) {
-      paste("**Keywords:** ", paste(pkg$keywords, collapse = ", "), "\n")
-    } else {
-      ""
-    },
+    "**Number of tags:** \n",
+    paste0("- ", names(pkg$numberTags), ": ", unlist(pkg$numberTags), collapse = "\n"), "\n",
     sep = ""
   )
 
@@ -167,7 +146,7 @@ write_geopressuretemplate_readme <- function(pkg) {
 }
 
 #' @noRd
-write_geopressuretemplate_licences <- function(licenses) {
+create_geopressuretemplate_licences <- function(licenses) {
   # 1. If more than one license, display a warning using cli
   if (length(licenses) > 1) {
     cli_warn("Multiple licenses detected. Only the first license will be used.")
@@ -180,24 +159,27 @@ write_geopressuretemplate_licences <- function(licenses) {
   }
 
   # 3. Match and apply the license using usethis functions
+  licenses$name <- tolower(licenses$name)
 
-  if (grepl("MIT", licenses$name)) {
+  if (grepl("mit", licenses$name)) {
     usethis::use_mit_license()
-  } else if (grepl("GPL", licenses$name)) {
+  } else if (grepl("gpl", licenses$name)) {
     usethis::use_gpl_license()
-  } else if (grepl("AGPL", licenses$name)) {
+  } else if (grepl("agpl", licenses$name)) {
     usethis::use_agpl_license()
-  } else if (grepl("LGPL", licenses$name)) {
+  } else if (grepl("lgpl", licenses$name)) {
     usethis::use_lgpl_license()
-  } else if (grepl("Apache", licenses$name)) {
+  } else if (grepl("apache", licenses$name)) {
     usethis::use_apache_license()
-  } else if (grepl("CC0", licenses$name) || grepl("CC-0", licenses$name) ||
-    grepl("CC 0", licenses$name)) {
+  } else if (grepl("cc0", licenses$name) ||
+             grepl("cc-0", licenses$name) ||
+             grepl("cc 0", licenses$name)) {
     usethis::use_cc0_license()
-  } else if (grepl("CCBY", licenses$name) || grepl("CC-BY", licenses$name) ||
-    grepl("CC BY", licenses$name)) {
+  } else if (grepl("ccby", licenses$name) ||
+             grepl("cc-by", licenses$name) ||
+             grepl("cc by", licenses$name)) {
     usethis::use_ccby_license()
-  } else if (grepl("Proprietary", licenses$name)) {
+  } else if (grepl("proprietary", licenses$name)) {
     usethis::use_proprietary_license()
   } else {
     cli_warn("No matching license found in {.pkg usethis}. License file not created.")
@@ -206,15 +188,12 @@ write_geopressuretemplate_licences <- function(licenses) {
 
 
 #' @noRd
-write_geopressuretemplate_data <- function(pkg) {
-  # Observations
-  writexl::write_xlsx(tags(pkg), "./data/tags.xlsx")
-  writexl::write_xlsx(observations(pkg), "./data/observations.xlsx")
+create_geopressuretemplate_data <- function(pkg) {
+  check_gldp(pkg)
 
-  # delete existing data
-  unlink("./data/raw-tag/", recursive = TRUE)
-  unlink("./data/tag-label/", recursive = TRUE)
-  unlink("./data/twilight-label/", recursive = TRUE)
+  # Observations
+  readr::write_csv(tags(pkg), "./data/tags.csv")
+  readr::write_csv(observations(pkg), "./data/observations.csv")
 
   m <- measurements(pkg)
 
@@ -267,7 +246,9 @@ write_geopressuretemplate_data <- function(pkg) {
 }
 
 #' @noRd
-write_geopressuretemplate_config <- function(pkg) {
+create_geopressuretemplate_config <- function(pkg) {
+  check_gldp(pkg)
+
   t <- tags(pkg)
   o <- observations(pkg)
 
@@ -359,7 +340,7 @@ write_geopressuretemplate_config <- function(pkg) {
         tmp <- lapply(names(k), function(name) {
           x <- k[[name]]
           if (name == "stap_id" && any(x == 0)) {
-            add_text <- " !!!Modify the `stap_id` of `0` to the correct stap_id"
+            add_text <- " # Modify the `stap_id` of `0` to the correct stap_id"
           } else {
             add_text <- ""
           }
@@ -380,15 +361,8 @@ write_geopressuretemplate_config <- function(pkg) {
   # Manually fix issue with tibble export
   t_yaml <- gsub("\\]\\'", "]", gsub("\\'\\[", "[", t_yaml))
 
-
-  # Read the default config.yml
-  default_yaml <- readLines("config.yml")
-
-  # Remove any example
-  trim_yaml <- default_yaml[1:(grep("18LX:", default_yaml)[1] - 1)]
-
-  # Combine trim_yaml and t_yaml
-  combined_yaml <- c(trim_yaml, t_yaml)
+  # Combine default config.yml with trim_yaml
+  combined_yaml <- c(readLines("config.yml"), t_yaml)
 
   # Write the combined output to config.yml
   writeLines(combined_yaml, "config.yml")
