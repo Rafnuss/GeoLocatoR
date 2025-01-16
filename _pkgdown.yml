@@ -37,12 +37,8 @@ reference:
       - read_gdl
   - title: Zenodo
     contents:
-      - gldp2zenodo
-      - zenodo2gldp
-      - create_zendo_gldp
-      - add_gldp
-      - add_gldp_geopressuretemplate
-      - write_gldp_zendo
+      - gldp2zenodoRecord
+      - zenodoRecord2gldp
   - title: Miscellaneous functions
     contents:
       - print.geolocatordp

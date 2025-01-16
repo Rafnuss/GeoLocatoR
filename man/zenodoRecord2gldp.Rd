@@ -16,8 +16,8 @@ not provided, create a new one.}
 An updated or new Geolocator Data Package object with metadata from the zenodo record.
 }
 \description{
-This function update the metadata of a \href{https://datapackage.org/standard/data-package/}{GeoLocator Data Package } based on an \code{zen4R} ZenodoRecord provided. If no
-package is provided (\code{pkg = NULL}), a new data package is created.
+This function update the metadata of a \href{https://datapackage.org/standard/data-package/}{GeoLocator Data Package } based on an \code{zen4R} ZenodoRecord provided. If
+no package is provided (\code{pkg = NULL}), a new data package is created.
 
 All metadata are retrieved with the Zenodo API through the R package
 \href{https://github.com/eblondel/zen4R}{zen4R}.

@@ -7,27 +7,27 @@
 \alias{read_gdl_access}
 \title{Read Geolocator Data and Orders}
 \usage{
-read_gdl(access_file = NA, file_data = NA, file_order = NA, filter_col = TRUE)
+read_gdl(access_file = NA, data_file = NA, order_file = NA, filter_col = TRUE)
 
-read_gdl_orders(file_order)
+read_gdl_orders(order_file)
 
-read_gdl_data(file_data)
+read_gdl_data(data_file)
 
 read_gdl_access(
   access_file,
-  file_data = tempfile("GDL_Data", fileext = "csv"),
-  file_order = tempfile("GDL_Orders", fileext = "csv")
+  data_file = tempfile("GDL_Data", fileext = ".csv"),
+  order_file = tempfile("GDL_Orders", fileext = ".csv")
 )
 }
 \arguments{
 \item{access_file}{A string specifying the path to an Access file containing both the GDL data
 and order information.
-If provided, it takes precedence over \code{file_data} and \code{file_order}. Defaults to \code{NA}.  §}
+If provided, it takes precedence over \code{data_file} and \code{order_file}. Defaults to \code{NA}.  §}
 
-\item{file_data}{A string specifying the path to the GDL data file. Required if \code{access_file}
+\item{data_file}{A string specifying the path to the GDL data file. Required if \code{access_file}
 is not provided. Defaults to \code{NA}.}
 
-\item{file_order}{A string specifying the path to the GDL order file. Required if \code{access_file}
+\item{order_file}{A string specifying the path to the GDL order file. Required if \code{access_file}
 is not provided. Defaults to \code{NA}.}
 
 \item{filter_col}{A logical value or a character vector. If \code{TRUE}, only a predefined set of
