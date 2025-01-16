@@ -26,7 +26,7 @@ reference:
     contents:
       - create_gldp_geopressuretemplate
       - add_gldp_geopressuretemplate
-      - write_geopressuretemplate
+      - create_geopressuretemplate
   - title: SOI
     contents:
       - add_gldp_soi
@@ -37,12 +37,8 @@ reference:
       - read_gdl
   - title: Zenodo
     contents:
-      - gldp2zenodo
-      - zenodo2gldp
-      - create_zendo_gldp
-      - add_gldp
-      - add_gldp_geopressuretemplate
-      - write_gldp_zendo
+      - gldp2zenodoRecord
+      - zenodoRecord2gldp
   - title: Miscellaneous functions
     contents:
       - print.geolocatordp

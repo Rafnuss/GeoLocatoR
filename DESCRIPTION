@@ -10,6 +10,7 @@ License: MIT + file LICENSE
 Imports: 
     assertthat,
     cli,
+    DBI,
     desc,
     dplyr,
     frictionless,
@@ -20,6 +21,7 @@ Imports:
     jsonlite,
     keyring,
     magrittr,
+    odbc,
     purrr,
     readr,
     rvest,

@@ -29,6 +29,8 @@ update_gldp_metadata(pkg)
 }
 \arguments{
 \item{pkg}{A GeoLocator Data Package object}
+
+\item{...}{overwrite parameters for \code{utils::bibentry()}}
 }
 \value{
 An updated GeoLocator Data Package object with modified metadata.
