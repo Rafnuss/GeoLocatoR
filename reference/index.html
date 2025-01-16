@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GeoLocatoR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,7 @@
           <code><a href="add_gldp_resource.html">add_gldp_resource()</a></code>
 
         </dt>
-        <dd>Add a Resource with Schema to a Package</dd>
+        <dd>Add a Geolocator Data Resource</dd>
       </dl><dl><dt>
 
           <code><a href="read_gldp.html">read_gldp()</a></code>
@@ -62,62 +62,10 @@
         <dd>Read a GeoLocator Data Package</dd>
       </dl><dl><dt>
 
-          <code><a href="update_gldp.html">update_gldp()</a></code>
+          <code><a href="update_gldp.html">update_gldp()</a></code> <code><a href="update_gldp.html">update_gldp_temporal()</a></code> <code><a href="update_gldp.html">update_gldp_spatial()</a></code> <code><a href="update_gldp.html">update_gldp_taxonomic()</a></code> <code><a href="update_gldp.html">update_gldp_number_tags()</a></code> <code><a href="update_gldp.html">update_gldp_bibliographic_citation()</a></code> <code><a href="update_gldp.html">update_gldp_reference_location()</a></code> <code><a href="update_gldp.html">update_gldp_metadata()</a></code>
 
         </dt>
-        <dd>Update a GeoLocator Data Package Metadata</dd>
-      </dl></div><div class="section level2">
-      <h2 id="geopressuretemplate">GeoPressureTemplate<a class="anchor" aria-label="anchor" href="#geopressuretemplate"></a></h2>
-
-
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="create_gldp_geopressuretemplate.html">create_gldp_geopressuretemplate()</a></code>
-
-        </dt>
-        <dd>Create a GeoLocator Data Package from a GeoPressure Template</dd>
-      </dl><dl><dt>
-
-          <code><a href="add_gldp_geopressuretemplate.html">add_gldp_geopressuretemplate()</a></code>
-
-        </dt>
-        <dd>Add GLDP Geopressure Template</dd>
-      </dl><dl><dt>
-
-          <code><a href="write_geopressuretemplate.html">write_geopressuretemplate()</a></code>
-
-        </dt>
-        <dd>Create a Geopressure Template Project</dd>
-      </dl></div><div class="section level2">
-      <h2 id="soi">SOI<a class="anchor" aria-label="anchor" href="#soi"></a></h2>
-
-
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="read_gdl.html">read_gdl()</a></code> <code><a href="read_gdl.html">read_gdl_orders()</a></code> <code><a href="read_gdl.html">read_gdl_data()</a></code> <code><a href="read_gdl.html">read_gdl_access()</a></code>
-
-        </dt>
-        <dd>Read Geolocator Data and Orders</dd>
-      </dl><dl><dt>
-
-          <code><a href="add_gldp_soi.html">add_gldp_soi()</a></code>
-
-        </dt>
-        <dd>Add GLDP SOI Data to a Package</dd>
+        <dd>Update computed metadata of a GeoLocator Data Package</dd>
       </dl></div><div class="section level2">
       <h2 id="accessor-and-assignment-functions">Accessor (and assignment) functions<a class="anchor" aria-label="anchor" href="#accessor-and-assignment-functions"></a></h2>
 
@@ -178,7 +126,7 @@
         </dt>
         <dd>Get or set pressurepaths</dd>
       </dl></div><div class="section level2">
-      <h2 id="check-and-validate">Check and validate<a class="anchor" aria-label="anchor" href="#check-and-validate"></a></h2>
+      <h2 id="geopressuretemplate">GeoPressureTemplate<a class="anchor" aria-label="anchor" href="#geopressuretemplate"></a></h2>
 
 
 
@@ -190,22 +138,91 @@
 
       <dl><dt>
 
-          <code><a href="validate_gldp.html">validate_gldp()</a></code>
+          <code><a href="create_gldp_geopressuretemplate.html">create_gldp_geopressuretemplate()</a></code>
 
         </dt>
-        <dd>Validate a GeoLocator Data Package</dd>
+        <dd>Create a GeoLocator Data Package from a GeoPressure Template</dd>
       </dl><dl><dt>
 
-          <code><a href="check_gldp.html">check_gldp()</a></code>
+          <code><a href="add_gldp_geopressuretemplate.html">add_gldp_geopressuretemplate()</a></code>
 
         </dt>
-        <dd>Validate a GeoLocator Data Package</dd>
+        <dd>Add Geolocator DP resources from a Geopressure Template</dd>
       </dl><dl><dt>
 
-          <code><a href="check_gldp_pkg.html">check_gldp_pkg()</a></code>
+          <code><a href="write_geopressuretemplate.html">write_geopressuretemplate()</a></code>
 
         </dt>
-        <dd>Validate the GeoLocator Data Package Metadata</dd>
+        <dd>Create a Geopressure Template Project</dd>
+      </dl></div><div class="section level2">
+      <h2 id="soi">SOI<a class="anchor" aria-label="anchor" href="#soi"></a></h2>
+
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="add_gldp_soi.html">add_gldp_soi()</a></code>
+
+        </dt>
+        <dd>Add GLDP SOI Data to a Package</dd>
+      </dl><dl><dt>
+
+          <code><a href="read_gdl.html">read_gdl()</a></code> <code><a href="read_gdl.html">read_gdl_orders()</a></code> <code><a href="read_gdl.html">read_gdl_data()</a></code> <code><a href="read_gdl.html">read_gdl_access()</a></code>
+
+        </dt>
+        <dd>Read Geolocator Data and Orders</dd>
+      </dl></div><div class="section level2">
+      <h2 id="soi-1">SOI<a class="anchor" aria-label="anchor" href="#soi-1"></a></h2>
+
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="add_gldp_soi.html">add_gldp_soi()</a></code>
+
+        </dt>
+        <dd>Add GLDP SOI Data to a Package</dd>
+      </dl><dl><dt>
+
+          <code><a href="read_gdl.html">read_gdl()</a></code> <code><a href="read_gdl.html">read_gdl_orders()</a></code> <code><a href="read_gdl.html">read_gdl_data()</a></code> <code><a href="read_gdl.html">read_gdl_access()</a></code>
+
+        </dt>
+        <dd>Read Geolocator Data and Orders</dd>
+      </dl></div><div class="section level2">
+      <h2 id="zenodo">Zenodo<a class="anchor" aria-label="anchor" href="#zenodo"></a></h2>
+
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="gldp2zenodoRecord.html">gldp2zenodoRecord()</a></code>
+
+        </dt>
+        <dd>Create or update a Zenodo Record baased on the metadata from a GeoLocator Data Package</dd>
+      </dl><dl><dt>
+
+          <code><a href="zenodoRecord2gldp.html">zenodoRecord2gldp()</a></code>
+
+        </dt>
+        <dd>Create or update the metadata of a GeoLocator Data Package based on a Zenodo Record</dd>
       </dl></div><div class="section level2">
       <h2 id="miscellaneous-functions">Miscellaneous functions<a class="anchor" aria-label="anchor" href="#miscellaneous-functions"></a></h2>
 
@@ -231,6 +248,24 @@
         <dd>Plot GeoLocator Data Package coverage</dd>
       </dl><dl><dt>
 
+          <code><a href="version.html">version()</a></code>
+
+        </dt>
+        <dd>Get GeoLocator DP version</dd>
+      </dl><dl><dt>
+
+          <code><a href="validate_gldp.html">validate_gldp()</a></code>
+
+        </dt>
+        <dd>Validate a GeoLocator Data Package</dd>
+      </dl><dl><dt>
+
+          <code><a href="validate_gldp_py.html">validate_gldp_py()</a></code>
+
+        </dt>
+        <dd>Validate a GeoLocator Data Package</dd>
+      </dl><dl><dt>
+
           <code><a href="tags2m.html">tags2m()</a></code>
 
         </dt>
@@ -247,12 +282,6 @@
 
         </dt>
         <dd>Generate <code>observations</code> from GeoPressureR parameters</dd>
-      </dl><dl><dt>
-
-          <code><a href="version.html">version()</a></code>
-
-        </dt>
-        <dd>Get GeoLocator DP version</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
