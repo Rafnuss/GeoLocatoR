@@ -1,21 +1,21 @@
 Package: GeoLocatoR
 Title: R package for GeoLocator Data Package
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: 
     person("Raphaël", "Nussbaumer", , "rafnuss@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8185-1020"))
 Description: R package will help you create and read geolocator data using the GeoLocator Data package standard.
 URL: https://github.com/rafnuss/geolocator
-License: MIT + file LICENSE
+License: MIT
 Imports: 
     assertthat,
     cli,
-    curl,
     DBI,
     desc,
     dplyr,
     frictionless,
     GeoPressureR,
+    gert,
     glue,
     ggplot2,
     jsonlite,
@@ -24,6 +24,7 @@ Imports:
     odbc,
     purrr,
     readr,
+    rvest,
     rlang,
     rstudioapi,
     stringr,
@@ -32,17 +33,16 @@ Imports:
     usethis,
     withr,
     yaml,
-    zen4R,
-    zip
+    zen4R
 Suggests: 
+    covr,
     knitr,
     quarto,
     readxl,
     rmarkdown,
     spelling,
     testthat (>= 3.0.0),
-    tidyverse,
-    writexl
+    tidyverse
 Remotes: 
   rafnuss/GeoPressureR
 Config/testthat/edition: 3

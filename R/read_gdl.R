@@ -325,8 +325,8 @@ read_gdl_access <- function(access_file,
         "Dbq=", access_file, ";"
       )
     )
-    utils::write.csv(DBI::dbReadTable(con, "GDL_Orders"), order_file, row.names = FALSE)
-    utils::write.csv(DBI::dbReadTable(con, "GDL_Data"), data_file, row.names = FALSE)
+    readr::write_csv(DBI::dbReadTable(con, "GDL_Orders"), order_file, row.names = FALSE)
+    readr::write_csv(DBI::dbReadTable(con, "GDL_Data"), data_file, row.names = FALSE)
   }
 
 
