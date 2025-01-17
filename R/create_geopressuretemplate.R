@@ -225,8 +225,29 @@ create_geopressuretemplate_data <- function(pkg) {
       # Write the data to CSV
       split(dft_split, dft_split$sensor) %>%
         purrr::iwalk(\(dfts, sensor) {
-          dfts %>%
-            select(-c("tag_id", "sensor", "label")) %>%
+          tmp <- dfts %>% select(-c("tag_id", "sensor", "label"))
+
+          # Check for duplicates
+          duplicates_exist <- tmp %>%
+            group_by(datetime, variable_type) %>%
+            filter(n() > 1) %>%
+            ungroup()
+
+          if (nrow(duplicates_exist) > 0) {
+            cli::cli_warn(c(
+              "!" = "Duplicate measurements of {.var {sensor}} on the same datetime for \\
+            {.field {tag_id}}.",
+              "i" = "The median value will be taken for these duplicates."
+            ))
+
+            # grouping and meadian is needed to be able to
+            tmp <- tmp %>%
+              group_by(datetime, variable_type) %>%
+              summarize(value = median(value), .groups = "drop") %>%
+              ungroup()
+          }
+
+          tmp %>%
             tidyr::pivot_wider(names_from = "variable_type", values_from = "value") %>%
             rename(value = any_of(c(
               "pressure", "acceleration", "light", "temperature_external",
