@@ -67,7 +67,7 @@ read_gdl <- function(access_file = NA,
   if (is.data.frame(order_file)) {
     o <- order_file
   } else {
-    o <- read_gdl_data(order_file)
+    o <- read_gdl_orders(order_file)
   }
 
 
@@ -142,16 +142,16 @@ read_gdl_orders <- function(order_file) {
       NumberOrdered = readr::col_integer(),
       OrderStatus = readr::col_factor(c("ordered", "delivered", "request")),
       NumberDelivered = readr::col_integer(),
-      DeliveryDate = readr::col_datetime(format = "%m/%d/%y %H:%M:%S"),
-      DateDelivered = readr::col_datetime(format = "%m/%d/%y %H:%M:%S"),
+      DeliveryDate = readr::col_datetime(),
+      DateDelivered = readr::col_datetime(),
       UnitPrice = readr::col_double(),
       Currency = readr::col_factor(c("CHF")),
-      InvoiceDate = readr::col_datetime(format = "%m/%d/%y %H:%M:%S"),
+      InvoiceDate = readr::col_datetime(),
       RemarksProduction = readr::col_character(),
       RemarksOrder = readr::col_character(),
       IntervalBlue = readr::col_integer(),
       LoggingPeriodEnabled = readr::col_logical(),
-      StartPeriod1 = readr::col_datetime("%m/%d/%y %H:%M:%S"),
+      StartPeriod1 = readr::col_datetime(),
       IntervalRGC = readr::col_integer(),
       GreenEnabled = readr::col_logical(),
       RedEnabled = readr::col_logical(),
@@ -213,31 +213,31 @@ read_gdl_data <- function(data_file) {
       RingNumber = readr::col_character(),
       Species = readr::col_character(),
       SiteAttached = readr::col_character(),
-      UTC_Attached = readr::col_datetime("%m/%d/%y %H:%M:%S"),
+      UTC_Attached = readr::col_datetime(),
       LongitudeAttached = readr::col_double(),
       LatitudeAttached = readr::col_double(),
-      DateDeparture = readr::col_datetime("%m/%d/%y %H:%M:%S"),
-      DateArrival = readr::col_datetime("%m/%d/%y %H:%M:%S"),
-      UTC_Removed = readr::col_datetime("%m/%d/%y %H:%M:%S"),
+      DateDeparture = readr::col_datetime(),
+      DateArrival = readr::col_datetime(),
+      UTC_Removed = readr::col_datetime(),
       LatitudeRemoved = readr::col_double(),
-      DateDownload = readr::col_datetime("%m/%d/%y %H:%M:%S"),
-      UTC_StartRTC = readr::col_datetime("%m/%d/%y %H:%M:%S"),
-      UTC_StopRTC = readr::col_datetime("%m/%d/%y %H:%M:%S"),
-      UTC_StopReference = readr::col_datetime("%m/%d/%y %H:%M:%S"),
-      UTC_FirstData = readr::col_datetime("%m/%d/%y %H:%M:%S"),
-      UTC_LastData = readr::col_datetime("%m/%d/%y %H:%M:%S"),
+      DateDownload = readr::col_datetime(),
+      UTC_StartRTC = readr::col_datetime(),
+      UTC_StopRTC = readr::col_datetime(),
+      UTC_StopReference = readr::col_datetime(),
+      UTC_FirstData = readr::col_datetime(),
+      UTC_LastData = readr::col_datetime(),
       DataFileName = readr::col_character(),
       RooftopCalFileName = readr::col_character(),
-      UTC_StartRooftopCal = readr::col_datetime("%m/%d/%y %H:%M:%S"),
-      UTC_StopRooftopCal = readr::col_datetime("%m/%d/%y %H:%M:%S"),
+      UTC_StartRooftopCal = readr::col_datetime(),
+      UTC_StopRooftopCal = readr::col_datetime(),
       LongitudeRooftopCal = readr::col_double(),
       LatitudeRooftopCal = readr::col_double(),
-      UTC_StartStatCal1 = readr::col_datetime("%m/%d/%y %H:%M:%S"),
-      UTC_StopStatCal1 = readr::col_datetime("%m/%d/%y %H:%M:%S"),
+      UTC_StartStatCal1 = readr::col_datetime(),
+      UTC_StopStatCal1 = readr::col_datetime(),
       LongitudeStatCal1 = readr::col_double(),
       LatitudeStatCal1 = readr::col_double(),
-      UTC_StartStatCal2 = readr::col_datetime("%m/%d/%y %H:%M:%S"),
-      UTC_StopStatCal2 = readr::col_datetime("%m/%d/%y %H:%M:%S"),
+      UTC_StartStatCal2 = readr::col_datetime(),
+      UTC_StopStatCal2 = readr::col_datetime(),
       LongitudeStatCal2 = readr::col_double(),
       LatitudeStatCal2 = readr::col_double(),
       NightBaseline = readr::col_double(),
@@ -247,7 +247,7 @@ read_gdl_data <- function(data_file) {
       FirmwareVersion = readr::col_character(),
       IntervalBlue = readr::col_integer(),
       LoggingPeriodEnabled = readr::col_logical(),
-      UTC_StartLog1 = readr::col_datetime("%m/%d/%y %H:%M:%S"),
+      UTC_StartLog1 = readr::col_datetime(),
       IntervalRGC = readr::col_double(),
       GreenEnabled = readr::col_logical(),
       RedEnabled = readr::col_logical(),
@@ -325,8 +325,8 @@ read_gdl_access <- function(access_file,
         "Dbq=", access_file, ";"
       )
     )
-    readr::write_csv(DBI::dbReadTable(con, "GDL_Orders"), order_file, row.names = FALSE)
-    readr::write_csv(DBI::dbReadTable(con, "GDL_Data"), data_file, row.names = FALSE)
+    readr::write_csv(DBI::dbReadTable(con, "GDL_Orders"), order_file)
+    readr::write_csv(DBI::dbReadTable(con, "GDL_Data"), data_file)
   }
 
 
