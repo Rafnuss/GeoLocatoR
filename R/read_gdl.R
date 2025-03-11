@@ -305,7 +305,7 @@ read_gdl_access <- function(access_file,
 
   if (.Platform$OS.type == "unix") {
     # Export data
-    system(glue::glue("mdb-export {access_file} GDL_Data > {data_file}"))
+    system(glue::glue("mdb-export '{access_file}' GDL_Data > {data_file}"))
 
     if (!file.exists(data_file)) {
       cli_abort("The file {.file {data_file}} does not exist. \\
