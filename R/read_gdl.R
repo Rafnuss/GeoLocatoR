@@ -313,7 +313,7 @@ read_gdl_access <- function(access_file,
     }
 
     # Export orders
-    system(glue::glue("mdb-export {access_file} GDL_Orders > {order_file}"))
+    system(glue::glue("mdb-export '{access_file}' GDL_Orders > {order_file}"))
     if (!file.exists(order_file)) {
       cli_abort("The file {.file {order_file}} does not exist. \\
                      There has been an issue in creating the order file")
