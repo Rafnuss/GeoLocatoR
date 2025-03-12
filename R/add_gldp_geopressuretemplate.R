@@ -63,7 +63,7 @@ add_gldp_geopressuretemplate <- function(
       all_files <- all_files[!grepl("^_", basename(all_files))]
 
       # List of variable names to be processed
-      var_names_required <- c("marginal", "tag", "param")
+      var_names_required <- c("tag", "param")
       var_names_path <- c("path_simulation", "path_geopressureviz", "path_tag", "path_most_likely")
       var_names_edges <- c("edge_most_likely", "edge_simulation", "edge_geopressureviz", "edge_tag")
       var_names_pressurepath <- c(
@@ -83,6 +83,17 @@ add_gldp_geopressuretemplate <- function(
           if (var %in% save_list) {
             interim[[var]][[i]] <- get(var)
           }
+        }
+      }
+
+      # Check for required variables
+      for (var in var_names_required){
+        is_null_var <- sapply(interim[[var]], is.null)
+        if (any(is_null_var)){
+          cli::cli_abort(
+            "Interim file {.file {basename(all_files)[is_null_var]}} have no variable \\
+                {.var {var}}"
+          )
         }
       }
 
