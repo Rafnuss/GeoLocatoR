@@ -33,5 +33,5 @@ edges <- function(x) {
     replace = "edges" %in% frictionless::resources(x)
   )
 
-  return(x)
+  x
 }

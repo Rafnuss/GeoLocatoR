@@ -172,12 +172,12 @@ create_geopressuretemplate_licences <- function(licenses) {
   } else if (grepl("apache", licenses$name)) {
     usethis::use_apache_license()
   } else if (grepl("cc0", licenses$name) ||
-             grepl("cc-0", licenses$name) ||
-             grepl("cc 0", licenses$name)) {
+    grepl("cc-0", licenses$name) ||
+    grepl("cc 0", licenses$name)) {
     usethis::use_cc0_license()
   } else if (grepl("ccby", licenses$name) ||
-             grepl("cc-by", licenses$name) ||
-             grepl("cc by", licenses$name)) {
+    grepl("cc-by", licenses$name) ||
+    grepl("cc by", licenses$name)) {
     usethis::use_ccby_license()
   } else if (grepl("proprietary", licenses$name)) {
     usethis::use_proprietary_license()
@@ -229,7 +229,7 @@ create_geopressuretemplate_data <- function(pkg) {
 
           # Check for duplicates
           duplicates_exist <- tmp %>%
-            group_by(datetime, variable_type) %>%
+            group_by(.data$datetime, .data$variable_type) %>%
             filter(n() > 1) %>%
             ungroup()
 
@@ -242,8 +242,8 @@ create_geopressuretemplate_data <- function(pkg) {
 
             # grouping and meadian is needed to be able to
             tmp <- tmp %>%
-              group_by(datetime, variable_type) %>%
-              summarize(value = median(value), .groups = "drop") %>%
+              group_by(.data$datetime, .data$variable_type) %>%
+              summarize(value = stats::median(.data$value), .groups = "drop") %>%
               ungroup()
           }
 
@@ -347,7 +347,7 @@ create_geopressuretemplate_config <- function(pkg) {
         )
       )
 
-      return(co)
+      co
     })
 
   # Add tag_id as name
@@ -371,10 +371,10 @@ create_geopressuretemplate_config <- function(pkg) {
           tmp <- paste0("[", paste(x, collapse = ", "), "]")
 
           # class(tmp) <- "verbatim" # does not work
-          return(glue::glue("{tmp}{add_text}"))
+          glue::glue("{tmp}{add_text}")
         })
         names(tmp) <- names(k)
-        return(tmp)
+        tmp
       }
     )
   )

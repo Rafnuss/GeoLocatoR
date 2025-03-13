@@ -33,5 +33,5 @@ staps <- function(x) {
     replace = "staps" %in% frictionless::resources(x)
   )
 
-  return(x)
+  x
 }

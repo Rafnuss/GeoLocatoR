@@ -41,7 +41,7 @@ params2t <- function(params) {
           )
       }
 
-      return(t)
+      t
     }) %>%
     purrr::list_rbind()
 }

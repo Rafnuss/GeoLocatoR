@@ -87,9 +87,9 @@ add_gldp_geopressuretemplate <- function(
       }
 
       # Check for required variables
-      for (var in var_names_required){
+      for (var in var_names_required) {
         is_null_var <- sapply(interim[[var]], is.null)
-        if (any(is_null_var)){
+        if (any(is_null_var)) {
           cli::cli_abort(
             "Interim file {.file {basename(all_files)[is_null_var]}} have no variable \\
                 {.var {var}}"

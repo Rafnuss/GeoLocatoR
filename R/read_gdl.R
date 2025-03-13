@@ -196,7 +196,7 @@ read_gdl_orders <- function(order_file) {
       PriorityMemory = readr::col_double()
     )
   ) %>% arrange(.data$OrderName)
-  return(o)
+  o
 }
 
 
@@ -287,7 +287,7 @@ read_gdl_data <- function(data_file) {
     )
   )
 
-  return(d)
+  d
 }
 
 #' @rdname read_gdl

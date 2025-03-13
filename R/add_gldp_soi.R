@@ -285,9 +285,7 @@ add_gldp_soi_directory <- function(gdl, directory_data) {
         return(matching_files[1])
       }
     }
-
-
-    return(NA)
+    NA
   }
 
   # Apply the check_folder_exists function to each row and add directory and folder_exists columns
@@ -305,6 +303,5 @@ add_gldp_soi_directory <- function(gdl, directory_data) {
     cli::cli_warn("We could not find the data directory for {length(gdl_id_na_dir)} tags (out of \
                       {nrow(gdl)}). GDL_IDs: {.field {gdl_id_na_dir}}. These will not be imported.")
   }
-
-  return(gdl)
+  gdl
 }

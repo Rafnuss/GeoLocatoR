@@ -37,5 +37,5 @@ paths <- function(x) {
     update_gldp_spatial() %>%
     update_gldp_number_tags()
 
-  return(x)
+  x
 }
