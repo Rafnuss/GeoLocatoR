@@ -27,7 +27,7 @@
 #'
 #' @export
 update_gldp <- function(pkg) {
-  pkg %>%
+  pkg <- pkg %>%
     update_gldp_temporal() %>%
     update_gldp_spatial() %>%
     update_gldp_taxonomic() %>%
@@ -202,8 +202,8 @@ update_gldp_reference_location <- function(pkg) {
   if ("observations" %in% frictionless::resources(pkg)) {
     pkg$referenceLocation <- observations(pkg) %>%
       summarise(
-        lat = stats::median(.data$latitude, na.rm = TRUE),
-        lon = stats::median(.data$longitude, na.rm = TRUE)
+        latitude = stats::median(.data$latitude, na.rm = TRUE),
+        longitude = stats::median(.data$longitude, na.rm = TRUE)
       ) %>%
       as.list()
   } else {
