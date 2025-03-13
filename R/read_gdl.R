@@ -196,7 +196,7 @@ read_gdl_orders <- function(order_file) {
       PriorityMemory = readr::col_double()
     )
   ) %>% arrange(.data$OrderName)
-  return(o)
+  o
 }
 
 
@@ -287,7 +287,7 @@ read_gdl_data <- function(data_file) {
     )
   )
 
-  return(d)
+  d
 }
 
 #' @rdname read_gdl
@@ -305,7 +305,7 @@ read_gdl_access <- function(access_file,
 
   if (.Platform$OS.type == "unix") {
     # Export data
-    system(glue::glue("mdb-export {access_file} GDL_Data > {data_file}"))
+    system(glue::glue("mdb-export '{access_file}' GDL_Data > {data_file}"))
 
     if (!file.exists(data_file)) {
       cli_abort("The file {.file {data_file}} does not exist. \\
@@ -313,7 +313,7 @@ read_gdl_access <- function(access_file,
     }
 
     # Export orders
-    system(glue::glue("mdb-export {access_file} GDL_Orders > {order_file}"))
+    system(glue::glue("mdb-export '{access_file}' GDL_Orders > {order_file}"))
     if (!file.exists(order_file)) {
       cli_abort("The file {.file {order_file}} does not exist. \\
                      There has been an issue in creating the order file")

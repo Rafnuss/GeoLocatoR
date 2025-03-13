@@ -32,6 +32,12 @@ create_gldp_geopressuretemplate <- function(directory = ".") {
   pkg <- withr::with_dir(directory, {
     # setwd(directory)
 
+    if (!file.exists("DESCRIPTION")) {
+      cli_abort(
+        message = "The specified directory has no {.file DESCRIPTION} file."
+      )
+    }
+
     # Read description file
     d <- desc::desc()
 

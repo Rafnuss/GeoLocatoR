@@ -27,7 +27,7 @@
 #'
 #' @export
 update_gldp <- function(pkg) {
-  pkg %>%
+  pkg <- pkg %>%
     update_gldp_temporal() %>%
     update_gldp_spatial() %>%
     update_gldp_taxonomic() %>%
@@ -36,7 +36,7 @@ update_gldp <- function(pkg) {
     update_gldp_reference_location() %>%
     update_gldp_metadata()
 
-  return(pkg)
+  pkg
 }
 
 
@@ -54,7 +54,7 @@ update_gldp_temporal <- function(pkg) {
   } else {
     pkg$temporal <- NULL
   }
-  return(pkg)
+  pkg
 }
 
 #' @rdname update_gldp
@@ -113,7 +113,7 @@ update_gldp_spatial <- function(pkg) {
     pkg$spatial <- NULL
   }
 
-  return(pkg)
+  pkg
 }
 
 #' @rdname update_gldp
@@ -125,7 +125,7 @@ update_gldp_taxonomic <- function(pkg) {
   } else {
     pkg$taxonomic <- NULL
   }
-  return(pkg)
+  pkg
 }
 
 #' @rdname update_gldp
@@ -165,7 +165,7 @@ update_gldp_number_tags <- function(pkg) {
     pkg$numberTags$pressurepaths <- length(unique(pressurepaths(pkg)$tag_id))
   }
 
-  return(pkg)
+  pkg
 }
 
 #' @rdname update_gldp
@@ -192,7 +192,7 @@ update_gldp_bibliographic_citation <- function(pkg, ...) {
   # Update the bibliographic citation in the package
   pkg$bibliographicCitation <- format(bib)
 
-  return(pkg)
+  pkg
 }
 
 #' @rdname update_gldp
@@ -202,14 +202,14 @@ update_gldp_reference_location <- function(pkg) {
   if ("observations" %in% frictionless::resources(pkg)) {
     pkg$referenceLocation <- observations(pkg) %>%
       summarise(
-        lat = stats::median(.data$latitude, na.rm = TRUE),
-        lon = stats::median(.data$longitude, na.rm = TRUE)
+        latitude = stats::median(.data$latitude, na.rm = TRUE),
+        longitude = stats::median(.data$longitude, na.rm = TRUE)
       ) %>%
       as.list()
   } else {
     pkg$referenceLocation <- NULL
   }
-  return(pkg)
+  pkg
 }
 
 #' @rdname update_gldp
@@ -222,5 +222,5 @@ update_gldp_metadata <- function(pkg) {
   # Ensure the class attribute is preserved
   class(sorted_pkg) <- class(pkg)
 
-  return(sorted_pkg)
+  sorted_pkg
 }

@@ -322,7 +322,7 @@ validate_gldp_item <- function(item, prop, field) {
   }
 
 
-  return(valid)
+  valid
 }
 
 
@@ -416,7 +416,7 @@ check_format <- function(value, format, field) {
     cli_alert_danger("Unknown expected format {.val {format}} for {.field {field}}.")
     valid <- FALSE
   }
-  return(valid)
+  valid
 }
 
 #' @noRd
@@ -469,7 +469,7 @@ check_type <- function(value, type, field) {
     valid <- FALSE
   }
 
-  return(valid)
+  valid
 }
 
 

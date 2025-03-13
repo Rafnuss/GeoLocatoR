@@ -30,7 +30,7 @@ read_gldp <- function(file = "datapackage.json", force_read = TRUE) {
         r$data <- cast_table(r$data, r$schema)
         r$path <- NULL
       }
-      return(r)
+      r
     })
   }
 
@@ -41,5 +41,5 @@ read_gldp <- function(file = "datapackage.json", force_read = TRUE) {
     cli::cli_warn("The datapackage provided does not seems to be a Geolocator Data Package.")
   }
 
-  return(pkg)
+  pkg
 }

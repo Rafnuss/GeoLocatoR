@@ -48,7 +48,7 @@ tags2m <- function(tags) {
             if (!"label" %in% colnames(df)) {
               df <- df %>% mutate(label = NA_character_)
             }
-            return(df)
+            df
           }) %>%
           purrr::map(~ select(.x, any_of(
             c(
@@ -78,5 +78,5 @@ tags2m <- function(tags) {
       label = character()
     )
   }
-  return(m)
+  m
 }

@@ -35,7 +35,7 @@ print.geolocatordp <- function(x, ...) {
     if (!is.null(x$path)) {
       str <- paste0(str, " - {.url ", x$path, "}")
     }
-    return(str)
+    str
   })
   cli::cli_bullets(c("*" = "{.field contributors}:"))
   for (ctr in contributors) {
@@ -57,10 +57,12 @@ print.geolocatordp <- function(x, ...) {
     if (!is.null(x$path)) {
       str <- paste0(str, " - {.url ", x$path, "}")
     }
-    return(str)
+    str
   })
-  cli::cli_bullets(c("*" = paste0("{.field licenses}: ", licenses)))
-
+  cli::cli_bullets(c("*" = "{.field licenses}:"))
+  for (l in licenses) {
+    cli::cli_bullets(c(" " = l))
+  }
   if (!is.null(x$id)) {
     cli::cli_bullets(c("*" = "{.field id}: {.url {x$id}}"))
   }

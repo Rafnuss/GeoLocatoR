@@ -39,7 +39,7 @@ contributors2persons <- function(contributors) {
 
   persons <- do.call(c, Filter(Negate(is.null), persons))
 
-  return(persons)
+  persons
 }
 
 
@@ -70,5 +70,5 @@ cast_table <- function(data, schema) {
       }
     }
   }
-  return(data)
+  data
 }

@@ -36,5 +36,5 @@ observations <- function(x) {
   x <- x %>%
     update_gldp_spatial()
 
-  return(x)
+  x
 }

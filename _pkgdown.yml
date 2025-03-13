@@ -11,6 +11,7 @@ reference:
       - create_gldp
       - add_gldp_resource
       - read_gldp
+      - merge_gldp
       - update_gldp
   - title: Accessor (and assignment) functions
     contents:

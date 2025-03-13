@@ -75,7 +75,7 @@ params2o <- function(params) {
 
       o <- bind_rows(oe, or)
 
-      return(o)
+      o
     }) %>%
     purrr::list_rbind()
 }

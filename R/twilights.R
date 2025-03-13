@@ -33,5 +33,5 @@ twilights <- function(x) {
     replace = "twilights" %in% frictionless::resources(x)
   )
 
-  return(x)
+  x
 }

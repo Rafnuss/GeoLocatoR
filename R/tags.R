@@ -37,5 +37,5 @@ tags <- function(x) {
     update_gldp_taxonomic() %>%
     update_gldp_number_tags()
 
-  return(x)
+  x
 }

@@ -37,5 +37,5 @@ measurements <- function(x) {
     update_gldp_temporal() %>%
     update_gldp_number_tags()
 
-  return(x)
+  x
 }
