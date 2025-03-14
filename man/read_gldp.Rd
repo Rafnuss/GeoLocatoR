@@ -10,7 +10,7 @@ read_gldp(file = "datapackage.json", force_read = TRUE)
 \item{file}{A string specifying the path to the JSON file containing the GeoLocator Data Package
 metadata. Defaults to \code{"datapackage.json"}. Can also be a url.}
 
-\item{force_read}{Logical to force the reading of the data fomr path/url to memory.}
+\item{force_read}{Logical to force the reading of the data from path/url to memory.}
 }
 \value{
 A GeoLocator Data Package object created from a file/url

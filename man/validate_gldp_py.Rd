@@ -31,7 +31,7 @@ NULL. The function performs validation as a side effect and does not return a va
 \description{
 This function validates a GeoLocator Data Package using the \code{frictionless} command-line tool. It
 writes the package metadata to a JSON file and performs validation to ensure that the package
-conformsto the required standards. The function supports two modes: validating only the package
+conforms to the required standards. The function supports two modes: validating only the package
 metadata or validating the entire package including its resources.
 }
 \details{

@@ -1,4 +1,4 @@
-#' Add Geolocator DP resources from a Geopressure Template
+#' Add Geolocator DP resources from a GeoPressureTemplate
 #'
 #' @description
 #' This function adds all possible resources to a Geolocator Data Package by reading data from

@@ -8,7 +8,7 @@ params2t(params)
 }
 \arguments{
 \item{params}{A list of GeoPressureR parameter objects. These parameters should have been
-generated during the GeoPressure worflow. See \href{https://raphaelnussbaumer.com/GeoPressureR/reference/param_create.html}{\code{GeoPressureR::param_create()} } for more information.}
+generated during the GeoPressure workflow. See \href{https://raphaelnussbaumer.com/GeoPressureR/reference/param_create.html}{\code{GeoPressureR::param_create()} } for more information.}
 }
 \value{
 A tibble with columns \code{tag_id}, \code{manufacturer}, \code{scientific_name}, \code{ring_number},

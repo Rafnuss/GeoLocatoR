@@ -1,4 +1,4 @@
-#' Create a Geopressure Template Project
+#' Create a GeoPressureTemplate Project
 #' @description
 #' Initializes a geopressure template project by creating a specified directory structure and
 #' populating it with essential files, including a DESCRIPTION file, README, license, and data.

@@ -702,7 +702,7 @@ validate_gldp_observations <- function(o) {
 #'
 #' This function validates a GeoLocator Data Package using the `frictionless` command-line tool. It
 #' writes the package metadata to a JSON file and performs validation to ensure that the package
-#' conformsto the required standards. The function supports two modes: validating only the package
+#' conforms to the required standards. The function supports two modes: validating only the package
 #' metadata or validating the entire package including its resources.
 #'
 #' The function performs the following steps:

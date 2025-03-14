@@ -2,7 +2,7 @@
 % Please edit documentation in R/gldp2zenodoRecord.R
 \name{gldp2zenodoRecord}
 \alias{gldp2zenodoRecord}
-\title{Create or update a Zenodo Record baased on the metadata from a GeoLocator Data Package}
+\title{Create or update a Zenodo Record based on the metadata from a GeoLocatoR Data Package}
 \usage{
 gldp2zenodoRecord(
   pkg,

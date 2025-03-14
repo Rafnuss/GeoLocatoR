@@ -5,7 +5,7 @@
 #' ](https://raphaelnussbaumer.com/GeoLocator-DP/core/observations/).
 #'
 #' @param params A list of GeoPressureR parameter objects. These parameters should have been
-#' generated during the GeoPressure worflow. See [`GeoPressureR::param_create()`
+#' generated during the GeoPressure workflow. See [`GeoPressureR::param_create()`
 #' ](https://raphaelnussbaumer.com/GeoPressureR/reference/param_create.html) for more information.
 #'
 #' @return A tibble with columns `tag_id`, `manufacturer`, `scientific_name`, `ring_number`,

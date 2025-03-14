@@ -1,4 +1,4 @@
-#' Create or update a Zenodo Record baased on the metadata from a GeoLocator Data Package
+#' Create or update a Zenodo Record based on the metadata from a GeoLocatoR Data Package
 #'
 #' @description
 #' This function update a `zen4R` ZenodoRecord based on the GeoLocator Data Package provided.
@@ -134,7 +134,7 @@ gldp2zenodoRecord <- function(pkg,
   # Set created/publication date
   z$setPublicationDate(format(as.POSIXct(pkg$created), "%Y-%m-%d"))
 
-  # Locations is not saved on zenodo
+  # Locations is not saved on Zenodo
   # z$addLocation(place="equipement", lat=2, lon=32)
 
   # Not working

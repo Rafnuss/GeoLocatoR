@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_geopressuretemplate.R
 \name{create_geopressuretemplate}
 \alias{create_geopressuretemplate}
-\title{Create a Geopressure Template Project}
+\title{Create a GeoPressureTemplate Project}
 \usage{
 create_geopressuretemplate(path, pkg = NULL, open = rlang::is_interactive())
 }

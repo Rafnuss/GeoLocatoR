@@ -2,7 +2,7 @@
 % Please edit documentation in R/add_gldp_geopressuretemplate.R
 \name{add_gldp_geopressuretemplate}
 \alias{add_gldp_geopressuretemplate}
-\title{Add Geolocator DP resources from a Geopressure Template}
+\title{Add Geolocator DP resources from a GeoPressureTemplate}
 \usage{
 add_gldp_geopressuretemplate(
   pkg,
