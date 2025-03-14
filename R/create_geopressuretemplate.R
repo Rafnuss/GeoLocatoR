@@ -42,6 +42,7 @@ create_geopressuretemplate <- function(path,
 
   # setwd(path)
   withr::with_dir(path, {
+    # setwd(path)
     d <- desc::desc()
     d$set("Package", gsub("[^a-zA-Z0-9\\.]", "", project_name))
     d$write()
@@ -195,39 +196,49 @@ create_geopressuretemplate_data <- function(pkg) {
   readr::write_csv(tags(pkg), "./data/tags.csv")
   readr::write_csv(observations(pkg), "./data/observations.csv")
 
-  m <- measurements(pkg)
+  # Create variable type from sensor and re-group sensors by type
+  m <- measurements(pkg) %>%
+    mutate(variable_type = .data$sensor) %>%
+    mutate(sensor = case_when(
+      stringr::str_detect(.data$variable_type, "pressure") ~ "pressure",
+      stringr::str_detect(.data$variable_type, "activity|pitch") ~ "acceleration",
+      stringr::str_detect(.data$variable_type, "light") ~ "light",
+      stringr::str_detect(.data$variable_type, "temperature_internal") ~ "temperature_internal",
+      stringr::str_detect(.data$variable_type, "temperature_external") ~ "temperature_external",
+      stringr::str_detect(
+        .data$variable_type,
+        "acceleration_x|acceleration_y|acceleration_z|magnetic_x|magnetic_y|magnetic_z"
+      ) ~
+        "magnetic",
+      TRUE ~ "other"
+    ))
+
+  # Create the tag-label directory if it doesn't exist
+  path_label <- glue::glue("./data/tag-label/")
+  if (!dir.exists(path_label)) {
+    dir.create(path_label, recursive = TRUE)
+  }
+  path_twl <- glue::glue("./data/twilight-label/")
+  if (!dir.exists(path_twl)) {
+    dir.create(path_twl, recursive = TRUE)
+  }
 
   split(m, m$tag_id) %>%
     purrr::iwalk(\(dft, tag_id) {
-      # Split the data by sensor
-      dft_split <- dft %>%
-        mutate(variable_type = .data$sensor) %>%
-        mutate(sensor = case_when(
-          stringr::str_detect(.data$variable_type, "pressure") ~ "pressure",
-          stringr::str_detect(.data$variable_type, "activity|pitch") ~ "acceleration",
-          stringr::str_detect(.data$variable_type, "light") ~ "light",
-          stringr::str_detect(.data$variable_type, "temperature_internal") ~ "temperature_internal",
-          stringr::str_detect(.data$variable_type, "temperature_external") ~ "temperature_external",
-          stringr::str_detect(
-            .data$variable_type,
-            "acceleration_x|acceleration_y|acceleration_z|magnetic_x|magnetic_y|magnetic_z"
-          ) ~
-            "magnetic",
-          TRUE ~ "other"
-        ))
-
       # Create the raw-tag directory if it doesn't exist
       dir_path <- glue::glue("./data/raw-tag/{tag_id}")
       if (!dir.exists(dir_path)) {
         dir.create(dir_path, recursive = TRUE)
       }
 
+      # Split the data by sensor
       # Write the data to CSV
-      split(dft_split, dft_split$sensor) %>%
+      split(dft, dft$sensor) %>%
         purrr::iwalk(\(dfts, sensor) {
+          # remove unsed columns
           tmp <- dfts %>% select(-c("tag_id", "sensor", "label"))
 
-          # Check for duplicates
+          # Check for duplicates and merge with median if necessary
           duplicates_exist <- tmp %>%
             group_by(.data$datetime, .data$variable_type) %>%
             filter(n() > 1) %>%
@@ -240,13 +251,14 @@ create_geopressuretemplate_data <- function(pkg) {
               "i" = "The median value will be taken for these duplicates."
             ))
 
-            # grouping and meadian is needed to be able to
+            # grouping and median
             tmp <- tmp %>%
               group_by(.data$datetime, .data$variable_type) %>%
               summarize(value = stats::median(.data$value), .groups = "drop") %>%
               ungroup()
           }
 
+          # Write raw-tag
           tmp %>%
             tidyr::pivot_wider(names_from = "variable_type", values_from = "value") %>%
             rename(value = any_of(c(
@@ -258,11 +270,39 @@ create_geopressuretemplate_data <- function(pkg) {
             )
         })
 
-      # Create the tag-label directory if it doesn't exist
-      dir_path <- glue::glue("./data/tag-label/{tag_id}")
-      if (!dir.exists(dir_path)) {
-        dir.create(dir_path, recursive = TRUE)
-      }
+
+      # Write tag label
+      dft %>%
+        filter(.data$sensor %in% c("pressure", "acceleration")) %>%
+        transmute(
+          date = .data$datetime,
+          .data$value,
+          label = ifelse(is.na(.data$label), "", .data$label),
+          series = .data$sensor
+        ) %>%
+        GeoPressureR:::trainset_write(
+          file = glue::glue("{path_label}/{tag_id}-labeled.csv"),
+          quiet = TRUE
+        )
+    }, .progress = list(type = "tasks"))
+
+  # Write twilight label
+  twl <- twilights(pkg)
+
+  split(twl, twl$tag_id) %>%
+    purrr::iwalk(\(dft, tag_id) {
+      dft %>%
+        transmute(
+          date = .data$twilight,
+          value = as.numeric(format(.data$twilight, "%H")) * 60 +
+            as.numeric(format(.data$twilight, "%M")),
+          label = ifelse(is.na(.data$label), "", .data$label),
+          series = ifelse(.data$rise, "Rise", "Set")
+        ) %>%
+        GeoPressureR:::trainset_write(
+          file = glue::glue("{path_twl}/{tag_id}-labeled.csv"),
+          quiet = TRUE
+        )
     }, .progress = list(type = "tasks"))
 }
 
