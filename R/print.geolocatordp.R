@@ -14,9 +14,9 @@ print.geolocatordp <- function(x, ...) {
 
   check_gldp(x)
 
-  cli::cli_h3("A GeoLocator Data Package ({version(x)})")
+  cli_h3("A GeoLocator Data Package ({version(x)})")
 
-  cli::cli_bullets(c("*" = "{.field title}: {.val {x$title}}"))
+  cli_bullets(c("*" = "{.field title}: {.val {x$title}}"))
 
   contributors <- sapply(x$contributors, \(x) {
     str <- x$title
@@ -37,13 +37,13 @@ print.geolocatordp <- function(x, ...) {
     }
     str
   })
-  cli::cli_bullets(c("*" = "{.field contributors}:"))
+  cli_bullets(c("*" = "{.field contributors}:"))
   for (ctr in contributors) {
-    cli::cli_bullets(c(" " = ctr))
+    cli_bullets(c(" " = ctr))
   }
 
   embargo_date <- as.POSIXct(x$embargo, format = "%Y-%m-%d", tz = "UTC") # nolint
-  cli::cli_bullets(c("*" = "{.field embargo}: {.val {embargo_date}}"))
+  cli_bullets(c("*" = "{.field embargo}: {.val {embargo_date}}"))
 
   licenses <- sapply(x$licenses, \(x) {
     if (!is.null(x$title)) {
@@ -59,20 +59,20 @@ print.geolocatordp <- function(x, ...) {
     }
     str
   })
-  cli::cli_bullets(c("*" = "{.field licenses}:"))
+  cli_bullets(c("*" = "{.field licenses}:"))
   for (l in licenses) {
-    cli::cli_bullets(c(" " = l))
+    cli_bullets(c(" " = l))
   }
   if (!is.null(x$id)) {
-    cli::cli_bullets(c("*" = "{.field id}: {.url {x$id}}"))
+    cli_bullets(c("*" = "{.field id}: {.url {x$id}}"))
   }
 
   if (!is.null(x$description)) {
-    cli::cli_bullets(c("*" = "{.field description}: {.val {x$description}}"))
+    cli_bullets(c("*" = "{.field description}: {.val {x$description}}"))
   }
 
   if (!is.null(x$version)) {
-    cli::cli_bullets(c("*" = "{.field version}: {.val {x$version}}"))
+    cli_bullets(c("*" = "{.field version}: {.val {x$version}}"))
   }
 
   if (!is.null(x$relatedIdentifiers)) {
@@ -82,48 +82,48 @@ print.geolocatordp <- function(x, ...) {
       }
       paste0(x$relationType, " {.url ", x$relatedIdentifier, "}")
     })
-    cli::cli_bullets(c("*" = "{.field relatedIdentifiers}:"))
+    cli_bullets(c("*" = "{.field relatedIdentifiers}:"))
     for (ri in ris) {
-      cli::cli_bullets(c(" " = ri))
+      cli_bullets(c(" " = ri))
     }
   }
 
   if (!is.null(x$grants)) {
-    cli::cli_bullets(c("*" = "{.field grants}: {.val {x$grants}}"))
+    cli_bullets(c("*" = "{.field grants}: {.val {x$grants}}"))
   }
 
   if (!is.null(x$keywords)) {
-    cli::cli_bullets(c("*" = "{.field keywords}: {.val {x$keywords}}"))
+    cli_bullets(c("*" = "{.field keywords}: {.val {x$keywords}}"))
   }
 
   created_datetime <- as.POSIXct(x$created, format = "%Y-%m-%dT%H:%M:%SZ", tz = "UTC") # nolint
-  cli::cli_bullets(c("*" = "{.field created}: {.val {created_datetime}}"))
+  cli_bullets(c("*" = "{.field created}: {.val {created_datetime}}"))
 
   if (!is.null(x$bibliographicCitation)) {
-    cli::cli_bullets(c("*" = "{.field bibliographicCitation}: {.val {x$bibliographicCitation}}"))
+    cli_bullets(c("*" = "{.field bibliographicCitation}: {.val {x$bibliographicCitation}}"))
   }
 
-  cli::cli_bullets(c("*" = "{.field spatial}: {.val {x$spatial}}"))
-  cli::cli_bullets(
+  cli_bullets(c("*" = "{.field spatial}: {.val {x$spatial}}"))
+  cli_bullets(
     c("*" = "{.field temporal}: {.val {x$temporal$start}} to {.val {x$temporal$end}}")
   )
-  cli::cli_bullets(c("*" = "{.field taxonomic}: {.val {x$taxonomic}}"))
+  cli_bullets(c("*" = "{.field taxonomic}: {.val {x$taxonomic}}"))
 
   if (!is.null(x$referenceLocation)) {
-    cli::cli_bullets(c("*" = "{.field referenceLocation}: {.val {x$referenceLocation}}"))
+    cli_bullets(c("*" = "{.field referenceLocation}: {.val {x$referenceLocation}}"))
   }
 
-  cli::cli_bullets(c("*" = "{.field numberTags}:"))
+  cli_bullets(c("*" = "{.field numberTags}:"))
   for (nt in names(x$numberTags)) {
     if (x$numberTags[[nt]] > 0) {
-      cli::cli_bullets(c(" " = "{.strong {nt}}: {.val {x$numberTags[[nt]]}}"))
+      cli_bullets(c(" " = "{.strong {nt}}: {.val {x$numberTags[[nt]]}}"))
     }
   }
 
 
-  # cli::cli_bullets(c("*" = "{.field schema}: {.url {x$`$schema`}}"))
+  # cli_bullets(c("*" = "{.field schema}: {.url {x$`$schema`}}"))
 
-  cli::cli_h3("{length(x$resources)} resource{?s}{?./:/:}")
+  cli_h3("{length(x$resources)} resource{?s}{?./:/:}")
   if (length(x$resources) > 0) {
     purrr::walk(x$resources, \(x) {
       cat_bullet(format_inline("{x$name}"))
@@ -146,15 +146,15 @@ bullets <- function(pkg, x) {
   val <- pkg[[x]]
   if (!is.null(val)) {
     if (is.data.frame(val)) {
-      cli::cli_bullets(c("*" = "{.field {x}}:"))
-      cli::cat_print(val)
+      cli_bullets(c("*" = "{.field {x}}:"))
+      cat_print(val)
     } else if (is.list(val) && length(val) > 1) {
-      cli::cli_bullets(c("*" = "{.field {x}}:"))
+      cli_bullets(c("*" = "{.field {x}}:"))
       for (n in names(val)) {
-        cli::cli_bullets(c(" " = "{.field {n}}: {.val {val[[n]]}}"))
+        cli_bullets(c(" " = "{.field {n}}: {.val {val[[n]]}}"))
       }
     } else {
-      cli::cli_bullets(c("*" = "{.field {x}}: {.val {val}}"))
+      cli_bullets(c("*" = "{.field {x}}: {.val {val}}"))
     }
   }
 }

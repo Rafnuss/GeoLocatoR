@@ -32,7 +32,7 @@ contributors2persons <- function(contributors) {
         given = ifelse(is.null(.x$givenName) & !is.null(.x$title), .x$title, .x$givenName),
         family = .x$familyName,
         email = .x$email,
-        role = purrr::map_vec(.x$roles, ~ dplyr::coalesce(role_mapping[tolower(.x)], "ctb")),
+        role = purrr::map_vec(.x$roles, ~ coalesce(role_mapping[tolower(.x)], "ctb")),
         comment = c(.x$path, .x$organization)
       )
     })
@@ -66,7 +66,7 @@ cast_table <- function(data, schema) {
       } else if (type == "datetime") {
         data[[field]] <- as.POSIXct(data[[field]])
       } else {
-        cli::cli_warn("No casting for {.field {field}} of type {.val {type}}")
+        cli_warn("No casting for {.field {field}} of type {.val {type}}")
       }
     }
   }

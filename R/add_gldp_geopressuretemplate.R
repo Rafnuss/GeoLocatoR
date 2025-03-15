@@ -90,7 +90,7 @@ add_gldp_geopressuretemplate <- function(
       for (var in var_names_required) {
         is_null_var <- sapply(interim[[var]], is.null)
         if (any(is_null_var)) {
-          cli::cli_abort(
+          cli_abort(
             "Interim file {.file {basename(all_files)[is_null_var]}} have no variable \\
                 {.var {var}}"
           )
@@ -247,7 +247,7 @@ add_gldp_geopressuretemplate <- function(
 
       # Not sure about this warning
       if (length(list_id) == 0 && FALSE) {
-        cli::cli_warn(
+        cli_warn(
           "We did not find any tag data in {.file {file.path(directory, 'data/raw-tag')}}."
         )
       }
@@ -312,7 +312,7 @@ add_gldp_geopressuretemplate <- function(
 
     # Check that all tag_id are in tf
     if (!all(t$tag_id %in% tf$tag_id)) {
-      cli::cli_warn(c(
+      cli_warn(c(
         "!" = "Not all {.var tag_id} in {.file {file}} are present in the interim/raw data.",
         "i" = "We will proceed with a merge of the two.",
         ">" = "Please, fix {.file {file}}"
@@ -403,7 +403,7 @@ rawtagid2tag <- function(id, display_config_error = TRUE) {
     error = function(e) {
       if (display_config_error) {
         # Warn that the configuration file could not be read and display the error
-        cli::cli_warn(c(
+        cli_warn(c(
           "i" = "Configuration file {.file config.yml} could not be read to build the
                 datapackage.",
           ">" = "Create the tag with default value wit

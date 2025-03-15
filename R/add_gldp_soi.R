@@ -53,7 +53,7 @@ add_gldp_soi <- function(pkg,
   # Error for duplicate
   duplicates <- gdl$GDL_ID[duplicated(gdl$GDL_ID)]
   if (length(duplicates) > 0) {
-    cli::cli_abort(c(
+    cli_abort(c(
       "x" = "Duplicate {.var GDL_ID} found in {.arg gdl}: {unique(duplicates)}",
       "i" = "{.var GDL_ID} (or {.var tag_id}) needs to be unique."
     ))
@@ -300,7 +300,7 @@ add_gldp_soi_directory <- function(gdl, directory_data) {
     pull(.data$GDL_ID)
 
   if (length(gdl_id_na_dir) > 0 && FALSE) {
-    cli::cli_warn("We could not find the data directory for {length(gdl_id_na_dir)} tags (out of \
+    cli_warn("We could not find the data directory for {length(gdl_id_na_dir)} tags (out of \
                       {nrow(gdl)}). GDL_IDs: {.field {gdl_id_na_dir}}. These will not be imported.")
   }
   gdl

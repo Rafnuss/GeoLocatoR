@@ -25,11 +25,11 @@
 #' @export
 create_geopressuretemplate <- function(path,
                                        pkg = NULL,
-                                       open = rlang::is_interactive()) {
+                                       open = interactive()) {
   path <- gert::git_clone("https://github.com/Rafnuss/GeoPressureTemplate/",
     path = path, verbose = FALSE
   )
-  cli::cli_bullets(c(
+  cli_bullets(c(
     "v" = "Cloning repo from {.url https://github.com/Rafnuss/GeoPressureTemplate/} \\
     into {.path {path}}."
   ))
@@ -196,22 +196,25 @@ create_geopressuretemplate_data <- function(pkg) {
   readr::write_csv(tags(pkg), "./data/tags.csv")
   readr::write_csv(observations(pkg), "./data/observations.csv")
 
+  sensor_map <- c(
+    "pressure" = "pressure",
+    "activity" = "acceleration",
+    "pitch" = "acceleration",
+    "light" = "light",
+    "temperature_internal" = "temperature_internal",
+    "temperature_external" = "temperature_external",
+    "acceleration_x" = "magnetic",
+    "acceleration_y" = "magnetic",
+    "acceleration_z" = "magnetic",
+    "magnetic_x" = "magnetic",
+    "magnetic_y" = "magnetic",
+    "magnetic_z" = "magnetic"
+  )
+
   # Create variable type from sensor and re-group sensors by type
   m <- measurements(pkg) %>%
     mutate(variable_type = .data$sensor) %>%
-    mutate(sensor = case_when(
-      stringr::str_detect(.data$variable_type, "pressure") ~ "pressure",
-      stringr::str_detect(.data$variable_type, "activity|pitch") ~ "acceleration",
-      stringr::str_detect(.data$variable_type, "light") ~ "light",
-      stringr::str_detect(.data$variable_type, "temperature_internal") ~ "temperature_internal",
-      stringr::str_detect(.data$variable_type, "temperature_external") ~ "temperature_external",
-      stringr::str_detect(
-        .data$variable_type,
-        "acceleration_x|acceleration_y|acceleration_z|magnetic_x|magnetic_y|magnetic_z"
-      ) ~
-        "magnetic",
-      TRUE ~ "other"
-    ))
+    mutate(sensor = recode(.data$variable_type, !!!sensor_map, .default = "other"))
 
   # Create the tag-label directory if it doesn't exist
   path_label <- glue::glue("./data/tag-label/")
@@ -245,7 +248,7 @@ create_geopressuretemplate_data <- function(pkg) {
             ungroup()
 
           if (nrow(duplicates_exist) > 0) {
-            cli::cli_warn(c(
+            cli_warn(c(
               "!" = "Duplicate measurements of {.var {sensor}} on the same datetime for \\
             {.field {tag_id}}.",
               "i" = "The median value will be taken for these duplicates."

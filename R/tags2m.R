@@ -42,7 +42,7 @@ tags2m <- function(tags) {
               sensor <- "activity"
             }
             if ("value" %in% colnames(df)) {
-              df <- df %>% rename(!!sym(sensor) := .data$value)
+              names(df)[names(df) == "value"] <- sensor
             }
             # Add 'label' column if it doesn't exist
             if (!"label" %in% colnames(df)) {
