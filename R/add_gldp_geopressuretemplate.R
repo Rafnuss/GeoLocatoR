@@ -45,7 +45,7 @@ add_gldp_geopressuretemplate <- function(
       message = "The specified directory does not exist: {.file {directory}}."
     )
   }
-  assertthat::assert_that(all(from %in% c("interim", "raw-tag")))
+  assertthat::assert_that(any(from %in% c("interim", "raw-tag")))
   assertthat::assert_that(is.logical(replace))
 
   # Initiate empty resources to be able to merge interim and raw-tag as necessary
@@ -308,6 +308,8 @@ add_gldp_geopressuretemplate <- function(
           tag_comments = "c"
         )
       )
+    } else {
+      tf <- t
     }
 
     # Check that all tag_id are in tf
