@@ -5,8 +5,8 @@
 \title{Create a GeoLocator Data Package}
 \usage{
 create_gldp(
-  title,
-  contributors,
+  title = "",
+  contributors = list(list(title = "")),
   embargo = "1970-01-01",
   licenses = list(list(name = "CC-BY-4.0", title = "Creative Commons Attribution 4.0",
     path = "https://creativecommons.org/licenses/by/4.0/")),
