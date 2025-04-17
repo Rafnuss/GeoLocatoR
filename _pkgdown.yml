@@ -32,10 +32,6 @@ reference:
     contents:
       - add_gldp_soi
       - read_gdl
-  - title: SOI
-    contents:
-      - add_gldp_soi
-      - read_gdl
   - title: Zenodo
     contents:
       - gldp2zenodoRecord
