@@ -64,11 +64,10 @@ add_gldp_geopressuretemplate <- function(
 
       # List of variable names to be processed
       var_names_required <- c("tag", "param")
-      var_names_path <- c("path_simulation", "path_geopressureviz", "path_tag", "path_most_likely")
+      var_names_path <- c("path_simulation", "path_tag", "path_most_likely", "path_geopressureviz")
       var_names_edges <- c("edge_most_likely", "edge_simulation", "edge_geopressureviz", "edge_tag")
       var_names_pressurepath <- c(
-        "pressurepath_most_likely", "pressurepath_geopressureviz",
-        "path_geopressureviz"
+        "pressurepath_most_likely", "pressurepath_geopressureviz", "pressurepath_geopressureviz"
       )
       var_names <- c(var_names_required, var_names_path, var_names_edges, var_names_pressurepath)
 
