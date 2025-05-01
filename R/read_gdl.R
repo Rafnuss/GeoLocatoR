@@ -101,18 +101,28 @@ read_gdl <- function(access_file = NA,
           "NumberDelivered",
           "RemarksProduction",
           "RemarksOrder",
+          "Remarks",
 
           # GDL
           "GDL_ID",
           "GDL_Type",
+
           "Species",
           "UTC_Attached",
+          "SiteAttached",
           "LongitudeAttached",
           "LatitudeAttached",
           "UTC_Removed",
           "LongitudeRemoved",
           "LongitudeRemoved",
-          "LongitudeAttached"
+          "LongitudeAttached",
+
+          # Information needed for package
+          "RingNumber",
+          "FirmwareVersion",
+          "HardwareVersion",
+          "TotalWeight"
+          # "Harness_data","BreastHarnessDiameterHead",...
         )
       )
     }

@@ -36,15 +36,15 @@ merge_gldp <- function(x, y) {
 
   # Check if the versions are the same
   if (version(x) != version(y)) {
-    cli::cli_warn("The versions of {.pkg x} ({version(x)}) and {.pkg y}  ({version(y)}) differ, \\
+    cli_warn("The versions of {.pkg x} ({version(x)}) and {.pkg y}  ({version(y)}) differ, \\
                   which might cause merging to fail.")
   }
 
   # Check for duplicate tag_ids
   common_tags <- intersect(tags(x)$tag_id, tags(y)$tag_id)
   if (length(common_tags) > 0) {
-    cli::cli_abort(c(
-      "Duplicate {.field tag_id} detected: {cli::col_red(paste(common_tags, collapse = ', '))}.",
+    cli_abort(c(
+      "Duplicate {.field tag_id} detected: {col_red(paste(common_tags, collapse = ', '))}.",
       "x" = "Merging may fail due to duplicate tag IDs.",
       "i" = "Consider renaming or deleting one of the conflicting tag IDs."
     ))

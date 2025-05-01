@@ -43,7 +43,7 @@ add_gldp_resource <- function(package,
     pkg_schema$allOf[[2]]$properties$resources$items$oneOf[[1]]$properties$name$enum
 
   if (!resource_name %in% possible_resources) {
-    cli::cli_abort(c(
+    cli_abort(c(
       "x" = "{.val {resource_name}} is not a valid resource.",
       "i" = "Possible resources are: {.val {possible_resources}}."
     ))
@@ -103,7 +103,7 @@ add_gldp_resource <- function(package,
           NA
         )
         # Add the column with NA values of the specified type
-        data <- data %>% mutate(!!schema_fields[i] := na_type)
+        data[[schema_fields[i]]] <- na_type
       }
     }
   }

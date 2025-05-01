@@ -57,7 +57,7 @@ gldp2zenodoRecord <- function(pkg,
     )
 
     if (length(c$roles) > 0 & !warn_role) {
-      cli::cli_warn(c(
+      cli_warn(c(
         "!" = "Zenodo's creator can only have a single {.field role}.",
         ">" = "Only the first role will be kept"
       ))
@@ -93,7 +93,7 @@ gldp2zenodoRecord <- function(pkg,
 
   # Set license
   if (length(pkg$licenses) > 1) {
-    cli::cli_warn("Multiple licenses detected ({length(pkg$licenses)}).
+    cli_warn("Multiple licenses detected ({length(pkg$licenses)}).
                   Only the first license will be used.")
   }
   z$setLicense(licenseId = tolower(pkg$licenses[[1]]$name))

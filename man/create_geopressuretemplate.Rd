@@ -4,7 +4,7 @@
 \alias{create_geopressuretemplate}
 \title{Create a GeoPressureTemplate Project}
 \usage{
-create_geopressuretemplate(path, pkg = NULL, open = rlang::is_interactive())
+create_geopressuretemplate(path, pkg = NULL, open = interactive())
 }
 \arguments{
 \item{path}{A character string specifying the destination directory where the project will

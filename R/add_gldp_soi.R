@@ -53,7 +53,7 @@ add_gldp_soi <- function(pkg,
   # Error for duplicate
   duplicates <- gdl$GDL_ID[duplicated(gdl$GDL_ID)]
   if (length(duplicates) > 0) {
-    cli::cli_abort(c(
+    cli_abort(c(
       "x" = "Duplicate {.var GDL_ID} found in {.arg gdl}: {unique(duplicates)}",
       "i" = "{.var GDL_ID} (or {.var tag_id}) needs to be unique."
     ))
@@ -128,45 +128,55 @@ add_gldp_soi <- function(pkg,
     gdl_to %>%
       rowwise() %>%
       mutate(
-        attachment_type = paste0(
-          c(
-            if (!is.na(.data[["Harness_data"]])) .data[["Harness_data"]],
-            if (!is.na(.data[["HarnessMaterial_data"]])) {
-              glue::glue("material:{.data[['HarnessMaterial_data']]}")
-            },
-            if (!is.na(.data[["HarnessAttachement_data"]])) {
-              glue::glue("attachement:{.data[['HarnessAttachement_data']]}")
-            },
-            if (!is.na(.data[["HarnessThickness"]])) {
-              glue::glue("thickness:{.data[['HarnessThickness']]}")
-            },
-            if (!is.na(.data[["LegHarnessDiameter"]])) {
-              glue::glue("legDiameter:{.data[['LegHarnessDiameter']]}")
-            },
-            if (!is.na(.data[["BreastHarnessDiameterHead"]])) {
-              glue::glue("BreastDiameterHead:{.data[['BreastHarnessDiameterHead']]}")
-            },
-            if (!is.na(.data[["BreastHarnessDiameterTail"]])) {
-              glue::glue("BreastDiameterTail:{.data[['BreastHarnessDiameterTail']]}")
-            }
-          ),
-          collapse = "|"
-        )
+        attachment_type = {
+          vars <- pick(everything())
+          paste0(
+            c(
+              if ("Harness_data" %in% names(vars) && !is.na(.data$Harness_data)) .data$Harness_data,
+              if ("HarnessMaterial_data" %in% names(vars) && !is.na(.data$HarnessMaterial_data)) {
+                glue::glue("material:{HarnessMaterial_data}")
+              },
+              if ("HarnessAttachement_data" %in% names(vars) &&
+                  !is.na(.data$HarnessAttachement_data)) {
+                glue::glue("attachement:{HarnessAttachement_data}")
+              },
+              if ("HarnessThickness" %in% names(vars) && !is.na(.data$HarnessThickness)) {
+                glue::glue("thickness:{HarnessThickness}")
+              },
+              if ("LegHarnessDiameter" %in% names(vars) && !is.na(.data$LegHarnessDiameter)) {
+                glue::glue("legDiameter:{LegHarnessDiameter}")
+              },
+              if ("BreastHarnessDiameterHead" %in% names(vars) &&
+                  !is.na(.data$BreastHarnessDiameterHead)) {
+                glue::glue("BreastDiameterHead:{BreastHarnessDiameterHead}")
+              },
+              if ("BreastHarnessDiameterTail" %in% names(vars) &&
+                  !is.na(.data$BreastHarnessDiameterTail)) {
+                glue::glue("BreastDiameterTail:{BreastHarnessDiameterTail}")
+              }
+            ),
+            collapse = "|"
+          )
+        }
       ) %>%
       ungroup() %>%
       transmute(
         tag_id = .data$GDL_ID,
         manufacturer = "Swiss Ornithological Institute",
-        model = glue::glue("{.data$GDL_Type}-{.data$HardwareVersion}"),
-        firmware = .data$FirmwareVersion,
-        weight = .data$TotalWeight,
-        attachment_type = .data$attachment_type,
-        scientific_name = .data$Species,
-        ring_number = .data$RingNumber,
-        tag_comments = .data$Remarks
+        model = if (all(c("GDL_Type", "HardwareVersion") %in% names(.data$.)))
+          glue::glue("{GDL_Type}-{HardwareVersion}") else NA_character_,
+        firmware = if ("FirmwareVersion" %in% names(.data$.)) .data$FirmwareVersion else NA_character_,
+        weight = if ("TotalWeight" %in% names(.data$.)) .data$TotalWeight else NA_real_,
+        attachment_type = if ("attachment_type" %in% names(.data$.)) {
+          .data$attachment_type
+        } else {
+          NA_character_
+        },
+        scientific_name = if ("Species" %in% names(.data$.)) .data$Species else NA_character_,
+        ring_number = if ("RingNumber" %in% names(.data$.)) .data$RingNumber else NA_character_,
+        tag_comments = if ("Remarks" %in% names(.data$.)) .data$Remarks else NA_character_
       )
   }
-
 
   t <- bind_rows(t, t_gdl)
 
@@ -184,26 +194,26 @@ add_gldp_soi <- function(pkg,
 
   # Adding sensor resource
   o_gdl <- bind_rows(
-    gdl_to %>% transmute(
-      ring_number = .data$RingNumber,
-      tag_id = .data$GDL_ID,
-      datetime = .data$UTC_Attached,
-      location_name = .data$SiteAttached,
-      longitude = .data$LongitudeAttached,
-      latitude = .data$LatitudeAttached,
+    gdl_attach <- gdl_to %>% transmute(
+      ring_number = if ("RingNumber" %in% names(.data$.)) .data$RingNumber else NA_character_,
+      tag_id = if ("GDL_ID" %in% names(.data$.)) .data$GDL_ID else NA_character_,
+      datetime = if ("UTC_Attached" %in% names(.data$.)) .data$UTC_Attached else as.POSIXct(NA),
+      location_name = if ("SiteAttached" %in% names(.data$.)) .data$SiteAttached else NA_character_,
+      longitude = if ("LongitudeAttached" %in% names(.data$.)) .data$LongitudeAttached else NA_real_,
+      latitude = if ("LatitudeAttached" %in% names(.data$.)) .data$LatitudeAttached else NA_real_,
       observation_type = "equipment",
       age_class = "0",
-      sex = "U",
+      sex = "U"
     ),
-    gdl_to %>% transmute(
-      ring_number = .data$RingNumber,
-      tag_id = .data$GDL_ID,
-      datetime = .data$UTC_Removed,
-      longitude = .data$LongitudeRemoved,
-      latitude = .data$LatitudeRemoved,
+    gdl_retrieve <- gdl_to %>% transmute(
+      ring_number = if ("RingNumber" %in% names(.data$.)) .data$RingNumber else NA_character_,
+      tag_id = if ("GDL_ID" %in% names(.data$.)) .data$GDL_ID else NA_character_,
+      datetime = if ("UTC_Removed" %in% names(.data$.)) .data$UTC_Removed else as.POSIXct(NA),
+      longitude = if ("LongitudeRemoved" %in% names(.data$.)) .data$LongitudeRemoved else NA_real_,
+      latitude = if ("LatitudeRemoved" %in% names(.data$.)) .data$LatitudeRemoved else NA_real_,
       observation_type = "retrieval",
       age_class = "0",
-      sex = "U",
+      sex = "U"
     )
   )
 
@@ -300,7 +310,7 @@ add_gldp_soi_directory <- function(gdl, directory_data) {
     pull(.data$GDL_ID)
 
   if (length(gdl_id_na_dir) > 0 && FALSE) {
-    cli::cli_warn("We could not find the data directory for {length(gdl_id_na_dir)} tags (out of \
+    cli_warn("We could not find the data directory for {length(gdl_id_na_dir)} tags (out of \
                       {nrow(gdl)}). GDL_IDs: {.field {gdl_id_na_dir}}. These will not be imported.")
   }
   gdl

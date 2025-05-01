@@ -1,8 +1,22 @@
 #' Add Geolocator DP resources from a GeoPressureTemplate
 #'
 #' @description
-#' This function adds all possible resources to a Geolocator Data Package by reading data from
+#' This function adds all possible resources to a GeolocatoR Data Package by reading data from
 #' a [GeoPressureTemplate](https://github.com/Rafnuss/GeoPressureTemplate) directories and files.
+#'
+#' The function performs the following steps:
+#' 1. If `"interim"` in `from`,  reads all interim ".RData" files, extract all resources possibles
+#' and add them to the package. `tags` and `observations` are generated automatically from `param`.
+#' 2. If `"raw-data"` in `from`, create all the possible resources from `data/raw-data/` and
+#' `data/tag-label/`. `tags` and `observations` resources are also generated from available
+#' information.
+#' 3. Reads the `tags.csv` and `observations.csv` files from the `./data` directory if they exist
+#' and overwrite the previously generated `tags` and `observations`.
+#'
+#' You can exclude interim file to be included in the package by starting the file name with an `_`.
+#'
+#' It is possible to do a mix of some `tag` read from `"interim"` and other from `"raw-data"`
+#' simultaneously.
 #'
 #' You can find more information on the use of this function in the [GeoPressureManual
 #' ](https://raphaelnussbaumer.com/GeoPressureManual/geolocator-create.html)
@@ -14,23 +28,7 @@
 #' in `data/interim`.
 #' @inheritParams add_gldp_resource
 #'
-#' @return The updated GLDP package object with added geopressure templates.
-#'
-#' @details
-#' The function performs the following steps:
-#' 1. Reads the "tags.csv" and "observations.csv" files from the "./data" directory if they exist
-#' and adds them to the GLDP package.
-#' 3. Determines the source of the data files ("data" or "interim") if the `from` parameter is NULL.
-#' 4. If `interim`, reads all interim ".RData" files, extract all resources possibles and add them
-#' to the package.
-#' 5. If `raw-data`, create GeoPressureR `tag` object from the `data/raw-data/`, compute the `tags`
-#' and `observations` resources and add them to the package.
-#'
-#' You can exclude interim file to be included in the package by starting the file name with an `_`.
-#'
-#' It is not possible to do a mix of some `tag` read from `from="data"` and some `tag` read from
-#' `from="interim"`.
-#'
+#' @return The updated GLDP package object with new resources
 #' @export
 add_gldp_geopressuretemplate <- function(
     pkg,
@@ -45,7 +43,7 @@ add_gldp_geopressuretemplate <- function(
       message = "The specified directory does not exist: {.file {directory}}."
     )
   }
-  assertthat::assert_that(all(from %in% c("interim", "raw-tag")))
+  assertthat::assert_that(any(from %in% c("interim", "raw-tag")))
   assertthat::assert_that(is.logical(replace))
 
   # Initiate empty resources to be able to merge interim and raw-tag as necessary
@@ -64,11 +62,10 @@ add_gldp_geopressuretemplate <- function(
 
       # List of variable names to be processed
       var_names_required <- c("tag", "param")
-      var_names_path <- c("path_simulation", "path_geopressureviz", "path_tag", "path_most_likely")
+      var_names_path <- c("path_simulation", "path_tag", "path_most_likely", "path_geopressureviz")
       var_names_edges <- c("edge_most_likely", "edge_simulation", "edge_geopressureviz", "edge_tag")
       var_names_pressurepath <- c(
-        "pressurepath_most_likely", "pressurepath_geopressureviz",
-        "path_geopressureviz"
+        "pressurepath_most_likely", "pressurepath_geopressureviz", "pressurepath_geopressureviz"
       )
       var_names <- c(var_names_required, var_names_path, var_names_edges, var_names_pressurepath)
 
@@ -90,7 +87,7 @@ add_gldp_geopressuretemplate <- function(
       for (var in var_names_required) {
         is_null_var <- sapply(interim[[var]], is.null)
         if (any(is_null_var)) {
-          cli::cli_abort(
+          cli_abort(
             "Interim file {.file {basename(all_files)[is_null_var]}} have no variable \\
                 {.var {var}}"
           )
@@ -247,7 +244,7 @@ add_gldp_geopressuretemplate <- function(
 
       # Not sure about this warning
       if (length(list_id) == 0 && FALSE) {
-        cli::cli_warn(
+        cli_warn(
           "We did not find any tag data in {.file {file.path(directory, 'data/raw-tag')}}."
         )
       }
@@ -308,11 +305,13 @@ add_gldp_geopressuretemplate <- function(
           tag_comments = "c"
         )
       )
+    } else {
+      tf <- t
     }
 
     # Check that all tag_id are in tf
     if (!all(t$tag_id %in% tf$tag_id)) {
-      cli::cli_warn(c(
+      cli_warn(c(
         "!" = "Not all {.var tag_id} in {.file {file}} are present in the interim/raw data.",
         "i" = "We will proceed with a merge of the two.",
         ">" = "Please, fix {.file {file}}"
@@ -403,7 +402,7 @@ rawtagid2tag <- function(id, display_config_error = TRUE) {
     error = function(e) {
       if (display_config_error) {
         # Warn that the configuration file could not be read and display the error
-        cli::cli_warn(c(
+        cli_warn(c(
           "i" = "Configuration file {.file config.yml} could not be read to build the
                 datapackage.",
           ">" = "Create the tag with default value wit
