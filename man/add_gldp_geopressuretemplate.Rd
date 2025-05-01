@@ -24,28 +24,27 @@ in \code{data/interim}.}
 resource with the same name.}
 }
 \value{
-The updated GLDP package object with added geopressure templates.
+The updated GLDP package object with new resources
 }
 \description{
-This function adds all possible resources to a Geolocator Data Package by reading data from
+This function adds all possible resources to a GeolocatoR Data Package by reading data from
 a \href{https://github.com/Rafnuss/GeoPressureTemplate}{GeoPressureTemplate} directories and files.
 
-You can find more information on the use of this function in the \href{https://raphaelnussbaumer.com/GeoPressureManual/geolocator-create.html}{GeoPressureManual }
-}
-\details{
 The function performs the following steps:
 \enumerate{
-\item Reads the "tags.csv" and "observations.csv" files from the "./data" directory if they exist
-and adds them to the GLDP package.
-\item Determines the source of the data files ("data" or "interim") if the \code{from} parameter is NULL.
-\item If \code{interim}, reads all interim ".RData" files, extract all resources possibles and add them
-to the package.
-\item If \code{raw-data}, create GeoPressureR \code{tag} object from the \verb{data/raw-data/}, compute the \code{tags}
-and \code{observations} resources and add them to the package.
+\item If \code{"interim"} in \code{from},  reads all interim ".RData" files, extract all resources possibles
+and add them to the package. \code{tags} and \code{observations} are generated automatically from \code{param}.
+\item If \code{"raw-data"} in \code{from}, create all the possible resources from \verb{data/raw-data/} and
+\verb{data/tag-label/}. \code{tags} and \code{observations} resources are also generated from available
+information.
+\item Reads the \code{tags.csv} and \code{observations.csv} files from the \code{./data} directory if they exist
+and overwrite the previously generated \code{tags} and \code{observations}.
 }
 
 You can exclude interim file to be included in the package by starting the file name with an \verb{_}.
 
-It is not possible to do a mix of some \code{tag} read from \code{from="data"} and some \code{tag} read from
-\code{from="interim"}.
+It is possible to do a mix of some \code{tag} read from \code{"interim"} and other from \code{"raw-data"}
+simultaneously.
+
+You can find more information on the use of this function in the \href{https://raphaelnussbaumer.com/GeoPressureManual/geolocator-create.html}{GeoPressureManual }
 }

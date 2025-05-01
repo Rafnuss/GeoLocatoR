@@ -102,26 +102,6 @@ Note that this function does not add any data resources, it returns an empty she
 project level metadata.
 }
 \examples{
-# Create a Data Package with, at minimum a title and a list of contributors.
-pkg <- create_gldp(
-  title = "Geolocator Data Package example",
-  contributors = list(
-    list(
-      title = "Raphaël Nussbaumer",
-      roles = c("ContactPerson", "DataCurator", "ProjectLeader")
-    ),
-    list(
-      title = "Yann Rime",
-      roles = c("Researcher")
-    )
-  )
-)
-
-pkg
-
-# See the structure of the (empty) Data Package
-str(pkg)
-
 # Create a Data Package with all possible metadata
 pkg <- create_gldp(
   title = "Geolocator Data Package example",
@@ -132,11 +112,18 @@ pkg <- create_gldp(
     ),
     list(
       title = "Yann Rime",
-      roles = c("Researcher")
+      givenName = "Yann",
+      familyName = "Rime",
+      path= "https://orcid.org/0000-0003-2745-0557",
+      email = "yann.rime@vogelwarte.ch",
+      roles = c("Researcher"),
+      organization = "Swiss Ornithological Institute"
     )
   ),
   embargo = "2025-01-01",
+  licenses = list(list(name = "CC-BY-4.0")),
   id = "https://doi.org/10.5281/zenodo.13829929",
+  description = NULL,
   version = "1.0.1",
   relatedIdentifiers = list(
     list(
@@ -146,12 +133,16 @@ pkg <- create_gldp(
     ),
     list(
       relationType = "IsSupplementTo",
-      relatedIdentifier = "",
+      relatedIdentifier = "10.1007/s00114-018-1566-9",
       relatedIdentifierType = "DOI"
     )
   ),
   grants = c("Swiss National Fundation grant no. 354251"),
-  keywords = c("Woodland Kingfisher", "intra-african", "multi-sensor geolocator")
+  keywords = c("Woodland Kingfisher", "intra-african", "multi-sensor geolocator"),
+  created = "2024-05-17",
+  bibliographicCitation = "Nussbaumer, R., & Rime, Y. (2024). Woodland Kingfisher: Migration
+  route and timing of South African Woodland Kingfisher (v1.1). Zenodo.
+  https://doi.org/10.5281/zenodo.11207141"
 )
 
 }

@@ -121,7 +121,7 @@ read_gdl <- function(access_file = NA,
           "RingNumber",
           "FirmwareVersion",
           "HardwareVersion",
-          "TotalWeight",
+          "TotalWeight"
           # "Harness_data","BreastHarnessDiameterHead",...
         )
       )
