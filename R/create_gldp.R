@@ -123,7 +123,7 @@
 #' @export
 create_gldp <- function(
     title = "",
-    contributors = list(list(title="")),
+    contributors = list(list(title = "")),
     embargo = "1970-01-01",
     licenses = list(list(
       name = "CC-BY-4.0",

@@ -167,7 +167,8 @@ add_gldp_soi <- function(pkg,
         manufacturer = "Swiss Ornithological Institute",
         model = if (all(c("GDL_Type", "HardwareVersion") %in% names(t_gdl)))
           glue::glue("{GDL_Type}-{HardwareVersion}") else NA_character_,
-        firmware = if ("FirmwareVersion" %in% names(t_gdl)) .data$FirmwareVersion else NA_character_,
+        firmware = if ("FirmwareVersion" %in% names(t_gdl))
+          .data$FirmwareVersion else NA_character_,
         weight = if ("TotalWeight" %in% names(t_gdl)) .data$TotalWeight else NA_real_,
         attachment_type = if ("attachment_type" %in% names(t_gdl)) {
           .data$attachment_type
@@ -196,7 +197,7 @@ add_gldp_soi <- function(pkg,
 
   # Adding sensor resource
   o_gdl <- bind_rows(
-    gdl_attach <- gdl_to %>% transmute(
+    gdl_attach <- gdl_to %>% transmute( # nolint
       ring_number = if ("RingNumber" %in% names(gdl_to)) .data$RingNumber else NA_character_,
       tag_id = if ("GDL_ID" %in% names(gdl_to)) .data$GDL_ID else NA_character_,
       datetime = if ("UTC_Attached" %in% names(gdl_to)) .data$UTC_Attached else as.POSIXct(NA),
@@ -207,7 +208,7 @@ add_gldp_soi <- function(pkg,
       age_class = "0",
       sex = "U"
     ),
-    gdl_retrieve <- gdl_to %>% transmute(
+    gdl_retrieve <- gdl_to %>% transmute( # nolint
       ring_number = if ("RingNumber" %in% names(gdl_to)) .data$RingNumber else NA_character_,
       tag_id = if ("GDL_ID" %in% names(gdl_to)) .data$GDL_ID else NA_character_,
       datetime = if ("UTC_Removed" %in% names(gdl_to)) .data$UTC_Removed else as.POSIXct(NA),
