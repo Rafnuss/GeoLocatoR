@@ -112,8 +112,8 @@ add_gldp_soi <- function(pkg,
   }
 
   # Compute tags.csv from gdl table
-  t_gdl <- if (nrow(gdl_to) == 0) {
-    tibble(
+  if (nrow(gdl_to) == 0) {
+    t_gdl <- tibble(
       tag_id = character(),
       manufacturer = character(),
       model = character(),
@@ -125,7 +125,7 @@ add_gldp_soi <- function(pkg,
       tag_comments = character()
     )
   } else {
-    gdl_to %>%
+    t_gdl <- gdl_to %>%
       rowwise() %>%
       mutate(
         attachment_type = {
@@ -159,22 +159,24 @@ add_gldp_soi <- function(pkg,
           )
         }
       ) %>%
-      ungroup() %>%
-      transmute(
+      ungroup()
+
+      t_gdl <-  t_gdl %>%
+        transmute(
         tag_id = .data$GDL_ID,
         manufacturer = "Swiss Ornithological Institute",
-        model = if (all(c("GDL_Type", "HardwareVersion") %in% names(.data$.)))
+        model = if (all(c("GDL_Type", "HardwareVersion") %in% names(t_gdl)))
           glue::glue("{GDL_Type}-{HardwareVersion}") else NA_character_,
-        firmware = if ("FirmwareVersion" %in% names(.data$.)) .data$FirmwareVersion else NA_character_,
-        weight = if ("TotalWeight" %in% names(.data$.)) .data$TotalWeight else NA_real_,
-        attachment_type = if ("attachment_type" %in% names(.data$.)) {
+        firmware = if ("FirmwareVersion" %in% names(t_gdl)) .data$FirmwareVersion else NA_character_,
+        weight = if ("TotalWeight" %in% names(t_gdl)) .data$TotalWeight else NA_real_,
+        attachment_type = if ("attachment_type" %in% names(t_gdl)) {
           .data$attachment_type
         } else {
           NA_character_
         },
-        scientific_name = if ("Species" %in% names(.data$.)) .data$Species else NA_character_,
-        ring_number = if ("RingNumber" %in% names(.data$.)) .data$RingNumber else NA_character_,
-        tag_comments = if ("Remarks" %in% names(.data$.)) .data$Remarks else NA_character_
+        scientific_name = if ("Species" %in% names(t_gdl)) .data$Species else NA_character_,
+        ring_number = if ("RingNumber" %in% names(t_gdl)) .data$RingNumber else NA_character_,
+        tag_comments = if ("Remarks" %in% names(t_gdl)) .data$Remarks else NA_character_
       )
   }
 
@@ -195,22 +197,22 @@ add_gldp_soi <- function(pkg,
   # Adding sensor resource
   o_gdl <- bind_rows(
     gdl_attach <- gdl_to %>% transmute(
-      ring_number = if ("RingNumber" %in% names(.data$.)) .data$RingNumber else NA_character_,
-      tag_id = if ("GDL_ID" %in% names(.data$.)) .data$GDL_ID else NA_character_,
-      datetime = if ("UTC_Attached" %in% names(.data$.)) .data$UTC_Attached else as.POSIXct(NA),
-      location_name = if ("SiteAttached" %in% names(.data$.)) .data$SiteAttached else NA_character_,
-      longitude = if ("LongitudeAttached" %in% names(.data$.)) .data$LongitudeAttached else NA_real_,
-      latitude = if ("LatitudeAttached" %in% names(.data$.)) .data$LatitudeAttached else NA_real_,
+      ring_number = if ("RingNumber" %in% names(gdl_to)) .data$RingNumber else NA_character_,
+      tag_id = if ("GDL_ID" %in% names(gdl_to)) .data$GDL_ID else NA_character_,
+      datetime = if ("UTC_Attached" %in% names(gdl_to)) .data$UTC_Attached else as.POSIXct(NA),
+      location_name = if ("SiteAttached" %in% names(gdl_to)) .data$SiteAttached else NA_character_,
+      longitude = if ("LongitudeAttached" %in% names(gdl_to)) .data$LongitudeAttached else NA_real_,
+      latitude = if ("LatitudeAttached" %in% names(gdl_to)) .data$LatitudeAttached else NA_real_,
       observation_type = "equipment",
       age_class = "0",
       sex = "U"
     ),
     gdl_retrieve <- gdl_to %>% transmute(
-      ring_number = if ("RingNumber" %in% names(.data$.)) .data$RingNumber else NA_character_,
-      tag_id = if ("GDL_ID" %in% names(.data$.)) .data$GDL_ID else NA_character_,
-      datetime = if ("UTC_Removed" %in% names(.data$.)) .data$UTC_Removed else as.POSIXct(NA),
-      longitude = if ("LongitudeRemoved" %in% names(.data$.)) .data$LongitudeRemoved else NA_real_,
-      latitude = if ("LatitudeRemoved" %in% names(.data$.)) .data$LatitudeRemoved else NA_real_,
+      ring_number = if ("RingNumber" %in% names(gdl_to)) .data$RingNumber else NA_character_,
+      tag_id = if ("GDL_ID" %in% names(gdl_to)) .data$GDL_ID else NA_character_,
+      datetime = if ("UTC_Removed" %in% names(gdl_to)) .data$UTC_Removed else as.POSIXct(NA),
+      longitude = if ("LongitudeRemoved" %in% names(gdl_to)) .data$LongitudeRemoved else NA_real_,
+      latitude = if ("LatitudeRemoved" %in% names(gdl_to)) .data$LatitudeRemoved else NA_real_,
       observation_type = "retrieval",
       age_class = "0",
       sex = "U"
