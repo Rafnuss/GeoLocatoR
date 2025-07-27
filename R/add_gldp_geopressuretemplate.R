@@ -95,10 +95,10 @@ add_gldp_geopressuretemplate <- function(
       }
 
       # Crete tag resource
-      t <- params2t(interim$param)
+      t <- params_to_tags(interim$param)
 
       # Create observations resource
-      o <- params2o(interim$param)
+      o <- params_to_observations(interim$param)
 
       # Create measurements resource
       m <- tags2m(interim$tag)

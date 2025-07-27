@@ -1,5 +1,6 @@
 #' Transform Tags to a Tidy Data Frame
 #'
+#' @description
 #' This function processes a list of tags, each containing sensor data, and transforms it into a
 #' tidy data frame. The tags are expected to have various sensor types and their corresponding
 #' measurements. The function reshapes and standardizes the data for further analysis.
@@ -7,7 +8,7 @@
 #' @param tags A list of tags, where each tag is a data frame containing sensor data. Each tag
 #' should include columns for sensor measurements and an identifier.
 #'
-#' @return A tibble (data frame) with columns:
+#' @return A [tibble::tibble()] data frame with columns:
 #' \describe{
 #'   \item{tag_id}{A character vector representing the unique identifier for each tag.}
 #'   \item{sensor}{A character vector representing the type of sensor measurement, including types
@@ -19,7 +20,7 @@
 #' }
 #'
 #' @details
-#' The `tags2m()` function extracts and processes sensor data from a list of tags. It renames the
+#' The `tags_to_measurements()` function extracts and processes sensor data from a list of tags. It renames the
 #' `value` column to the corresponding sensor type if it exists, ensures the presence of a `label`
 #' column, and reshapes the data into a long format. The function handles various sensor types such
 #'  as pressure, acceleration, light, temperature, and magnetic fields.
@@ -28,7 +29,7 @@
 #'  and types.
 #'
 #' @export
-tags2m <- function(tags) {
+tags_to_measurements <- function(tags) {
   if (length(tags) > 0) {
     m <- tags %>%
       purrr::map(function(tag) {

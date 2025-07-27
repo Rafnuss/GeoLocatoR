@@ -8,11 +8,11 @@
 #' generated during the GeoPressure workflow. See [`GeoPressureR::param_create()`
 #' ](https://raphaelnussbaumer.com/GeoPressureR/reference/param_create.html) for more information.
 #'
-#' @return A tibble with columns `tag_id`, `manufacturer`, `scientific_name`, `ring_number`,
-#' `model`, and `firmware` (if `soi_settings` is present).
+#' @return A [tibble::tibble()] data frame with columns `ring_number`, `tag_id`, 
+#' `observation_type`, `datetime`, `longitude`, `latitude`, and `comments`.
 #'
 #' @export
-params2o <- function(params) {
+params_to_observations <- function(params) {
   params %>%
     purrr::map(\(param) {
       o0 <- tibble::tibble(
@@ -24,7 +24,7 @@ params2o <- function(params) {
         latitude = NA_real_,
         age_class = "0",
         sex = "U",
-        observation_comments = "Automatically computed with `params2o()`"
+        observation_comments = "Automatically computed with `params_to_observations()`"
       )
 
       if (!is.null(param$tag_create$crop_start)) {
@@ -58,7 +58,7 @@ params2o <- function(params) {
             longitude = known$known_lon[id],
             latitude = known$known_lat[id],
             observation_comments =
-              "Automatically computed from `known$stap_id==1` with `params2o()`"
+              "Automatically computed from `known$stap_id==1` with `params_to_observations()`"
           )
         }
 
@@ -68,7 +68,7 @@ params2o <- function(params) {
             longitude = known$known_lon[id],
             latitude = known$known_lat[id],
             observation_comments =
-              "Automatically computed from `known$stap_id==-1` with `params2o()`"
+              "Automatically computed from `known$stap_id==-1` with `params_to_observations()`"
           )
         }
       }

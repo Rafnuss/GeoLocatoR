@@ -34,8 +34,8 @@ reference:
       - read_gdl
   - title: Zenodo
     contents:
-      - gldp2zenodoRecord
-      - zenodoRecord2gldp
+      - gldp_to_zenodo
+      - zenodo_to_gldp
   - title: Miscellaneous functions
     contents:
       - print.geolocatordp
@@ -43,9 +43,9 @@ reference:
       - version
       - validate_gldp
       - validate_gldp_py
-      - tags2m
-      - params2t
-      - params2o
+      - tags_to_measurements
+      - params_to_measurements
+      - params_to_observations
 
 
 
