@@ -32,16 +32,16 @@
 #' @param embargo End date of the embargo. Default to `"1970-01-01"`. See the
 #' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#embargo) and the
 #' [Data Package specification](https://datapackage.org/standard/data-package/#embargo).
-#' @param licenses A list of licenses under which the data is provided.  Usually, a single license
-#' if sufficient and prefered. If you're not sure, checkout the [Creative Commons License Chooser
+#' @param licenses A list of licenses under which the data is provided. Usually, a single license
+#' is sufficient and preferred. If you're not sure, check out the [Creative Commons License Chooser
 #' ](https://chooser-beta.creativecommons.org/) and the [Open Data Commons
-#' ](https://opendatacommons.org/). `name` or `path` must be provided. Defaults is a CC-BY-4.0
+#' ](https://opendatacommons.org/). `name` or `path` must be provided. Default is a CC-BY-4.0
 #' license. See the [Geolocator DP
 #' ](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#licenses) and the
 #' [Data Package specification](https://datapackage.org/standard/data-package/#licenses).
 #' @param id A globally unique identifier for the package, typically the DOI link of the
 #' corresponding Zenodo repository which [can be reserved prior to publication
-#' ](https://help.zenodo.org/docs/deposit/describe-records/reserve-doi/#reserve-doi). Default to
+#' ](https://help.zenodo.org/docs/deposit/describe-records/reserve-doi/#reserve-doi). Defaults to
 #' `NULL`. See the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#id) and
 #' the [Data Package specification](https://datapackage.org/standard/data-package/#id).
 #' @param description A markdown-formatted string describing the package. You can
@@ -112,7 +112,7 @@
 #'       relatedIdentifierType = "DOI"
 #'     )
 #'   ),
-#'   grants = c("Swiss National Fundation grant no. 354251"),
+#'   grants = c("Swiss National Foundation grant no. 354251"),
 #'   keywords = c("Woodland Kingfisher", "intra-african", "multi-sensor geolocator"),
 #'   created = "2024-05-17",
 #'   bibliographicCitation = "Nussbaumer, R., & Rime, Y. (2024). Woodland Kingfisher: Migration
@@ -205,7 +205,7 @@ create_gldp <- function(
   if (!is.null(description)) descriptor$description <- description
   if (!is.null(version)) descriptor$version <- version
   if (!is.null(keywords)) descriptor$keywords <- keywords
-  if (is.null(bibliographicCitation)) descriptor$bibliographicCitation <- bibliographicCitation
+  if (!is.null(bibliographicCitation)) descriptor$bibliographicCitation <- bibliographicCitation
   if (!is.null(grants)) descriptor$grants <- grants
   if (!is.null(relatedIdentifiers)) descriptor$relatedIdentifiers <- relatedIdentifiers
 
@@ -213,8 +213,8 @@ create_gldp <- function(
   pkg <- frictionless::create_package(descriptor = descriptor)
 
   class(pkg) <- c("geolocatordp", class(pkg))
-  # This is the the version of the GeoLocator Data Package standard (as defined by the release
-  # version on Gihub). Not to be confused with the version of the data pacakge being created.
+  # This is the version of the GeoLocator Data Package standard (as defined by the release
+  # version on GitHub). Not to be confused with the version of the data package being created.
   attr(pkg, "version") <- version(pkg)
 
   pkg <- pkg %>% update_gldp()

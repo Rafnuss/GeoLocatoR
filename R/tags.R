@@ -16,7 +16,7 @@ tags <- function(x) {
 }
 
 #' @rdname tags
-#' @param value A data frame to assign as tags
+#' @param value A data frame to assign as tags. Must conform to the tags schema specification.
 #' @export
 "tags<-" <- function(x, value) {
   if (!is.data.frame(value)) {

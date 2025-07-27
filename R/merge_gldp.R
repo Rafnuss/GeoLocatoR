@@ -26,7 +26,7 @@
 #'
 #' @param x A GeoLocator Data Package object.
 #' @param y A GeoLocator Data Package object.
-#' @return A single GeoLocator Data Package object containing the merged data from both `x` and `y`.
+#' @return A GeoLocator Data Package object containing the merged data from both `x` and `y`.
 #'
 #' @export
 merge_gldp <- function(x, y) {
@@ -36,8 +36,10 @@ merge_gldp <- function(x, y) {
 
   # Check if the versions are the same
   if (version(x) != version(y)) {
-    cli_warn("The versions of {.pkg x} ({version(x)}) and {.pkg y}  ({version(y)}) differ, \\
-                  which might cause merging to fail.")
+    cli_warn(c(
+      "!" = "The versions of {.pkg x} ({version(x)}) and {.pkg y} ({version(y)}) differ.",
+      ">" = "This might cause merging to fail."
+    ))
   }
 
   # Check for duplicate tag_ids

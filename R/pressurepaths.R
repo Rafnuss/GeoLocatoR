@@ -16,7 +16,7 @@ pressurepaths <- function(x) {
 }
 
 #' @rdname pressurepaths
-#' @param value A data frame to assign as pressurepaths
+#' @param value A data frame to assign as pressurepaths. Must conform to the pressurepaths schema specification.
 #' @export
 "pressurepaths<-" <- function(x, value) {
   if (!is.data.frame(value)) {

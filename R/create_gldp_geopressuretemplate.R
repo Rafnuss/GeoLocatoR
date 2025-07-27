@@ -25,17 +25,17 @@
 create_gldp_geopressuretemplate <- function(directory = ".") {
   # Check if the directory exists
   if (!dir.exists(directory)) {
-    cli_abort(
-      message = "The specified directory does not exist: {.file {directory}}."
-    )
+    cli_abort(c(
+      "x" = "The specified directory does not exist: {.file {directory}}."
+    ))
   }
   pkg <- withr::with_dir(directory, {
     # setwd(directory)
 
     if (!file.exists("DESCRIPTION")) {
-      cli_abort(
-        message = "The specified directory has no {.file DESCRIPTION} file."
-      )
+      cli_abort(c(
+        "x" = "The specified directory has no {.file DESCRIPTION} file."
+      ))
     }
 
     # Read description file
@@ -44,15 +44,18 @@ create_gldp_geopressuretemplate <- function(directory = ".") {
     # Check for mandatory variables
     for (var in c("Title", "Authors@R", "License")) {
       if (!d$has_fields(var)) {
-        cli_abort("{.field {var}} is not present in {.file DESCRIPTION} and is mandatory.")
+        cli_abort(c(
+          "x" = "{.field {var}} is not present in {.file DESCRIPTION} and is mandatory."
+        ))
       }
     }
 
     # Check for suggested variable
     for (var in c("Version", "Description")) {
       if (!d$has_fields(var)) {
-        cli_warn("{.field {var}} is not present in
-                      {.file DESCRIPTION} and is strongly suggested")
+        cli_warn(c(
+          "!" = "{.field {var}} is not present in {.file DESCRIPTION} and is strongly suggested."
+        ))
       }
     }
 

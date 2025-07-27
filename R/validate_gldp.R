@@ -1,13 +1,13 @@
 #' Validate a GeoLocator Data Package
 #'
+#' @description
 #' This function performs a comprehensive validation of a GeoLocator Data Package by checking the
 #' package metadata, profile, and resources. The validation includes verifying that the package
 #' conforms to the GeoLocator Data Package profile and that each resource adheres to its schema.
 #'
 #' If `quiet` is `TRUE`, the function suppresses the output of the `cli` package's messages.
 #'
-#' @param pkg An object of class `"geolocatordp"` representing the GeoLocator Data Package to be
-#' validated.
+#' @param pkg A GeoLocator Data Package object to be validated.
 #' @param quiet A logical indicating whether to suppress messages from the `cli` package. Defaults
 #' to `FALSE`.
 #'
@@ -41,6 +41,13 @@ validate_gldp <- function(pkg, quiet = FALSE) {
 }
 
 
+#' Validate GeoLocator Data Package profile
+#' 
+#' Internal helper function to validate that a GeoLocator Data Package conforms
+#' to the expected profile schema.
+#' 
+#' @param pkg A GeoLocator Data Package object
+#' @return Logical indicating whether the profile validation passed
 #' @noRd
 validate_gldp_profile <- function(pkg) {
   schema <- jsonlite::fromJSON(pkg$`$schema`, simplifyVector = FALSE)
@@ -60,6 +67,13 @@ validate_gldp_profile <- function(pkg) {
   invisible(valid)
 }
 
+#' Validate GeoLocator Data Package resources
+#' 
+#' Internal helper function to validate all resources within a GeoLocator Data Package
+#' against their respective schemas.
+#' 
+#' @param pkg A GeoLocator Data Package object
+#' @return Logical indicating whether all resource validations passed
 #' @noRd
 validate_gldp_resources <- function(pkg) {
   cli_h3("Check GeoLocator DataPackage Resources")
@@ -83,9 +97,9 @@ validate_gldp_resources <- function(pkg) {
   }
 
   if (valid) {
-    cli_alert_success("Package's ressources are valid.")
+    cli_alert_success("Package's resources are valid.")
   } else {
-    cli_alert_danger("Package's ressources validation failed.")
+    cli_alert_danger("Package's resources validation failed.")
   }
 
   invisible(valid)
@@ -128,6 +142,16 @@ validate_gldp_table <- function(data, schema) {
   invisible(valid)
 }
 
+#' Validate object against schema properties
+#' 
+#' Internal helper function to validate an object against a set of required fields
+#' and property definitions from a schema.
+#' 
+#' @param obj The object to validate
+#' @param required Vector of required field names
+#' @param properties List of property definitions from schema
+#' @param name Optional name prefix for error messages
+#' @return Logical indicating whether the object validation passed
 #' @noRd
 validate_gldp_object <- function(obj, required, properties, name = "") {
   name <- glue::glue("{name}{ifelse(name=='','','$')}")
@@ -524,7 +548,7 @@ validate_gldp_coherence <- function(pkg) {
       present in {.field tags}."
     )
     cli_alert_info(
-      "All {.field ring_number} present in the resource {.field tags} need tto also be present \\
+      "All {.field ring_number} present in the resource {.field tags} need to also be present \\
     in the resource {.field observations}."
     )
     valid <- FALSE

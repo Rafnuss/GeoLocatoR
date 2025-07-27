@@ -1,14 +1,16 @@
 #' Read a GeoLocator Data Package
 #'
-#' This function reads a GeoLocator Data Package from a `"datapackage.json"`, file that describes
+#' @description
+#' This function reads a GeoLocator Data Package from a `"datapackage.json"` file that describes
 #' the Data Package metadata and its Data Resources. The function wraps the function
 #' [`frictionless::read_package`
 #' ](https://docs.ropensci.org/frictionless/reference/read_package.html) and assigns the class
 #' `"geolocatordp"` to the datapackage read.
 #'
 #' @param file A string specifying the path to the JSON file containing the GeoLocator Data Package
-#' metadata. Defaults to `"datapackage.json"`. Can also be a url.
-#' @param force_read Logical to force the reading of the data from path/url to memory.
+#' metadata. Defaults to `"datapackage.json"`. Can also be a URL.
+#' @param force_read Logical indicating whether to force the reading of the data from path/URL to memory.
+#' Defaults to `TRUE`.
 #'
 #' @return A GeoLocator Data Package object created from a file/url
 #'
@@ -38,7 +40,7 @@ read_gldp <- function(file = "datapackage.json", force_read = TRUE) {
   class(pkg) <- c("geolocatordp", class(pkg))
 
   if (!grepl("geolocator-dp-profile\\.json$", pkg$`$schema`)) {
-    cli_warn("The datapackage provided does not seems to be a Geolocator Data Package.")
+    cli_warn("The datapackage provided does not seem to be a GeoLocator Data Package.")
   }
 
   pkg

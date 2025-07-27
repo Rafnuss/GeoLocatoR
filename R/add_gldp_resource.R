@@ -13,7 +13,7 @@
 #' Note that this function is generally not recommended to be used as all resources can be added or
 #' modified with their respective [accessors functions](https://bit.ly/41HruRs).
 #'
-#' @param package The package object to which the resource will be added.
+#' @param package A GeoLocator Data Package object to which the resource will be added.
 #' @param resource_name A character string specifying the name of the resource. This name is used
 #' to locate the schema file.
 #' @param data A data frame containing the data to be added as a resource. The data frame will be
@@ -22,7 +22,7 @@
 #' specified in the schema. Defaults to `FALSE`.
 #' @inheritParams frictionless::add_resource
 #'
-#' @return The updated package object with the new resource added.
+#' @return The updated GeoLocator Data Package object with the new resource added.
 #'
 #' @export
 add_gldp_resource <- function(package,

@@ -16,7 +16,7 @@ paths <- function(x) {
 }
 
 #' @rdname paths
-#' @param value A data frame to assign as paths
+#' @param value A data frame to assign as paths. Must conform to the paths schema specification.
 #' @export
 "paths<-" <- function(x, value) {
   if (!is.data.frame(value)) {

@@ -1,5 +1,6 @@
 #' Get GeoLocator DP version
 #'
+#' @description
 #' Extracts the version number used by a GeoLocator Data Package object.
 #' This version number indicates what version of the [GeoLocator DP standard](
 #' https://raphaelnussbaumer.com/GeoLocator-DP/) was used.
@@ -10,11 +11,10 @@
 #' contain the URL to the used GeoLocator DP standard.
 #' 3. `x$profile` in its entirety (can be `NULL`).
 #'
-#' @param x GeoLocator Data Package object, as returned by
-#'   `create_gldp()`.
-#'   Also works on a Frictionless Data Package, as returned by
+#' @param x A GeoLocator Data Package object, as returned by
+#'   `create_gldp()`. Also works on a Frictionless Data Package, as returned by
 #'   `read_package()`.
-#' @return GeoLocator DP version number (e.g. `1.0`).
+#' @return Character string with the GeoLocator DP version number (e.g. `"v0.2"`).
 #' @family misc functions
 #' @export
 version <- function(x) {

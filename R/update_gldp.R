@@ -18,7 +18,7 @@
 #' - `update_gldp_metadata`: Re-arrange the order of the properties according to the order of the
 #' schema
 #'
-#' `update_gldp` performs all of the the functions mentioned above.
+#' `update_gldp` performs all of the functions mentioned above.
 #'
 #' @param pkg A GeoLocator Data Package object
 #' @param ... overwrite parameters for `utils::bibentry()`

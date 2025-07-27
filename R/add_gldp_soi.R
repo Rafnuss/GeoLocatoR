@@ -95,7 +95,7 @@ add_gldp_soi <- function(pkg,
     )
 
   # Adding measurement resource
-  m <- bind_rows(m, tags2m(dtags))
+  m <- bind_rows(m, tags_to_measurements(dtags))
 
   if (nrow(m) > 0) {
     pkg <- add_gldp_resource(pkg, "measurements", m, replace = TRUE)
@@ -244,6 +244,14 @@ add_gldp_soi <- function(pkg,
 
 
 
+#' Add Swiss Ornithological Institute directory information
+#' 
+#' Internal helper function to add directory information for SOI data files
+#' to a GDL (Geolocator Data List) object.
+#' 
+#' @param gdl A GDL data frame object
+#' @param directory_data A data frame containing directory information
+#' @return Updated GDL object with directory information
 #' @noRd
 add_gldp_soi_directory <- function(gdl, directory_data) {
   # Check if the required columns are present
@@ -313,8 +321,10 @@ add_gldp_soi_directory <- function(gdl, directory_data) {
     pull(.data$GDL_ID)
 
   if (length(gdl_id_na_dir) > 0 && FALSE) {
-    cli_warn("We could not find the data directory for {length(gdl_id_na_dir)} tags (out of \
-                      {nrow(gdl)}). GDL_IDs: {.field {gdl_id_na_dir}}. These will not be imported.")
+    cli_warn(c(
+      "!" = "We could not find the data directory for {length(gdl_id_na_dir)} tags (out of {nrow(gdl)}).",
+      ">" = "GDL_IDs: {.field {gdl_id_na_dir}}. These will not be imported."
+    ))
   }
   gdl
 }
