@@ -42,10 +42,10 @@ validate_gldp <- function(pkg, quiet = FALSE) {
 
 
 #' Validate GeoLocator Data Package profile
-#' 
+#'
 #' Internal helper function to validate that a GeoLocator Data Package conforms
 #' to the expected profile schema.
-#' 
+#'
 #' @param pkg A GeoLocator Data Package object
 #' @return Logical indicating whether the profile validation passed
 #' @noRd
@@ -68,10 +68,10 @@ validate_gldp_profile <- function(pkg) {
 }
 
 #' Validate GeoLocator Data Package resources
-#' 
+#'
 #' Internal helper function to validate all resources within a GeoLocator Data Package
 #' against their respective schemas.
-#' 
+#'
 #' @param pkg A GeoLocator Data Package object
 #' @return Logical indicating whether all resource validations passed
 #' @noRd
@@ -143,10 +143,10 @@ validate_gldp_table <- function(data, schema) {
 }
 
 #' Validate object against schema properties
-#' 
+#'
 #' Internal helper function to validate an object against a set of required fields
 #' and property definitions from a schema.
-#' 
+#'
 #' @param obj The object to validate
 #' @param required Vector of required field names
 #' @param properties List of property definitions from schema
@@ -332,10 +332,10 @@ validate_gldp_item <- function(item, prop, field) {
     non_na_items <- !is.na(item)
     if (any(non_na_items)) {
       pattern_match <- grepl(prop$pattern, as.character(item[non_na_items]))
-      
+
       # Identify items that do not match the pattern
       not_matching <- !pattern_match
-      
+
       if (any(not_matching)) {
         cli_alert_danger("{.field {field}} has {sum(not_matching)} item{?s} that do not match the
                          required pattern: {.val {prop$pattern}}.")
@@ -404,13 +404,17 @@ check_format <- function(value, format, field) {
   }
 
   format_map <- list(
-    `date-time` = function(v) all(is.na(v) | grepl("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", v)),
+    `date-time` = function(v) {
+      all(is.na(v) | grepl("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", v))
+    },
     date = function(v) all(is.na(v) | grepl("^\\d{4}-\\d{2}-\\d{2}$", v)),
     time = function(v) all(is.na(v) | grepl("^\\d{2}:\\d{2}:\\d{2}$", v)),
     `utc-millisec` = function(v) all(is.na(v) | is.numeric(v)),
     regex = function(v) {
       all(sapply(v, function(x) {
-        if (is.na(x)) return(TRUE)
+        if (is.na(x)) {
+          return(TRUE)
+        }
         tryCatch(
           {
             grepl(x, "")
@@ -421,12 +425,19 @@ check_format <- function(value, format, field) {
       }))
     },
     color = function(v) {
-      all(is.na(v) | grepl("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^(red|blue|green|yellow|black|white)$", v))
+      color_pattern <- "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^(red|blue|green|yellow|black|white)$"
+      all(is.na(v) | grepl(color_pattern, v))
     },
     style = function(v) all(is.na(v) | grepl("^.+: .+;$", v)),
     phone = function(v) all(is.na(v) | grepl("^\\+?[0-9 .-]{7,}$", v)),
-    uri = function(v) all(is.na(v) | grepl("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?", v)),
-    email = function(v) all(is.na(v) | grepl("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", v)),
+    uri = function(v) {
+      uri_pattern <- "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$"
+      all(is.na(v) | grepl(uri_pattern, v))
+    },
+    email = function(v) {
+      email_pattern <- "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+      all(is.na(v) | grepl(email_pattern, v))
+    },
     `ip-address` = function(v) all(is.na(v) | grepl("^\\d{1,3}(\\.\\d{1,3}){3}$", v)),
     ipv6 = function(v) all(is.na(v) | grepl("^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$", v)),
     `host-name` = function(v) all(is.na(v) | grepl("^[a-zA-Z0-9.-]+$", v)),
@@ -514,23 +525,29 @@ check_type <- function(value, type, field) {
       FALSE
     },
     duration = function(v) {
-      if (!is.character(v)) return(FALSE)
+      if (!is.character(v)) {
+        return(FALSE)
+      }
       # ISO 8601 duration pattern - simplified version
       pattern <- "^P(\\d+Y)?(\\d+M)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+(\\.\\d+)?S)?)?$"
       all(is.na(v) | (grepl(pattern, v) & grepl("[YMDHS]", v))) # Must have at least one component
     },
     geopoint = function(v) {
-      if (!is.character(v)) return(FALSE)
-      
+      if (!is.character(v)) {
+        return(FALSE)
+      }
+
       # Handle NA values - they are considered valid
       na_mask <- is.na(v)
-      if (all(na_mask)) return(TRUE)
-      
+      if (all(na_mask)) {
+        return(TRUE)
+      }
+
       # Validate non-NA values
       valid_vals <- v[!na_mask]
       pattern <- "^\\s*(-?\\d+(?:\\.\\d+)?)\\s*,\\s*(-?\\d+(?:\\.\\d+)?)\\s*$"
       matches <- grepl(pattern, valid_vals)
-      
+
       if (length(valid_vals) > 0 && any(matches)) {
         # Extract coordinates and validate ranges using base R
         regex_matches <- regexec(pattern, valid_vals[matches])
@@ -543,21 +560,28 @@ check_type <- function(value, type, field) {
       all(matches)
     },
     geojson = function(v) {
-      if (!is.character(v)) return(FALSE)
-      
+      if (!is.character(v)) {
+        return(FALSE)
+      }
+
       # Handle each element in the vector
       all(sapply(v, function(x) {
-        if (is.na(x)) return(TRUE)  # NA values are considered valid
-        
+        if (is.na(x)) {
+          return(TRUE)
+        } # NA values are considered valid
+
         # Try to parse as JSON and validate structure
-        tryCatch({
-          json_obj <- jsonlite::fromJSON(x, simplifyVector = FALSE)
-          return(
-            !is.null(json_obj$type) && json_obj$type == "Feature" &&
-            !is.null(json_obj$geometry) && !is.null(json_obj$geometry$type) &&
-            !is.null(json_obj$geometry$coordinates)
-          )
-        }, error = function(e) FALSE)
+        tryCatch(
+          {
+            json_obj <- jsonlite::fromJSON(x, simplifyVector = FALSE)
+            return(
+              !is.null(json_obj$type) && json_obj$type == "Feature" &&
+                !is.null(json_obj$geometry) && !is.null(json_obj$geometry$type) &&
+                !is.null(json_obj$geometry$coordinates)
+            )
+          },
+          error = function(e) FALSE
+        )
       }))
     },
     any = function(v) TRUE # 'any' accepts everything

@@ -8,15 +8,16 @@ read_gldp(file = "datapackage.json", force_read = TRUE)
 }
 \arguments{
 \item{file}{A string specifying the path to the JSON file containing the GeoLocator Data Package
-metadata. Defaults to \code{"datapackage.json"}. Can also be a url.}
+metadata. Defaults to \code{"datapackage.json"}. Can also be a URL.}
 
-\item{force_read}{Logical to force the reading of the data from path/url to memory.}
+\item{force_read}{Logical indicating whether to force the reading of the data from path/URL to
+memory. Defaults to \code{TRUE}.}
 }
 \value{
 A GeoLocator Data Package object created from a file/url
 }
 \description{
-This function reads a GeoLocator Data Package from a \code{"datapackage.json"}, file that describes
+This function reads a GeoLocator Data Package from a \code{"datapackage.json"} file that describes
 the Data Package metadata and its Data Resources. The function wraps the function
 \href{https://docs.ropensci.org/frictionless/reference/read_package.html}{\code{frictionless::read_package} } and assigns the class
 \code{"geolocatordp"} to the datapackage read.

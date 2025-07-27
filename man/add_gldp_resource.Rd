@@ -14,7 +14,7 @@ add_gldp_resource(
 )
 }
 \arguments{
-\item{package}{The package object to which the resource will be added.}
+\item{package}{A GeoLocator Data Package object to which the resource will be added.}
 
 \item{resource_name}{A character string specifying the name of the resource. This name is used
 to locate the schema file.}
@@ -34,7 +34,7 @@ Will be set as \code{delimiter} in the resource Table Dialect, so read functions
 .  know how to read the file(s).}
 }
 \value{
-The updated package object with the new resource added.
+The updated GeoLocator Data Package object with the new resource added.
 }
 \description{
 This function adds a resource to a geolocator data package and ensures that the data conforms to

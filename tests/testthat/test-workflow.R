@@ -26,7 +26,7 @@ test_that("read_gldp correctly reads and processes GeoLocator Data Package", {
   pressurepaths(pkg) <- pressurepaths(pkg)
 
   # Update
-  pkg <-  GeoLocatoR:::update_gldp(pkg)
+  pkg <- GeoLocatoR:::update_gldp(pkg)
 
   # write geopressuretemplate
   project_dir <- create_geopressuretemplate(path = tempfile(), pkg = pkg, open = FALSE)

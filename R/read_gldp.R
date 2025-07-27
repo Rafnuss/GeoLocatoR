@@ -9,8 +9,8 @@
 #'
 #' @param file A string specifying the path to the JSON file containing the GeoLocator Data Package
 #' metadata. Defaults to `"datapackage.json"`. Can also be a URL.
-#' @param force_read Logical indicating whether to force the reading of the data from path/URL to memory.
-#' Defaults to `TRUE`.
+#' @param force_read Logical indicating whether to force the reading of the data from path/URL to
+#'   memory. Defaults to `TRUE`.
 #'
 #' @return A GeoLocator Data Package object created from a file/url
 #'

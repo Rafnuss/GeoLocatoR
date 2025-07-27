@@ -16,7 +16,8 @@ twilights <- function(x) {
 }
 
 #' @rdname twilights
-#' @param value A data frame to assign as twilights. Must conform to the twilights schema specification.
+#' @param value A data frame to assign as twilights. Must conform to the twilights schema
+#'   specification.
 #' @export
 "twilights<-" <- function(x, value) {
   if (!is.data.frame(value)) {

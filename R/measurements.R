@@ -16,7 +16,8 @@ measurements <- function(x) {
 }
 
 #' @rdname measurements
-#' @param value A data frame to assign as measurements. Must conform to the measurements schema specification.
+#' @param value A data frame to assign as measurements. Must conform to the measurements schema
+#'   specification.
 #' @export
 "measurements<-" <- function(x, value) {
   if (!is.data.frame(value)) {

@@ -8,7 +8,7 @@
 #' generated during the GeoPressure workflow. See [`GeoPressureR::param_create()`
 #' ](https://raphaelnussbaumer.com/GeoPressureR/reference/param_create.html) for more information.
 #'
-#' @return A [tibble::tibble()] data frame with columns `ring_number`, `tag_id`, 
+#' @return A [tibble::tibble()] data frame with columns `ring_number`, `tag_id`,
 #' `observation_type`, `datetime`, `longitude`, `latitude`, and `comments`.
 #'
 #' @export

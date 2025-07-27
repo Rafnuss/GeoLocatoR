@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-R package will help you create and read geolocator data using the GeoLocator Data package standard.
+An R package to help you create and read geolocator data using the GeoLocator Data Package standard.
 }
 \seealso{
 Useful links:

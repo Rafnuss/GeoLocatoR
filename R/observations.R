@@ -16,7 +16,8 @@ observations <- function(x) {
 }
 
 #' @rdname observations
-#' @param value A data frame to assign as observations. Must conform to the observations schema specification.
+#' @param value A data frame to assign as observations. Must conform to the observations schema
+#'   specification.
 #' @export
 "observations<-" <- function(x, value) {
   if (!is.data.frame(value)) {

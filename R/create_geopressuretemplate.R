@@ -95,10 +95,10 @@ create_geopressuretemplate <- function(path,
 }
 
 #' Create DESCRIPTION file for GeoPressure template
-#' 
-#' Internal helper function to generate a DESCRIPTION file based on a 
+#'
+#' Internal helper function to generate a DESCRIPTION file based on a
 #' GeoLocator Data Package's metadata.
-#' 
+#'
 #' @param pkg A GeoLocator Data Package object
 #' @return Nothing (side effect: writes DESCRIPTION file)
 #' @noRd
@@ -123,10 +123,10 @@ create_geopressuretemplate_desc <- function(pkg) {
 }
 
 #' Create README file for GeoPressure template
-#' 
-#' Internal helper function to generate a README.md file based on a 
+#'
+#' Internal helper function to generate a README.md file based on a
 #' GeoLocator Data Package's metadata.
-#' 
+#'
 #' @param pkg A GeoLocator Data Package object
 #' @return Nothing (side effect: writes README.md file)
 #' @noRd
@@ -161,10 +161,10 @@ create_geopressuretemplate_readme <- function(pkg) {
 }
 
 #' Create LICENSE file for GeoPressure template
-#' 
+#'
 #' Internal helper function to generate appropriate LICENSE files based on
 #' the license specifications in a GeoLocator Data Package.
-#' 
+#'
 #' @param licenses List of license objects from a GeoLocator Data Package
 #' @return Nothing (side effect: creates LICENSE files)
 #' @noRd

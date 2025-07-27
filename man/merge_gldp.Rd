@@ -12,7 +12,7 @@ merge_gldp(x, y)
 \item{y}{A GeoLocator Data Package object.}
 }
 \value{
-A single GeoLocator Data Package object containing the merged data from both \code{x} and \code{y}.
+A GeoLocator Data Package object containing the merged data from both \code{x} and \code{y}.
 }
 \description{
 Merges two GeoLocator Data Package objects (\code{x} and \code{y}) into a single combined package.

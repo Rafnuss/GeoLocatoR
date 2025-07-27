@@ -10,9 +10,10 @@ measurements(x)
 measurements(x) <- value
 }
 \arguments{
-\item{x}{GeoLocator Data Package object, as returned by \code{read_geolocatordp()}.}
+\item{x}{A GeoLocator Data Package object, as returned by \code{read_gldp()}.}
 
-\item{value}{A data frame to assign as measurements}
+\item{value}{A data frame to assign as measurements. Must conform to the measurements schema
+specification.}
 }
 \value{
 \code{\link[tibble:tibble]{tibble::tibble()}} data frame with measurements

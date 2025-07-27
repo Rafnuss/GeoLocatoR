@@ -144,10 +144,10 @@ print.geolocatordp <- function(x, ...) {
 
 
 #' Print formatted bullets for package fields
-#' 
+#'
 #' Internal helper function to print formatted bullet points for specific fields
 #' in a GeoLocator Data Package object.
-#' 
+#'
 #' @param pkg A GeoLocator Data Package object
 #' @param field_name Character string of the field name to print
 #' @return Nothing (side effect: prints to console)

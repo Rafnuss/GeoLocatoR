@@ -137,7 +137,7 @@ add_gldp_soi <- function(pkg,
                 glue::glue("material:{HarnessMaterial_data}")
               },
               if ("HarnessAttachement_data" %in% names(vars) &&
-                  !is.na(.data$HarnessAttachement_data)) {
+                !is.na(.data$HarnessAttachement_data)) {
                 glue::glue("attachement:{HarnessAttachement_data}")
               },
               if ("HarnessThickness" %in% names(vars) && !is.na(.data$HarnessThickness)) {
@@ -147,11 +147,11 @@ add_gldp_soi <- function(pkg,
                 glue::glue("legDiameter:{LegHarnessDiameter}")
               },
               if ("BreastHarnessDiameterHead" %in% names(vars) &&
-                  !is.na(.data$BreastHarnessDiameterHead)) {
+                !is.na(.data$BreastHarnessDiameterHead)) {
                 glue::glue("BreastDiameterHead:{BreastHarnessDiameterHead}")
               },
               if ("BreastHarnessDiameterTail" %in% names(vars) &&
-                  !is.na(.data$BreastHarnessDiameterTail)) {
+                !is.na(.data$BreastHarnessDiameterTail)) {
                 glue::glue("BreastDiameterTail:{BreastHarnessDiameterTail}")
               }
             ),
@@ -161,14 +161,20 @@ add_gldp_soi <- function(pkg,
       ) %>%
       ungroup()
 
-      t_gdl <-  t_gdl %>%
-        transmute(
+    t_gdl <- t_gdl %>%
+      transmute(
         tag_id = .data$GDL_ID,
         manufacturer = "Swiss Ornithological Institute",
-        model = if (all(c("GDL_Type", "HardwareVersion") %in% names(t_gdl)))
-          glue::glue("{GDL_Type}-{HardwareVersion}") else NA_character_,
-        firmware = if ("FirmwareVersion" %in% names(t_gdl))
-          .data$FirmwareVersion else NA_character_,
+        model = if (all(c("GDL_Type", "HardwareVersion") %in% names(t_gdl))) {
+          glue::glue("{GDL_Type}-{HardwareVersion}")
+        } else {
+          NA_character_
+        },
+        firmware = if ("FirmwareVersion" %in% names(t_gdl)) {
+          .data$FirmwareVersion
+        } else {
+          NA_character_
+        },
         weight = if ("TotalWeight" %in% names(t_gdl)) .data$TotalWeight else NA_real_,
         attachment_type = if ("attachment_type" %in% names(t_gdl)) {
           .data$attachment_type
@@ -245,10 +251,10 @@ add_gldp_soi <- function(pkg,
 
 
 #' Add Swiss Ornithological Institute directory information
-#' 
+#'
 #' Internal helper function to add directory information for SOI data files
 #' to a GDL (Geolocator Data List) object.
-#' 
+#'
 #' @param gdl A GDL data frame object
 #' @param directory_data A data frame containing directory information
 #' @return Updated GDL object with directory information
@@ -322,7 +328,7 @@ add_gldp_soi_directory <- function(gdl, directory_data) {
 
   if (length(gdl_id_na_dir) > 0 && FALSE) {
     cli_warn(c(
-      "!" = "We could not find the data directory for {length(gdl_id_na_dir)} tags (out of {nrow(gdl)}).",
+      "!" = "Could not find data directory for {length(gdl_id_na_dir)} tags (out of {nrow(gdl)}).",
       ">" = "GDL_IDs: {.field {gdl_id_na_dir}}. These will not be imported."
     ))
   }

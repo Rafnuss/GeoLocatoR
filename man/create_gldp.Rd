@@ -25,26 +25,28 @@ create_gldp(
 \item{title}{A string providing a title or one sentence description for this package. It should
 be plain text (no markup), capitalised like a title, NOT end in a period and less than 65
 characters. See \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#title}{Geolocator DP}
-and thw \href{https://datapackage.org/standard/data-package/#title}{Data Package specification}.}
+and the \href{https://datapackage.org/standard/data-package/#title}{Data Package specification}.}
 
 \item{contributors}{A list of contributors, where each contributor is a list with properties
-including at leas \code{title} but also optionally \code{givenName}, \code{familyName}, \code{path}, \code{email},
+including at least \code{title} but also optionally \code{givenName}, \code{familyName}, \code{path}, \code{email},
 \code{roles}, and \code{organization}. See the
 \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#contributors}{Geolocator DP}, the
 \href{https://datapackage.org/standard/data-package/#contributors}{Data Package specification} and the
 \href{https://r-pkgs.org/description.html#sec-description-authors-at-r}{R Packages}.}
 
-\item{embargo}{End date of the embargo. Default to \code{"1970-01-01"}. See the
-\href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#embargo}{Geolocator DP} and the
+\item{embargo}{End date of the embargo as ISO 8601 date string (YYYY-MM-DD). The repository
+will restrict access to the data until the end of the embargo period; at which time, the
+content will become publicly available automatically. Default to \code{"1970-01-01"} (no embargo).
+See the \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#embargo}{Geolocator DP} and the
 \href{https://datapackage.org/standard/data-package/#embargo}{Data Package specification}.}
 
-\item{licenses}{A list of licenses under which the data is provided.  Usually, a single license
-if sufficient and prefered. If you're not sure, checkout the \href{https://chooser-beta.creativecommons.org/}{Creative Commons License Chooser } and the \href{https://opendatacommons.org/}{Open Data Commons }. \code{name} or \code{path} must be provided. Defaults is a CC-BY-4.0
+\item{licenses}{A list of licenses under which the data is provided. Usually, a single license
+is sufficient and preferred. If you're not sure, check out the \href{https://chooser-beta.creativecommons.org/}{Creative Commons License Chooser } and the \href{https://opendatacommons.org/}{Open Data Commons }. \code{name} or \code{path} must be provided. Default is a CC-BY-4.0
 license. See the \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#licenses}{Geolocator DP } and the
 \href{https://datapackage.org/standard/data-package/#licenses}{Data Package specification}.}
 
 \item{id}{A globally unique identifier for the package, typically the DOI link of the
-corresponding Zenodo repository which \href{https://help.zenodo.org/docs/deposit/describe-records/reserve-doi/#reserve-doi}{can be reserved prior to publication }. Default to
+corresponding Zenodo repository which \href{https://help.zenodo.org/docs/deposit/describe-records/reserve-doi/#reserve-doi}{can be reserved prior to publication }. Defaults to
 \code{NULL}. See the \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#id}{Geolocator DP} and
 the \href{https://datapackage.org/standard/data-package/#id}{Data Package specification}.}
 
@@ -59,7 +61,8 @@ Semantic Versioning. Defaults to "1.0.0". See
 \href{https://datapackage.org/standard/data-package/#version}{Data Package specification} and \href{https://datapackage.org/recipes/data-package-version/}{Data Package Version recipe}.}
 
 \item{relatedIdentifiers}{(optional) A list of related identifiers for the package. Each related
-identifier is a list with properties \code{relationType} and \code{relatedIdentifier}. See the
+identifier is a list with properties \code{relationType}, \code{relatedIdentifier}, and
+\code{relatedIdentifierType}. See the
 \href{https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#relatedIdentifiers}{Geolocator DP} and
 the \href{https://camtrap-dp.tdwg.org/metadata/#relatedIdentifiers}{Camtrap DP specification }.}
 
@@ -114,7 +117,7 @@ pkg <- create_gldp(
       title = "Yann Rime",
       givenName = "Yann",
       familyName = "Rime",
-      path= "https://orcid.org/0000-0003-2745-0557",
+      path = "https://orcid.org/0000-0003-2745-0557",
       email = "yann.rime@vogelwarte.ch",
       roles = c("Researcher"),
       organization = "Swiss Ornithological Institute"
@@ -137,7 +140,7 @@ pkg <- create_gldp(
       relatedIdentifierType = "DOI"
     )
   ),
-  grants = c("Swiss National Fundation grant no. 354251"),
+  grants = c("Swiss National Foundation grant no. 354251"),
   keywords = c("Woodland Kingfisher", "intra-african", "multi-sensor geolocator"),
   created = "2024-05-17",
   bibliographicCitation = "Nussbaumer, R., & Rime, Y. (2024). Woodland Kingfisher: Migration

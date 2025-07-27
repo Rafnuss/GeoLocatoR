@@ -28,9 +28,10 @@ tidy data frame. The tags are expected to have various sensor types and their co
 measurements. The function reshapes and standardizes the data for further analysis.
 }
 \details{
-The \code{tags_to_measurements()} function extracts and processes sensor data from a list of tags. It renames the
-\code{value} column to the corresponding sensor type if it exists, ensures the presence of a \code{label}
-column, and reshapes the data into a long format. The function handles various sensor types such
+The \code{tags_to_measurements()} function extracts and processes sensor data from a list of tags. It
+renames the \code{value} column to the corresponding sensor type if it exists, ensures the presence of
+a \code{label} column, and reshapes the data into a long format. The function handles various sensor
+types such
 as pressure, acceleration, light, temperature, and magnetic fields.
 
 If no tags are provided, the function returns an empty tibble with the appropriate column names

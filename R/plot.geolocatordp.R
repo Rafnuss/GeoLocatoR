@@ -22,10 +22,10 @@ plot.geolocatordp <- function(x, type = NULL, ...) {
 }
 
 #' Plot coverage data for a GeoLocator Data Package
-#' 
+#'
 #' Internal helper function to create a coverage plot showing data availability
 #' across time for different sensors and tags.
-#' 
+#'
 #' @param x A GeoLocator Data Package object
 #' @return A ggplot2 object showing the coverage plot
 #' @noRd

@@ -56,7 +56,7 @@ read_gdl <- function(access_file = NA,
   } else {
     if (is.na(data_file) || is.na(order_file)) {
       cli_abort(c(
-        "x" = "Either {.arg access_file} or both {.arg data_file} and {.arg order_file} need to be provided."
+        "x" = "Need {.arg access_file} or both {.arg data_file} and {.arg order_file}."
       ))
     }
   }
@@ -109,7 +109,6 @@ read_gdl <- function(access_file = NA,
           # GDL
           "GDL_ID",
           "GDL_Type",
-
           "Species",
           "UTC_Attached",
           "SiteAttached",
