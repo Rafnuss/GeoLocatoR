@@ -27,7 +27,7 @@ project level metadata."><meta property="og:image" content="https://github.com/r
 
     <a class="navbar-brand me-2" href="../index.html">GeoLocatoR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,12 +95,12 @@ project level metadata.</p>
 <dd><p>A string providing a title or one sentence description for this package. It should
 be plain text (no markup), capitalised like a title, NOT end in a period and less than 65
 characters. See <a href="https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#title" class="external-link">Geolocator DP</a>
-and thw <a href="https://datapackage.org/standard/data-package/#title" class="external-link">Data Package specification</a>.</p></dd>
+and the <a href="https://datapackage.org/standard/data-package/#title" class="external-link">Data Package specification</a>.</p></dd>
 
 
 <dt id="arg-contributors">contributors<a class="anchor" aria-label="anchor" href="#arg-contributors"></a></dt>
 <dd><p>A list of contributors, where each contributor is a list with properties
-including at leas <code>title</code> but also optionally <code>givenName</code>, <code>familyName</code>, <code>path</code>, <code>email</code>,
+including at least <code>title</code> but also optionally <code>givenName</code>, <code>familyName</code>, <code>path</code>, <code>email</code>,
 <code>roles</code>, and <code>organization</code>. See the
 <a href="https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#contributors" class="external-link">Geolocator DP</a>, the
 <a href="https://datapackage.org/standard/data-package/#contributors" class="external-link">Data Package specification</a> and the
@@ -108,21 +108,23 @@ including at leas <code>title</code> but also optionally <code>givenName</code>,
 
 
 <dt id="arg-embargo">embargo<a class="anchor" aria-label="anchor" href="#arg-embargo"></a></dt>
-<dd><p>End date of the embargo. Default to <code>"1970-01-01"</code>. See the
-<a href="https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#embargo" class="external-link">Geolocator DP</a> and the
+<dd><p>End date of the embargo as ISO 8601 date string (YYYY-MM-DD). The repository
+will restrict access to the data until the end of the embargo period; at which time, the
+content will become publicly available automatically. Default to <code>"1970-01-01"</code> (no embargo).
+See the <a href="https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#embargo" class="external-link">Geolocator DP</a> and the
 <a href="https://datapackage.org/standard/data-package/#embargo" class="external-link">Data Package specification</a>.</p></dd>
 
 
 <dt id="arg-licenses">licenses<a class="anchor" aria-label="anchor" href="#arg-licenses"></a></dt>
-<dd><p>A list of licenses under which the data is provided.  Usually, a single license
-if sufficient and prefered. If you're not sure, checkout the <a href="https://chooser-beta.creativecommons.org/" class="external-link">Creative Commons License Chooser </a> and the <a href="https://opendatacommons.org/" class="external-link">Open Data Commons </a>. <code>name</code> or <code>path</code> must be provided. Defaults is a CC-BY-4.0
+<dd><p>A list of licenses under which the data is provided. Usually, a single license
+is sufficient and preferred. If you're not sure, check out the <a href="https://chooser-beta.creativecommons.org/" class="external-link">Creative Commons License Chooser </a> and the <a href="https://opendatacommons.org/" class="external-link">Open Data Commons </a>. <code>name</code> or <code>path</code> must be provided. Default is a CC-BY-4.0
 license. See the <a href="https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#licenses" class="external-link">Geolocator DP </a> and the
 <a href="https://datapackage.org/standard/data-package/#licenses" class="external-link">Data Package specification</a>.</p></dd>
 
 
 <dt id="arg-id">id<a class="anchor" aria-label="anchor" href="#arg-id"></a></dt>
 <dd><p>A globally unique identifier for the package, typically the DOI link of the
-corresponding Zenodo repository which <a href="https://help.zenodo.org/docs/deposit/describe-records/reserve-doi/#reserve-doi" class="external-link">can be reserved prior to publication </a>. Default to
+corresponding Zenodo repository which <a href="https://help.zenodo.org/docs/deposit/describe-records/reserve-doi/#reserve-doi" class="external-link">can be reserved prior to publication </a>. Defaults to
 <code>NULL</code>. See the <a href="https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#id" class="external-link">Geolocator DP</a> and
 the <a href="https://datapackage.org/standard/data-package/#id" class="external-link">Data Package specification</a>.</p></dd>
 
@@ -143,7 +145,8 @@ Semantic Versioning. Defaults to "1.0.0". See
 
 <dt id="arg-relatedidentifiers">relatedIdentifiers<a class="anchor" aria-label="anchor" href="#arg-relatedidentifiers"></a></dt>
 <dd><p>(optional) A list of related identifiers for the package. Each related
-identifier is a list with properties <code>relationType</code> and <code>relatedIdentifier</code>. See the
+identifier is a list with properties <code>relationType</code>, <code>relatedIdentifier</code>, and
+<code>relatedIdentifierType</code>. See the
 <a href="https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#relatedIdentifiers" class="external-link">Geolocator DP</a> and
 the <a href="https://camtrap-dp.tdwg.org/metadata/#relatedIdentifiers" class="external-link">Camtrap DP specification </a>.</p></dd>
 
@@ -196,7 +199,7 @@ to the GeoLocator Data Package profile. See the <a href="https://datapackage.org
 <span class="r-in"><span>      title <span class="op">=</span> <span class="st">"Yann Rime"</span>,</span></span>
 <span class="r-in"><span>      givenName <span class="op">=</span> <span class="st">"Yann"</span>,</span></span>
 <span class="r-in"><span>      familyName <span class="op">=</span> <span class="st">"Rime"</span>,</span></span>
-<span class="r-in"><span>      path<span class="op">=</span> <span class="st">"https://orcid.org/0000-0003-2745-0557"</span>,</span></span>
+<span class="r-in"><span>      path <span class="op">=</span> <span class="st">"https://orcid.org/0000-0003-2745-0557"</span>,</span></span>
 <span class="r-in"><span>      email <span class="op">=</span> <span class="st">"yann.rime@vogelwarte.ch"</span>,</span></span>
 <span class="r-in"><span>      roles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Researcher"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>      organization <span class="op">=</span> <span class="st">"Swiss Ornithological Institute"</span></span></span>
@@ -219,7 +222,7 @@ to the GeoLocator Data Package profile. See the <a href="https://datapackage.org
 <span class="r-in"><span>      relatedIdentifierType <span class="op">=</span> <span class="st">"DOI"</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  grants <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Swiss National Fundation grant no. 354251"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  grants <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Swiss National Foundation grant no. 354251"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  keywords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Woodland Kingfisher"</span>, <span class="st">"intra-african"</span>, <span class="st">"multi-sensor geolocator"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  created <span class="op">=</span> <span class="st">"2024-05-17"</span>,</span></span>
 <span class="r-in"><span>  bibliographicCitation <span class="op">=</span> <span class="st">"Nussbaumer, R., &amp; Rime, Y. (2024). Woodland Kingfisher: Migration</span></span></span>
@@ -238,7 +241,7 @@ to the GeoLocator Data Package profile. See the <a href="https://datapackage.org
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
