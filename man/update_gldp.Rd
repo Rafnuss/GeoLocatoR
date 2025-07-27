@@ -54,5 +54,5 @@ latitude and longitude values from the \code{observations} resource, if availabl
 schema
 }
 
-\code{update_gldp} performs all of the the functions mentioned above.
+\code{update_gldp} performs all of the functions mentioned above.
 }

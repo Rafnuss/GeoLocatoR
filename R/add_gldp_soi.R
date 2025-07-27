@@ -95,7 +95,7 @@ add_gldp_soi <- function(pkg,
     )
 
   # Adding measurement resource
-  m <- bind_rows(m, tags2m(dtags))
+  m <- bind_rows(m, tags_to_measurements(dtags))
 
   if (nrow(m) > 0) {
     pkg <- add_gldp_resource(pkg, "measurements", m, replace = TRUE)
@@ -137,7 +137,7 @@ add_gldp_soi <- function(pkg,
                 glue::glue("material:{HarnessMaterial_data}")
               },
               if ("HarnessAttachement_data" %in% names(vars) &&
-                  !is.na(.data$HarnessAttachement_data)) {
+                !is.na(.data$HarnessAttachement_data)) {
                 glue::glue("attachement:{HarnessAttachement_data}")
               },
               if ("HarnessThickness" %in% names(vars) && !is.na(.data$HarnessThickness)) {
@@ -147,11 +147,11 @@ add_gldp_soi <- function(pkg,
                 glue::glue("legDiameter:{LegHarnessDiameter}")
               },
               if ("BreastHarnessDiameterHead" %in% names(vars) &&
-                  !is.na(.data$BreastHarnessDiameterHead)) {
+                !is.na(.data$BreastHarnessDiameterHead)) {
                 glue::glue("BreastDiameterHead:{BreastHarnessDiameterHead}")
               },
               if ("BreastHarnessDiameterTail" %in% names(vars) &&
-                  !is.na(.data$BreastHarnessDiameterTail)) {
+                !is.na(.data$BreastHarnessDiameterTail)) {
                 glue::glue("BreastDiameterTail:{BreastHarnessDiameterTail}")
               }
             ),
@@ -161,13 +161,20 @@ add_gldp_soi <- function(pkg,
       ) %>%
       ungroup()
 
-      t_gdl <-  t_gdl %>%
-        transmute(
+    t_gdl <- t_gdl %>%
+      transmute(
         tag_id = .data$GDL_ID,
         manufacturer = "Swiss Ornithological Institute",
-        model = if (all(c("GDL_Type", "HardwareVersion") %in% names(t_gdl)))
-          glue::glue("{GDL_Type}-{HardwareVersion}") else NA_character_,
-        firmware = if ("FirmwareVersion" %in% names(t_gdl)) .data$FirmwareVersion else NA_character_,
+        model = if (all(c("GDL_Type", "HardwareVersion") %in% names(t_gdl))) {
+          glue::glue("{GDL_Type}-{HardwareVersion}")
+        } else {
+          NA_character_
+        },
+        firmware = if ("FirmwareVersion" %in% names(t_gdl)) {
+          .data$FirmwareVersion
+        } else {
+          NA_character_
+        },
         weight = if ("TotalWeight" %in% names(t_gdl)) .data$TotalWeight else NA_real_,
         attachment_type = if ("attachment_type" %in% names(t_gdl)) {
           .data$attachment_type
@@ -196,7 +203,7 @@ add_gldp_soi <- function(pkg,
 
   # Adding sensor resource
   o_gdl <- bind_rows(
-    gdl_attach <- gdl_to %>% transmute(
+    gdl_attach <- gdl_to %>% transmute( # nolint
       ring_number = if ("RingNumber" %in% names(gdl_to)) .data$RingNumber else NA_character_,
       tag_id = if ("GDL_ID" %in% names(gdl_to)) .data$GDL_ID else NA_character_,
       datetime = if ("UTC_Attached" %in% names(gdl_to)) .data$UTC_Attached else as.POSIXct(NA),
@@ -207,7 +214,7 @@ add_gldp_soi <- function(pkg,
       age_class = "0",
       sex = "U"
     ),
-    gdl_retrieve <- gdl_to %>% transmute(
+    gdl_retrieve <- gdl_to %>% transmute( # nolint
       ring_number = if ("RingNumber" %in% names(gdl_to)) .data$RingNumber else NA_character_,
       tag_id = if ("GDL_ID" %in% names(gdl_to)) .data$GDL_ID else NA_character_,
       datetime = if ("UTC_Removed" %in% names(gdl_to)) .data$UTC_Removed else as.POSIXct(NA),
@@ -243,6 +250,14 @@ add_gldp_soi <- function(pkg,
 
 
 
+#' Add Swiss Ornithological Institute directory information
+#'
+#' Internal helper function to add directory information for SOI data files
+#' to a GDL (Geolocator Data List) object.
+#'
+#' @param gdl A GDL data frame object
+#' @param directory_data A data frame containing directory information
+#' @return Updated GDL object with directory information
 #' @noRd
 add_gldp_soi_directory <- function(gdl, directory_data) {
   # Check if the required columns are present
@@ -312,8 +327,10 @@ add_gldp_soi_directory <- function(gdl, directory_data) {
     pull(.data$GDL_ID)
 
   if (length(gdl_id_na_dir) > 0 && FALSE) {
-    cli_warn("We could not find the data directory for {length(gdl_id_na_dir)} tags (out of \
-                      {nrow(gdl)}). GDL_IDs: {.field {gdl_id_na_dir}}. These will not be imported.")
+    cli_warn(c(
+      "!" = "Could not find data directory for {length(gdl_id_na_dir)} tags (out of {nrow(gdl)}).",
+      ">" = "GDL_IDs: {.field {gdl_id_na_dir}}. These will not be imported."
+    ))
   }
   gdl
 }

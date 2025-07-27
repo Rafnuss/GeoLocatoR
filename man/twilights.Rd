@@ -10,9 +10,10 @@ twilights(x)
 twilights(x) <- value
 }
 \arguments{
-\item{x}{GeoLocator Data Package object, as returned by \code{read_geolocatordp()}.}
+\item{x}{A GeoLocator Data Package object, as returned by \code{read_gldp()}.}
 
-\item{value}{A data frame to assign as twilights}
+\item{value}{A data frame to assign as twilights. Must conform to the twilights schema
+specification.}
 }
 \value{
 \code{\link[tibble:tibble]{tibble::tibble()}} data frame with twilights

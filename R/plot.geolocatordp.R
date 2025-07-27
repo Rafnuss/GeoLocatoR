@@ -1,27 +1,36 @@
 #' Plot GeoLocator Data Package coverage
 #'
-#' @param x a GeoLocator `pkg` object.
-#' @param type type of the plot to display. One of `"coverage"`.
-#' @param ... additional parameters
+#' @description
+#' Creates visualizations for a GeoLocator Data Package, including coverage plots
+#' showing data availability across time for different sensors and tags.
+#'
+#' @param x A GeoLocator Data Package object.
+#' @param type Type of the plot to display. Currently only `"coverage"` is supported.
+#' @param ... Additional parameters passed to plotting functions.
 #'
 #' @return a plot, ggplotly or leaflet object.
 #'
 #' @export
 plot.geolocatordp <- function(x, type = NULL, ...) {
-  pkg <- x
-
   if (is.null(type)) {
     type <- "coverage"
   }
 
   if (type == "coverage") {
-    plot_pkg_coverage(pkg, ...)
+    plot_pkg_coverage(x)
   }
 }
 
+#' Plot coverage data for a GeoLocator Data Package
+#'
+#' Internal helper function to create a coverage plot showing data availability
+#' across time for different sensors and tags.
+#'
+#' @param x A GeoLocator Data Package object
+#' @return A ggplot2 object showing the coverage plot
 #' @noRd
-plot_pkg_coverage <- function(pkg) {
-  m <- measurements(pkg) %>%
+plot_pkg_coverage <- function(x) {
+  m <- measurements(x) %>%
     mutate(sensor = case_when(
       sensor %in% c(
         "magnetic_x", "magnetic_y", "magnetic_z", "acceleration_x", "acceleration_y",
@@ -34,7 +43,7 @@ plot_pkg_coverage <- function(pkg) {
     summarize(has_data = sum(!is.na(.data$value)) > 0) %>% # Check if there is data (non-NA)
     ungroup()
 
-  o <- observations(pkg) %>%
+  o <- observations(x) %>%
     filter(!is.na(.data$datetime)) %>%
     filter(.data$tag_id %in% unique(m$tag_id))
 

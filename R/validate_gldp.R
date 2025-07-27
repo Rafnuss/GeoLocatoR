@@ -1,13 +1,13 @@
 #' Validate a GeoLocator Data Package
 #'
+#' @description
 #' This function performs a comprehensive validation of a GeoLocator Data Package by checking the
 #' package metadata, profile, and resources. The validation includes verifying that the package
 #' conforms to the GeoLocator Data Package profile and that each resource adheres to its schema.
 #'
 #' If `quiet` is `TRUE`, the function suppresses the output of the `cli` package's messages.
 #'
-#' @param pkg An object of class `"geolocatordp"` representing the GeoLocator Data Package to be
-#' validated.
+#' @param pkg A GeoLocator Data Package object to be validated.
 #' @param quiet A logical indicating whether to suppress messages from the `cli` package. Defaults
 #' to `FALSE`.
 #'
@@ -41,6 +41,13 @@ validate_gldp <- function(pkg, quiet = FALSE) {
 }
 
 
+#' Validate GeoLocator Data Package profile
+#'
+#' Internal helper function to validate that a GeoLocator Data Package conforms
+#' to the expected profile schema.
+#'
+#' @param pkg A GeoLocator Data Package object
+#' @return Logical indicating whether the profile validation passed
 #' @noRd
 validate_gldp_profile <- function(pkg) {
   schema <- jsonlite::fromJSON(pkg$`$schema`, simplifyVector = FALSE)
@@ -60,6 +67,13 @@ validate_gldp_profile <- function(pkg) {
   invisible(valid)
 }
 
+#' Validate GeoLocator Data Package resources
+#'
+#' Internal helper function to validate all resources within a GeoLocator Data Package
+#' against their respective schemas.
+#'
+#' @param pkg A GeoLocator Data Package object
+#' @return Logical indicating whether all resource validations passed
 #' @noRd
 validate_gldp_resources <- function(pkg) {
   cli_h3("Check GeoLocator DataPackage Resources")
@@ -83,9 +97,9 @@ validate_gldp_resources <- function(pkg) {
   }
 
   if (valid) {
-    cli_alert_success("Package's ressources are valid.")
+    cli_alert_success("Package's resources are valid.")
   } else {
-    cli_alert_danger("Package's ressources validation failed.")
+    cli_alert_danger("Package's resources validation failed.")
   }
 
   invisible(valid)
@@ -128,6 +142,16 @@ validate_gldp_table <- function(data, schema) {
   invisible(valid)
 }
 
+#' Validate object against schema properties
+#'
+#' Internal helper function to validate an object against a set of required fields
+#' and property definitions from a schema.
+#'
+#' @param obj The object to validate
+#' @param required Vector of required field names
+#' @param properties List of property definitions from schema
+#' @param name Optional name prefix for error messages
+#' @return Logical indicating whether the object validation passed
 #' @noRd
 validate_gldp_object <- function(obj, required, properties, name = "") {
   name <- glue::glue("{name}{ifelse(name=='','','$')}")
@@ -304,16 +328,19 @@ validate_gldp_item <- function(item, prop, field) {
 
   # Check if 'pattern' property exists and is specified
   if (!is.null(prop$pattern)) {
-    # Apply the regular expression to each item
-    pattern_match <- grepl(prop$pattern, as.character(item[!is.na(item)]))
+    # Apply the regular expression to each non-NA item
+    non_na_items <- !is.na(item)
+    if (any(non_na_items)) {
+      pattern_match <- grepl(prop$pattern, as.character(item[non_na_items]))
 
-    # Identify items that do not match the pattern
-    not_matching <- !pattern_match
+      # Identify items that do not match the pattern
+      not_matching <- !pattern_match
 
-    if (any(not_matching)) {
-      cli_alert_danger("{.field {field}} has {sum(not_matching)} item{?s} that do not match the
-                       required pattern: {.val {prop$pattern}}.")
-      valid <- FALSE
+      if (any(not_matching)) {
+        cli_alert_danger("{.field {field}} has {sum(not_matching)} item{?s} that do not match the
+                         required pattern: {.val {prop$pattern}}.")
+        valid <- FALSE
+      }
     }
   }
 
@@ -377,29 +404,44 @@ check_format <- function(value, format, field) {
   }
 
   format_map <- list(
-    `date-time` = function(v) grepl("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", v),
-    date = function(v) grepl("^\\d{4}-\\d{2}-\\d{2}$", v),
-    time = function(v) grepl("^\\d{2}:\\d{2}:\\d{2}$", v),
-    `utc-millisec` = function(v) is.numeric(v),
+    `date-time` = function(v) {
+      all(is.na(v) | grepl("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", v))
+    },
+    date = function(v) all(is.na(v) | grepl("^\\d{4}-\\d{2}-\\d{2}$", v)),
+    time = function(v) all(is.na(v) | grepl("^\\d{2}:\\d{2}:\\d{2}$", v)),
+    `utc-millisec` = function(v) all(is.na(v) | is.numeric(v)),
     regex = function(v) {
-      tryCatch(
-        {
-          grepl(v, "")
-        },
-        error = function(e) FALSE
-      )
+      all(sapply(v, function(x) {
+        if (is.na(x)) {
+          return(TRUE)
+        }
+        tryCatch(
+          {
+            grepl(x, "")
+            TRUE
+          },
+          error = function(e) FALSE
+        )
+      }))
     },
     color = function(v) {
-      grepl("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^(red|blue|green|yellow|black|white)$", v)
+      color_pattern <- "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^(red|blue|green|yellow|black|white)$"
+      all(is.na(v) | grepl(color_pattern, v))
     },
-    style = function(v) grepl("^.+: .+;$", v),
-    phone = function(v) grepl("^\\+?[0-9 .-]{7,}$", v),
-    uri = function(v) grepl("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?", v),
-    email = function(v) grepl("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", v),
-    `ip-address` = function(v) grepl("^\\d{1,3}(\\.\\d{1,3}){3}$", v),
-    ipv6 = function(v) grepl("^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$", v),
-    `host-name` = function(v) grepl("^[a-zA-Z0-9.-]+$", v),
-    textarea = function(v) grepl("^(\\S.*(?:\\r?\\n\\S.*)*)$", v) | v == ""
+    style = function(v) all(is.na(v) | grepl("^.+: .+;$", v)),
+    phone = function(v) all(is.na(v) | grepl("^\\+?[0-9 .-]{7,}$", v)),
+    uri = function(v) {
+      uri_pattern <- "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$"
+      all(is.na(v) | grepl(uri_pattern, v))
+    },
+    email = function(v) {
+      email_pattern <- "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+      all(is.na(v) | grepl(email_pattern, v))
+    },
+    `ip-address` = function(v) all(is.na(v) | grepl("^\\d{1,3}(\\.\\d{1,3}){3}$", v)),
+    ipv6 = function(v) all(is.na(v) | grepl("^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$", v)),
+    `host-name` = function(v) all(is.na(v) | grepl("^[a-zA-Z0-9.-]+$", v)),
+    textarea = function(v) all(is.na(v) | grepl("^(\\S.*(?:\\r?\\n\\S.*)*)$", v) | v == "")
   )
 
 
@@ -407,7 +449,8 @@ check_format <- function(value, format, field) {
   if (format %in% names(format_map)) {
     format_func <- format_map[[format]]
     # valid the value using the corresponding validation function
-    if (!format_func(value)) {
+    format_check_result <- format_func(value)
+    if (!all(format_check_result)) {
       cli_alert_danger("Format mismatch for {.field {field}}: Expected format {.val {format}},
                        but got {.val {value}}.")
       valid <- FALSE
@@ -426,31 +469,120 @@ check_type <- function(value, type, field) {
   }
 
   type_map <- list(
-    string = function(v) typeof(v) == "character",
-    number = function(v) typeof(v) %in% c("integer", "double"),
-    integer = function(v) typeof(v) == "integer",
-    boolean = function(v) typeof(v) == "logical",
-    object = function(v) typeof(v) == "list",
-    array = function(v) typeof(v) %in% c("list", "character", "integer", "double"),
+    string = function(v) is.character(v),
+    number = function(v) is.numeric(v) && !is.logical(v),
+    integer = function(v) is.integer(v) || (is.numeric(v) && all(v == floor(v), na.rm = TRUE)),
+    boolean = function(v) is.logical(v),
+    object = function(v) is.list(v) && !is.data.frame(v),
+    array = function(v) is.vector(v) || is.list(v),
     null = function(v) is.null(v),
     datetime = function(v) {
-      inherits(v, "POSIXct") ||
-        grepl("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", v)
+      if (inherits(v, c("Date", "POSIXct", "POSIXlt"))) {
+        return(TRUE)
+      }
+      if (is.character(v)) {
+        return(all(grepl("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", v), na.rm = TRUE))
+      }
+      FALSE
     },
-    date = function(v) inherits(v, "POSIXct") || grepl("^\\d{4}-\\d{2}-\\d{2}$", v),
-    time = function(v) inherits(v, "POSIXct") || grepl("^\\d{2}:\\d{2}:\\d{2}$", v),
-    year = function(v) inherits(v, "POSIXct") || grepl("^\\d{4}$", v),
-    yearmonth = function(v) inherits(v, "POSIXct") || grepl("^\\d{4}-\\d{2}$", v),
+    date = function(v) {
+      if (inherits(v, c("Date", "POSIXct", "POSIXlt"))) {
+        return(TRUE)
+      }
+      if (is.character(v)) {
+        return(all(grepl("^\\d{4}-\\d{2}-\\d{2}$", v), na.rm = TRUE))
+      }
+      FALSE
+    },
+    time = function(v) {
+      if (inherits(v, c("POSIXct", "POSIXlt"))) {
+        return(TRUE)
+      }
+      if (is.character(v)) {
+        return(all(grepl("^\\d{2}:\\d{2}:\\d{2}$", v), na.rm = TRUE))
+      }
+      FALSE
+    },
+    year = function(v) {
+      if (inherits(v, c("Date", "POSIXct", "POSIXlt"))) {
+        return(TRUE)
+      }
+      if (is.numeric(v)) {
+        return(all(is.na(v) | (v >= 1000 & v <= 9999 & v == floor(v))))
+      }
+      if (is.character(v)) {
+        return(all(is.na(v) | grepl("^\\d{4}$", v)))
+      }
+      FALSE
+    },
+    yearmonth = function(v) {
+      if (inherits(v, c("Date", "POSIXct", "POSIXlt"))) {
+        return(TRUE)
+      }
+      if (is.character(v)) {
+        return(all(is.na(v) | grepl("^\\d{4}-\\d{2}$", v)))
+      }
+      FALSE
+    },
     duration = function(v) {
-      grepl("^P(?:\\d+Y)?(?:\\d+M)?(?:\\d+D)?(?:T(?:\\d+H)?(?:\\d+M)?(?:\\d+S)?)?$", v)
+      if (!is.character(v)) {
+        return(FALSE)
+      }
+      # ISO 8601 duration pattern - simplified version
+      pattern <- "^P(\\d+Y)?(\\d+M)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+(\\.\\d+)?S)?)?$"
+      all(is.na(v) | (grepl(pattern, v) & grepl("[YMDHS]", v))) # Must have at least one component
     },
-    geopoint = function(v) grepl("^\\s*-?\\d+(\\.\\d+)?,\\s*-?\\d+(\\.\\d+)?\\s*$", v),
+    geopoint = function(v) {
+      if (!is.character(v)) {
+        return(FALSE)
+      }
+
+      # Handle NA values - they are considered valid
+      na_mask <- is.na(v)
+      if (all(na_mask)) {
+        return(TRUE)
+      }
+
+      # Validate non-NA values
+      valid_vals <- v[!na_mask]
+      pattern <- "^\\s*(-?\\d+(?:\\.\\d+)?)\\s*,\\s*(-?\\d+(?:\\.\\d+)?)\\s*$"
+      matches <- grepl(pattern, valid_vals)
+
+      if (length(valid_vals) > 0 && any(matches)) {
+        # Extract coordinates and validate ranges using base R
+        regex_matches <- regexec(pattern, valid_vals[matches])
+        coords <- regmatches(valid_vals[matches], regex_matches)
+        lat <- as.numeric(sapply(coords, function(x) if (length(x) > 1) x[2] else NA))
+        lon <- as.numeric(sapply(coords, function(x) if (length(x) > 2) x[3] else NA))
+        valid_coords <- all(lat >= -90 & lat <= 90 & lon >= -180 & lon <= 180, na.rm = TRUE)
+        return(all(matches) && valid_coords)
+      }
+      all(matches)
+    },
     geojson = function(v) {
-      TRUE || grepl(glue::glue(
-        "^\\s*\\{\\s*\"type\"\\s*:\\s*\"Feature\"\\s*,\\s*\"geometry\"\\s*:\\s*\\{\\s*\"type",
-        "\"\\s*:\\s*\"Point\"\\s*,\\s*\"coordinates\"\\s*:\\s*\\[\\s*-?\\d+(\\.\\d+)?,",
-        "\\s*-?\\d+(\\.\\d+)?\\s*\\]\\s*\\}\\s*\\}\\s*$"
-      ), v)
+      if (!is.character(v)) {
+        return(FALSE)
+      }
+
+      # Handle each element in the vector
+      all(sapply(v, function(x) {
+        if (is.na(x)) {
+          return(TRUE)
+        } # NA values are considered valid
+
+        # Try to parse as JSON and validate structure
+        tryCatch(
+          {
+            json_obj <- jsonlite::fromJSON(x, simplifyVector = FALSE)
+            return(
+              !is.null(json_obj$type) && json_obj$type == "Feature" &&
+                !is.null(json_obj$geometry) && !is.null(json_obj$geometry$type) &&
+                !is.null(json_obj$geometry$coordinates)
+            )
+          },
+          error = function(e) FALSE
+        )
+      }))
     },
     any = function(v) TRUE # 'any' accepts everything
   )
@@ -459,7 +591,8 @@ check_type <- function(value, type, field) {
   valid <- TRUE
   # Check if the expected type is in the type_map
   if (type %in% names(type_map)) {
-    if (!type_map[[type]](value)) {
+    type_check_result <- type_map[[type]](value)
+    if (!all(type_check_result)) {
       cli_alert_danger("Type mismatch for {.field {field}}: Expected `{type}`, but got
                        `{typeof(value)}`.")
       valid <- FALSE
@@ -524,7 +657,7 @@ validate_gldp_coherence <- function(pkg) {
       present in {.field tags}."
     )
     cli_alert_info(
-      "All {.field ring_number} present in the resource {.field tags} need tto also be present \\
+      "All {.field ring_number} present in the resource {.field tags} need to also be present \\
     in the resource {.field observations}."
     )
     valid <- FALSE

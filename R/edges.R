@@ -16,7 +16,7 @@ edges <- function(x) {
 }
 
 #' @rdname edges
-#' @param value A data frame to assign as edges
+#' @param value A data frame to assign as edges. Must conform to the edges schema specification.
 #' @export
 "edges<-" <- function(x, value) {
   if (!is.data.frame(value)) {

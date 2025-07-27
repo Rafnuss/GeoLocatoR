@@ -7,19 +7,17 @@
 version(x)
 }
 \arguments{
-\item{x}{GeoLocator Data Package object, as returned by
-\code{create_gldp()}.
-Also works on a Frictionless Data Package, as returned by
+\item{x}{A GeoLocator Data Package object, as returned by
+\code{create_gldp()}. Also works on a Frictionless Data Package, as returned by
 \code{read_package()}.}
 }
 \value{
-GeoLocator DP version number (e.g. \code{1.0}).
+Character string with the GeoLocator DP version number (e.g. \code{"v0.2"}).
 }
 \description{
 Extracts the version number used by a GeoLocator Data Package object.
 This version number indicates what version of the \href{https://raphaelnussbaumer.com/GeoLocator-DP/}{GeoLocator DP standard} was used.
-}
-\details{
+
 The version number is derived as follows:
 \enumerate{
 \item The \code{version} attribute, if defined.

@@ -17,8 +17,8 @@
 #' @return An updated or new Geolocator Data Package object with metadata from the zenodo record.
 #'
 #' @export
-zenodoRecord2gldp <- function(zenodo_record,
-                              pkg = NULL) {
+zenodo_to_gldp <- function(zenodo_record,
+                           pkg = NULL) {
   z <- zenodo_record
   assertthat::assert_that(all(c("ZenodoRecord", "zen4RLogger", "R6") %in% class(z)))
 

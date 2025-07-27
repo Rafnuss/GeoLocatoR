@@ -1,4 +1,3 @@
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # GeoLocatoR 🕊️📦 <a href="https://github.com/rafnuss/geolocator"><img src="man/figures/logo.png" align="right" height="139" alt="GeoLocatoR website" /></a>
@@ -12,6 +11,7 @@ stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://
 [![lint](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/lint.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/lint.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/Rafnuss/GeoLocatoR/graph/badge.svg)](https://app.codecov.io/gh/Rafnuss/GeoLocatoR)
+
 <!-- badges: end -->
 
 **GeoLocatoR** is an R package that helps you create, use, and share
@@ -60,7 +60,7 @@ exchangeable package. Learn more about the GeoLocator DP standard
 
 You can install GeoLocatoR from GitHub:
 
-``` r
+```r
 # install.packages("pak")
 pak::pkg_install("Rafnuss/GeoLocatoR")
 ```
@@ -72,12 +72,12 @@ Learn how to use GeoLocatoR with the dedicated part of the
 
 ## Functions mapping
 
-| [frictionless-r](https://docs.ropensci.org/frictionless/) | Basic GeolocatoR | GeoPressureTemplate |
-|----|----|----|
-| [`create_package()`](https://docs.ropensci.org/frictionless/reference/create_package.html) | [`create_gdlp()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/create_gldp.html) | [`create_gldp_geopressuretemplate()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/create_gldp_geopressuretemplate.html) |
-| [`add_resource()`](https://docs.ropensci.org/frictionless/reference/add_resource.html) | [`add_gdlp_resource()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/add_gldp_resource.html) | [`add_gldp_geopressuretemplate()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/add_gldp_geopressuretemplate.html) |
-| [`write_package()`](https://docs.ropensci.org/frictionless/reference/write_package.html) |  | [`write_geopressuretemplate()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/write_geopressuretemplate.html) |
-| [`read_package()`](https://docs.ropensci.org/frictionless/reference/read_package.html) | [`read_gdlp()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/read_gldp.html) |  |
+| [frictionless-r](https://docs.ropensci.org/frictionless/)                                  | Basic GeolocatoR                                                                                   | GeoPressureTemplate                                                                                                            |
+| ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| [`create_package()`](https://docs.ropensci.org/frictionless/reference/create_package.html) | [`create_gldp()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/create_gldp.html)             | [`create_gldp_geopressuretemplate()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/create_gldp_geopressuretemplate.html) |
+| [`add_resource()`](https://docs.ropensci.org/frictionless/reference/add_resource.html)     | [`add_gldp_resource()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/add_gldp_resource.html) | [`add_gldp_geopressuretemplate()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/add_gldp_geopressuretemplate.html)       |
+| [`write_package()`](https://docs.ropensci.org/frictionless/reference/write_package.html)   |                                                                                                    | [`write_geopressuretemplate()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/write_geopressuretemplate.html)             |
+| [`read_package()`](https://docs.ropensci.org/frictionless/reference/read_package.html)     | [`read_gldp()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/read_gldp.html)                 |                                                                                                                                |
 
 ## 📚 Citation
 

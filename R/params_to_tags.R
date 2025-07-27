@@ -7,11 +7,11 @@
 #' generated during the GeoPressure workflow. See [`GeoPressureR::param_create()`
 #' ](https://raphaelnussbaumer.com/GeoPressureR/reference/param_create.html) for more information.
 #'
-#' @return A tibble with columns `tag_id`, `manufacturer`, `scientific_name`, `ring_number`,
-#' `model`, and `firmware` (if `soi_settings` is present).
+#' @return A [tibble::tibble()] data frame with columns `tag_id`, `manufacturer`, `scientific_name`,
+#' `ring_number`, `model`, and `firmware` (if `soi_settings` is present).
 #'
 #' @export
-params2t <- function(params) {
+params_to_tags <- function(params) {
   params %>%
     purrr::map(\(param) {
       t <- tibble::tibble(
@@ -21,7 +21,7 @@ params2t <- function(params) {
         ring_number = NA_character_
       )
 
-      t$manufacturer[t$manufacturer == "soi"] <- "Swiss Ornithological Institue"
+      t$manufacturer[t$manufacturer == "soi"] <- "Swiss Ornithological Institute"
       t$manufacturer[t$manufacturer == "migratetech"] <- "Migrate Technology"
       t$manufacturer[t$manufacturer == "lund"] <- "Lund CAnMove"
 

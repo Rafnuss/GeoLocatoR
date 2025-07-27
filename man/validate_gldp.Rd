@@ -7,8 +7,7 @@
 validate_gldp(pkg, quiet = FALSE)
 }
 \arguments{
-\item{pkg}{An object of class \code{"geolocatordp"} representing the GeoLocator Data Package to be
-validated.}
+\item{pkg}{A GeoLocator Data Package object to be validated.}
 
 \item{quiet}{A logical indicating whether to suppress messages from the \code{cli} package. Defaults
 to \code{FALSE}.}
@@ -21,7 +20,6 @@ failed (\code{FALSE}).
 This function performs a comprehensive validation of a GeoLocator Data Package by checking the
 package metadata, profile, and resources. The validation includes verifying that the package
 conforms to the GeoLocator Data Package profile and that each resource adheres to its schema.
-}
-\details{
+
 If \code{quiet} is \code{TRUE}, the function suppresses the output of the \code{cli} package's messages.
 }

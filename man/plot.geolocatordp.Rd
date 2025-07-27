@@ -7,15 +7,16 @@
 \method{plot}{geolocatordp}(x, type = NULL, ...)
 }
 \arguments{
-\item{x}{a GeoLocator \code{pkg} object.}
+\item{x}{A GeoLocator Data Package object.}
 
-\item{type}{type of the plot to display. One of \code{"coverage"}.}
+\item{type}{Type of the plot to display. Currently only \code{"coverage"} is supported.}
 
-\item{...}{additional parameters}
+\item{...}{Additional parameters passed to plotting functions.}
 }
 \value{
 a plot, ggplotly or leaflet object.
 }
 \description{
-Plot GeoLocator Data Package coverage
+Creates visualizations for a GeoLocator Data Package, including coverage plots
+showing data availability across time for different sensors and tags.
 }

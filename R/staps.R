@@ -16,7 +16,7 @@ staps <- function(x) {
 }
 
 #' @rdname staps
-#' @param value A data frame to assign as staps
+#' @param value A data frame to assign as staps. Must conform to the staps schema specification.
 #' @export
 "staps<-" <- function(x, value) {
   if (!is.data.frame(value)) {

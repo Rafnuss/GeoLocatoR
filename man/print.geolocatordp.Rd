@@ -7,7 +7,7 @@
 \method{print}{geolocatordp}(x, ...)
 }
 \arguments{
-\item{x}{GeoLocator Data Package object, as returned by \code{read_geolocatordp()}.}
+\item{x}{A GeoLocator Data Package object, as returned by \code{read_gldp()}.}
 
 \item{...}{Further arguments, they are ignored by this function.}
 }

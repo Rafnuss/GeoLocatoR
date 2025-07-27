@@ -39,9 +39,9 @@ add_gldp_geopressuretemplate <- function(
   check_gldp(pkg)
   # Check if the directory exists
   if (!dir.exists(directory)) {
-    cli_abort(
-      message = "The specified directory does not exist: {.file {directory}}."
-    )
+    cli_abort(c(
+      "x" = "The specified directory does not exist: {.file {directory}}."
+    ))
   }
   assertthat::assert_that(any(from %in% c("interim", "raw-tag")))
   assertthat::assert_that(is.logical(replace))
@@ -87,21 +87,20 @@ add_gldp_geopressuretemplate <- function(
       for (var in var_names_required) {
         is_null_var <- sapply(interim[[var]], is.null)
         if (any(is_null_var)) {
-          cli_abort(
-            "Interim file {.file {basename(all_files)[is_null_var]}} have no variable \\
-                {.var {var}}"
-          )
+          cli_abort(c(
+            "x" = "File {.file {basename(all_files)[is_null_var]}} missing variable {.var {var}}."
+          ))
         }
       }
 
       # Crete tag resource
-      t <- params2t(interim$param)
+      t <- params_to_tags(interim$param)
 
       # Create observations resource
-      o <- params2o(interim$param)
+      o <- params_to_observations(interim$param)
 
       # Create measurements resource
-      m <- tags2m(interim$tag)
+      m <- tags_to_measurements(interim$tag)
 
       # Add twilights
       twl <- interim$tag %>%
@@ -253,14 +252,14 @@ add_gldp_geopressuretemplate <- function(
         purrr::map(rawtagid2tag, .progress = list(type = "tasks"))
 
       # Adding measurements resource
-      m <- bind_rows(m, tags2m(dtags))
+      m <- bind_rows(m, tags_to_measurements(dtags))
 
       # Adding tag resource
       t <- bind_rows(
         t,
         dtags %>%
           purrr::map(~ .x$param) %>%
-          params2t()
+          params_to_tags()
       )
 
       # Adding observations resource
@@ -268,7 +267,7 @@ add_gldp_geopressuretemplate <- function(
         o,
         dtags %>%
           purrr::map(~ .x$param) %>%
-          params2o()
+          params_to_observations()
       )
     }
 
@@ -390,6 +389,14 @@ add_gldp_geopressuretemplate <- function(
   return(pkg)
 }
 
+#' Convert raw tag ID to tag object
+#'
+#' Internal helper function to convert a raw tag identifier to a complete tag object
+#' by reading the configuration and data files.
+#'
+#' @param id Character string of the tag identifier
+#' @param display_config_error Logical indicating whether to display configuration errors
+#' @return A tag object with parameter and data information
 #' @noRd
 rawtagid2tag <- function(id, display_config_error = TRUE) {
   config <- tryCatch(
@@ -405,8 +412,7 @@ rawtagid2tag <- function(id, display_config_error = TRUE) {
         cli_warn(c(
           "i" = "Configuration file {.file config.yml} could not be read to build the
                 datapackage.",
-          ">" = "Create the tag with default value wit
-                    {.fun GeoPressureR::param_create}.",
+          ">" = "Create the tag with default value with {.fun GeoPressureR::param_create}.",
           "!" = "Error: {e$message}"
         ))
         display_config_error <- FALSE

@@ -94,6 +94,13 @@ create_geopressuretemplate <- function(path,
   return(path)
 }
 
+#' Create DESCRIPTION file for GeoPressure template
+#'
+#' Internal helper function to generate a DESCRIPTION file based on a
+#' GeoLocator Data Package's metadata.
+#'
+#' @param pkg A GeoLocator Data Package object
+#' @return Nothing (side effect: writes DESCRIPTION file)
 #' @noRd
 create_geopressuretemplate_desc <- function(pkg) {
   d <- desc::description$new()
@@ -115,6 +122,13 @@ create_geopressuretemplate_desc <- function(pkg) {
   d$write()
 }
 
+#' Create README file for GeoPressure template
+#'
+#' Internal helper function to generate a README.md file based on a
+#' GeoLocator Data Package's metadata.
+#'
+#' @param pkg A GeoLocator Data Package object
+#' @return Nothing (side effect: writes README.md file)
 #' @noRd
 create_geopressuretemplate_readme <- function(pkg) {
   check_gldp(pkg)
@@ -146,11 +160,21 @@ create_geopressuretemplate_readme <- function(pkg) {
   writeLines(content, con = "README.md")
 }
 
+#' Create LICENSE file for GeoPressure template
+#'
+#' Internal helper function to generate appropriate LICENSE files based on
+#' the license specifications in a GeoLocator Data Package.
+#'
+#' @param licenses List of license objects from a GeoLocator Data Package
+#' @return Nothing (side effect: creates LICENSE files)
 #' @noRd
 create_geopressuretemplate_licences <- function(licenses) {
   # 1. If more than one license, display a warning using cli
   if (length(licenses) > 1) {
-    cli_warn("Multiple licenses detected. Only the first license will be used.")
+    cli_warn(c(
+      "!" = "Multiple licenses detected.",
+      ">" = "Only the first license will be used."
+    ))
   }
   licenses <- licenses[[1]]
 
@@ -183,7 +207,10 @@ create_geopressuretemplate_licences <- function(licenses) {
   } else if (grepl("proprietary", licenses$name)) {
     usethis::use_proprietary_license()
   } else {
-    cli_warn("No matching license found in {.pkg usethis}. License file not created.")
+    cli_warn(c(
+      "!" = "No matching license found in {.pkg usethis}.",
+      ">" = "License file not created."
+    ))
   }
 }
 

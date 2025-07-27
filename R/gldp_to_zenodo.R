@@ -15,9 +15,9 @@
 #' @return A ZenodoRecord object updated with the metadata from `pkg`.
 #'
 #' @export
-gldp2zenodoRecord <- function(pkg,
-                              zenodo_record = zen4R::ZenodoRecord$new(),
-                              token = keyring::key_get(service = "ZENODO_PAT")) {
+gldp_to_zenodo <- function(pkg,
+                           zenodo_record = zen4R::ZenodoRecord$new(),
+                           token = keyring::key_get(service = "ZENODO_PAT")) {
   check_gldp(pkg)
 
   z <- zenodo_record
@@ -93,8 +93,10 @@ gldp2zenodoRecord <- function(pkg,
 
   # Set license
   if (length(pkg$licenses) > 1) {
-    cli_warn("Multiple licenses detected ({length(pkg$licenses)}).
-                  Only the first license will be used.")
+    cli_warn(c(
+      "!" = "Multiple licenses detected ({length(pkg$licenses)}).",
+      ">" = "Only the first license will be used."
+    ))
   }
   z$setLicense(licenseId = tolower(pkg$licenses[[1]]$name))
 

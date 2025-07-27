@@ -45,16 +45,19 @@ read_gdl <- function(access_file = NA,
                      filter_col = TRUE) {
   if (!is.na(access_file)) {
     if (!is.na(data_file) || !is.na(order_file)) {
-      cli_warn("Both {.arg access_file} and {.arg data_file} and {.arg order_file} were provided\\
-                     . We'll use {.arg access_file}")
+      cli_warn(c(
+        "!" = "Both {.arg access_file} and {.arg data_file} and {.arg order_file} were provided.",
+        ">" = "We'll use {.arg access_file}."
+      ))
     }
     data_order_file <- read_gdl_access(access_file)
     data_file <- data_order_file[[1]]
     order_file <- data_order_file[[2]]
   } else {
     if (is.na(data_file) || is.na(order_file)) {
-      cli_abort("Either {.arg access_file} or both {.arg data_file} and {.arg order_file} need\\
-                     to be provided.")
+      cli_abort(c(
+        "x" = "Need {.arg access_file} or both {.arg data_file} and {.arg order_file}."
+      ))
     }
   }
 
@@ -106,7 +109,6 @@ read_gdl <- function(access_file = NA,
           # GDL
           "GDL_ID",
           "GDL_Type",
-
           "Species",
           "UTC_Attached",
           "SiteAttached",
@@ -305,12 +307,16 @@ read_gdl_data <- function(data_file) {
 read_gdl_access <- function(access_file,
                             data_file = tempfile("GDL_Data", fileext = ".csv"),
                             order_file = tempfile("GDL_Orders", fileext = ".csv")) {
-  # Check Acess file
+  # Check Access file
   if (!file.exists(access_file)) {
-    cli_abort("The access file {.file {access_file}} does not exist.")
+    cli_abort(c(
+      "x" = "The access file {.file {access_file}} does not exist."
+    ))
   }
   if (tolower(tools::file_ext(access_file)) != "accdb") {
-    cli_abort("The acess file {.file {access_file}} does not have a {.val .accdb} extension.")
+    cli_abort(c(
+      "x" = "The access file {.file {access_file}} does not have a {.val .accdb} extension."
+    ))
   }
 
   if (.Platform$OS.type == "unix") {
@@ -318,15 +324,19 @@ read_gdl_access <- function(access_file,
     system(glue::glue("mdb-export '{access_file}' GDL_Data > {data_file}"))
 
     if (!file.exists(data_file)) {
-      cli_abort("The file {.file {data_file}} does not exist. \\
-                     There has been an issue in creating the data file")
+      cli_abort(c(
+        "x" = "The file {.file {data_file}} does not exist.",
+        "i" = "There has been an issue in creating the data file."
+      ))
     }
 
     # Export orders
     system(glue::glue("mdb-export '{access_file}' GDL_Orders > {order_file}"))
     if (!file.exists(order_file)) {
-      cli_abort("The file {.file {order_file}} does not exist. \\
-                     There has been an issue in creating the order file")
+      cli_abort(c(
+        "x" = "The file {.file {order_file}} does not exist.",
+        "i" = "There has been an issue in creating the order file."
+      ))
     }
   } else if (.Platform$OS.type == "windows") {
     con <- DBI::dbConnect(odbc::odbc(),

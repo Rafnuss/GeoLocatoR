@@ -1,9 +1,10 @@
 #' Print a GeoLocator Data Package
 #'
+#' @description
 #' Prints a human-readable summary of a GeoLocator Data Package, as an
 #' extension of [print.datapackage()].
 #'
-#' @param x GeoLocator Data Package object, as returned by `read_geolocatordp()`.
+#' @param x A GeoLocator Data Package object, as returned by `read_gldp()`.
 #' @param ... Further arguments, they are ignored by this function.
 #'
 #' @return [print()] with a summary of the GeoLocator Data Package object.
@@ -142,19 +143,28 @@ print.geolocatordp <- function(x, ...) {
 }
 
 
-bullets <- function(pkg, x) {
-  val <- pkg[[x]]
+#' Print formatted bullets for package fields
+#'
+#' Internal helper function to print formatted bullet points for specific fields
+#' in a GeoLocator Data Package object.
+#'
+#' @param pkg A GeoLocator Data Package object
+#' @param field_name Character string of the field name to print
+#' @return Nothing (side effect: prints to console)
+#' @noRd
+bullets <- function(pkg, field_name) {
+  val <- pkg[[field_name]]
   if (!is.null(val)) {
     if (is.data.frame(val)) {
-      cli_bullets(c("*" = "{.field {x}}:"))
+      cli_bullets(c("*" = "{.field {field_name}}:"))
       cat_print(val)
     } else if (is.list(val) && length(val) > 1) {
-      cli_bullets(c("*" = "{.field {x}}:"))
+      cli_bullets(c("*" = "{.field {field_name}}:"))
       for (n in names(val)) {
         cli_bullets(c(" " = "{.field {n}}: {.val {val[[n]]}}"))
       }
     } else {
-      cli_bullets(c("*" = "{.field {x}}: {.val {val}}"))
+      cli_bullets(c("*" = "{.field {field_name}}: {.val {val}}"))
     }
   }
 }

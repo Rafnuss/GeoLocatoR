@@ -1,3 +1,10 @@
+#' Convert contributors to person objects
+#'
+#' Internal helper function to convert a list of contributors to person objects
+#' for use in DESCRIPTION files.
+#'
+#' @param contributors A list of contributor objects from a GeoLocator Data Package
+#' @return A list of person objects
 #' @noRd
 contributors2persons <- function(contributors) {
   # nolint start
@@ -43,6 +50,14 @@ contributors2persons <- function(contributors) {
 }
 
 
+#' Cast data frame columns according to schema types
+#'
+#' Internal helper function to cast data frame columns to the appropriate types
+#' based on a table schema specification.
+#'
+#' @param data A data frame to cast
+#' @param schema A table schema object with field definitions
+#' @return The data frame with properly cast column types
 #' @noRd
 cast_table <- function(data, schema) {
   schema_fields <- sapply(schema$fields, \(x) x$name)
@@ -65,8 +80,30 @@ cast_table <- function(data, schema) {
         data[[field]] <- as.Date(data[[field]])
       } else if (type == "datetime") {
         data[[field]] <- as.POSIXct(data[[field]])
+      } else if (type == "time") {
+        # For time fields, convert to character if not already
+        if (!is.character(data[[field]])) {
+          data[[field]] <- as.character(data[[field]])
+        }
+      } else if (type == "year") {
+        # For year fields, convert to integer
+        data[[field]] <- as.integer(data[[field]])
+      } else if (type == "yearmonth") {
+        # For yearmonth fields, keep as character
+        data[[field]] <- as.character(data[[field]])
+      } else if (type == "duration") {
+        # For duration fields, keep as character (ISO 8601 format)
+        data[[field]] <- as.character(data[[field]])
+      } else if (type == "geopoint") {
+        # For geopoint fields, keep as character
+        data[[field]] <- as.character(data[[field]])
+      } else if (type == "geojson") {
+        # For geojson fields, keep as character
+        data[[field]] <- as.character(data[[field]])
       } else {
-        cli_warn("No casting for {.field {field}} of type {.val {type}}")
+        cli_warn(c(
+          "!" = "No casting for {.field {field}} of type {.val {type}}."
+        ))
       }
     }
   }
