@@ -390,10 +390,10 @@ add_gldp_geopressuretemplate <- function(
 }
 
 #' Convert raw tag ID to tag object
-#' 
+#'
 #' Internal helper function to convert a raw tag identifier to a complete tag object
 #' by reading the configuration and data files.
-#' 
+#'
 #' @param id Character string of the tag identifier
 #' @param display_config_error Logical indicating whether to display configuration errors
 #' @return A tag object with parameter and data information
@@ -412,8 +412,7 @@ rawtagid2tag <- function(id, display_config_error = TRUE) {
         cli_warn(c(
           "i" = "Configuration file {.file config.yml} could not be read to build the
                 datapackage.",
-          ">" = "Create the tag with default value wit
-                    {.fun GeoPressureR::param_create}.",
+          ">" = "Create the tag with default value with {.fun GeoPressureR::param_create}.",
           "!" = "Error: {e$message}"
         ))
         display_config_error <- FALSE

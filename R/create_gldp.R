@@ -22,15 +22,17 @@
 #' @param title A string providing a title or one sentence description for this package. It should
 #' be plain text (no markup), capitalised like a title, NOT end in a period and less than 65
 #' characters. See [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#title)
-#' and thw [Data Package specification](https://datapackage.org/standard/data-package/#title).
+#' and the [Data Package specification](https://datapackage.org/standard/data-package/#title).
 #' @param contributors A list of contributors, where each contributor is a list with properties
-#' including at leas `title` but also optionally `givenName`, `familyName`, `path`, `email`,
+#' including at least `title` but also optionally `givenName`, `familyName`, `path`, `email`,
 #' `roles`, and `organization`. See the
 #' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#contributors), the
 #' [Data Package specification](https://datapackage.org/standard/data-package/#contributors) and the
 #' [R Packages](https://r-pkgs.org/description.html#sec-description-authors-at-r).
-#' @param embargo End date of the embargo. Default to `"1970-01-01"`. See the
-#' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#embargo) and the
+#' @param embargo End date of the embargo as ISO 8601 date string (YYYY-MM-DD). The repository
+#' will restrict access to the data until the end of the embargo period; at which time, the
+#' content will become publicly available automatically. Default to `"1970-01-01"` (no embargo).
+#' See the [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#embargo) and the
 #' [Data Package specification](https://datapackage.org/standard/data-package/#embargo).
 #' @param licenses A list of licenses under which the data is provided. Usually, a single license
 #' is sufficient and preferred. If you're not sure, check out the [Creative Commons License Chooser
@@ -54,7 +56,8 @@
 #' [Data Package specification](https://datapackage.org/standard/data-package/#version) and [Data
 #' Package Version recipe](https://datapackage.org/recipes/data-package-version/).
 #' @param relatedIdentifiers (optional) A list of related identifiers for the package. Each related
-#' identifier is a list with properties `relationType` and `relatedIdentifier`. See the
+#' identifier is a list with properties `relationType`, `relatedIdentifier`, and
+#' `relatedIdentifierType`. See the
 #' [Geolocator DP](https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#relatedIdentifiers) and
 #' the [Camtrap DP specification
 #' ](https://camtrap-dp.tdwg.org/metadata/#relatedIdentifiers).
@@ -89,7 +92,7 @@
 #'       title = "Yann Rime",
 #'       givenName = "Yann",
 #'       familyName = "Rime",
-#'       path= "https://orcid.org/0000-0003-2745-0557",
+#'       path = "https://orcid.org/0000-0003-2745-0557",
 #'       email = "yann.rime@vogelwarte.ch",
 #'       roles = c("Researcher"),
 #'       organization = "Swiss Ornithological Institute"

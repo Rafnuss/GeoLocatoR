@@ -1,4 +1,5 @@
 library(testthat)
+library(GeoLocatoR)
 
 test_that("read_gldp correctly reads and processes GeoLocator Data Package", {
   pkg <- read_gldp("https://zenodo.org/records/14641765/files/datapackage.json")
@@ -6,7 +7,7 @@ test_that("read_gldp correctly reads and processes GeoLocator Data Package", {
 
   version(pkg)
 
-  check_gldp(pkg)
+  GeoLocatoR:::check_gldp(pkg)
 
   validate_gldp(pkg)
 
@@ -25,13 +26,13 @@ test_that("read_gldp correctly reads and processes GeoLocator Data Package", {
   pressurepaths(pkg) <- pressurepaths(pkg)
 
   # Update
-  pkg <- pkg %>% GeoLocatoR:::update_gldp()
+  pkg <-  GeoLocatoR:::update_gldp(pkg)
 
   # write geopressuretemplate
   project_dir <- create_geopressuretemplate(path = tempfile(), pkg = pkg, open = FALSE)
 
   # Re-create the pkg from geopressuretemplate
-  create_gldp_geopressuretemplate(project_dir) %>%
+  create_gldp_geopressuretemplate(project_dir) |>
     add_gldp_geopressuretemplate(project_dir)
 
   pkg2 <- read_gldp("https://zenodo.org/records/14641662/files/datapackage.json")

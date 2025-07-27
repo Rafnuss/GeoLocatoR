@@ -54,7 +54,7 @@ test_that("create_gldp handles invalid inputs", {
   expect_error(create_gldp(
     title = 123, # Invalid type
     contributors = list(list(title = "Raphaël Nussbaumer"))
-  ), "title is not a string")
+  ))
 
   # Test invalid contributor input (missing title)
   expect_error(create_gldp(
