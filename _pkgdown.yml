@@ -44,7 +44,7 @@ reference:
       - validate_gldp
       - validate_gldp_py
       - tags_to_measurements
-      - params_to_measurements
+      - params_to_tags
       - params_to_observations
 
 

@@ -23,8 +23,7 @@
 #' The `tags_to_measurements()` function extracts and processes sensor data from a list of tags. It
 #' renames the `value` column to the corresponding sensor type if it exists, ensures the presence of
 #' a `label` column, and reshapes the data into a long format. The function handles various sensor
-#' types such
-#'  as pressure, acceleration, light, temperature, and magnetic fields.
+#' types such as pressure, acceleration, light, temperature, and magnetic fields.
 #'
 #' If no tags are provided, the function returns an empty tibble with the appropriate column names
 #'  and types.

@@ -32,7 +32,7 @@ test_that("read_gldp correctly reads and processes GeoLocator Data Package", {
   project_dir <- create_geopressuretemplate(path = tempfile(), pkg = pkg, open = FALSE)
 
   # Re-create the pkg from geopressuretemplate
-  create_gldp_geopressuretemplate(project_dir) |>
+  create_gldp_geopressuretemplate(project_dir) %>%
     add_gldp_geopressuretemplate(project_dir)
 
   pkg2 <- read_gldp("https://zenodo.org/records/14641662/files/datapackage.json")
