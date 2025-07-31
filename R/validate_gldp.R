@@ -708,8 +708,8 @@ validate_gldp_observations <- function(o) {
     filter(.data$unique_ring_numbers > 1)
 
   if (nrow(inconsistent_tag_ids) > 0) {
-    cli_alert_danger("{nrow(inconsistent_tag_ids)} tag_id(s) are associated with multiple \\
-                     ring_numbers. Check: {inconsistent_tag_ids$tag_id}")
+    cli_alert_danger("{nrow(inconsistent_tag_ids)} tag_id{?s} {?is/are} associated with multiple \\
+                     ring_numbers. Check: {.field {inconsistent_tag_ids$tag_id}}")
     valid <- FALSE
   }
 
@@ -760,10 +760,10 @@ validate_gldp_observations <- function(o) {
       lag(.data$device_status) == "missing"))
 
   if (nrow(multiple_tags_without_retrieval) > 0) {
-    error_tag <- unique(multiple_tags_without_retrieval$tag_id) # nolint
+    error_ring_number <- unique(multiple_tags_without_retrieval$ring_number) # nolint
     cli_alert_danger(
-      "{length(error_tag)} instance{?s} where a second tag_id  is attached without a prior \\
-    retrieval or capture-missing. Check: {.field {error_tag}}"
+      "{length(error_tag)} ring{?s} where a second tag is attached without a prior \\
+    retrieval or capture-missing. Check: {.field {error_ring_number}}"
     )
     valid <- FALSE
   }
@@ -777,7 +777,7 @@ validate_gldp_observations <- function(o) {
   if (nrow(tag_without_equipment) > 0) {
     error_tag <- unique(tag_without_equipment$tag_id) # nolint
     cli_alert_danger(
-      "{length(error_tag)} tag_id{?s} {?was/were} recorded without a preceding equipment event. \\
+      "{length(error_tag)} tag{?s} {?was/were} recorded without a preceding equipment event. \\
       Check: {.field {error_tag}}"
     )
     valid <- FALSE
