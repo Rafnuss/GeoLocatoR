@@ -38,10 +38,10 @@ add_gldp_soi <- function(pkg,
 
 
   # Retrieve directory of all data and display warning message if absent
-    if (!("directory" %in% names(gdl))) {
-      cli::cli_progress_step("Retrieving data directories for SOI tags")
-      gdl <- add_gldp_soi_directory(gdl, directory_data)
-    }
+  if (!("directory" %in% names(gdl))) {
+    cli::cli_progress_step("Retrieving data directories for SOI tags")
+    gdl <- add_gldp_soi_directory(gdl, directory_data)
+  }
 
   # Do not add any data if same id already presents in measurements
   if ("measurements" %in% frictionless::resources(pkg)) {
@@ -62,7 +62,8 @@ add_gldp_soi <- function(pkg,
 
   # Read tag data
   n_tags_with_data <- sum(!is.na(gdl$directory))
-  cli::cli_progress_step(glue::glue("Loading tag data for {n_tags_with_data} tags with available data"))
+  cli::cli_progress_step(
+    glue::glue("Loading tag data for {n_tags_with_data} tags with available data"))
   dtags <- gdl %>%
     filter(!is.na(.data$directory)) %>%
     select("GDL_ID", "directory") %>%
@@ -104,7 +105,8 @@ add_gldp_soi <- function(pkg,
   if (nrow(m) > 0) {
     cli::cli_progress_step("Add {.field measurements} to {.pkg pkg}")
     pkg <- add_gldp_resource(pkg, "measurements", m,
-                             replace = "measurements" %in% frictionless::resources(pkg))
+      replace = "measurements" %in% frictionless::resources(pkg)
+    )
   }
 
 
