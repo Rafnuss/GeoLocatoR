@@ -98,7 +98,8 @@ add_gldp_soi <- function(pkg,
   m <- bind_rows(m, tags_to_measurements(dtags))
 
   if (nrow(m) > 0) {
-    pkg <- add_gldp_resource(pkg, "measurements", m, replace = TRUE)
+    pkg <- add_gldp_resource(pkg, "measurements", m,
+                             replace = "measurements" %in% frictionless::resources(pkg))
   }
 
 
