@@ -677,6 +677,42 @@ validate_gldp_coherence <- function(pkg) {
     valid <- FALSE
   }
 
+  # Check for tag_id present in tags but missing from observations.
+  # Each tag_id should have at least one observation record.
+  tidmissing <- setdiff(t$tag_id, unique(o$tag_id))
+  if (length(tidmissing) > 0) {
+    cli_alert_warning(
+      "No observations found for {.val {tidmissing}} declared in {.field tags}."
+    )
+    # Still valid
+    # valid <- FALSE
+  }
+
+  # Check for missing equipment or retrieval while measurement are present
+  # If measurements are present, there should be at least one equipment or retrieval observation.
+  tidmissingequip <- setdiff(
+    unique(m$tag_id),
+    unique(o$tag_id[o$observation_type == "equipment"])
+  )
+  if (length(tidmissingequip) > 0) {
+    cli_alert_danger(
+      "No equipment found for {.val {tidmissingequip}} in in {.field observations} while \\
+      data present in {.field measurements}."
+    )
+    valid <- FALSE
+  }
+  tidmissingret <- setdiff(
+    unique(m$tag_id),
+    unique(o$tag_id[o$observation_type == "retrieval"])
+  )
+  if (length(tidmissingret) > 0) {
+    cli_alert_danger(
+      "No retrieval found for {.val {tidmissingret}} in in {.field observations} while \\
+      data present in {.field measurements}."
+    )
+    valid <- FALSE
+  }
+
   if (valid) {
     cli_alert_success("Package is internally coherent.")
   } else {
