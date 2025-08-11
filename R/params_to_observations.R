@@ -38,7 +38,7 @@ params_to_observations <- function(params) {
         )
       }
 
-      if (!is.null(param$tag_create$crop_start)) {
+      if (!is.null(param$tag_create$crop_end)) {
         or <- o0 %>% mutate(
           datetime = as.POSIXct(param$tag_create$crop_end, tz = "UTC"),
           observation_type = "retrieval"
