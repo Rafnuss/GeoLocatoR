@@ -31,10 +31,9 @@ add_gldp_resource <- function(package,
                               cast_type = FALSE,
                               replace = FALSE,
                               delim = ",") {
-  pkg <- package
-  check_gldp(pkg)
+  check_gldp(package)
 
-  # Retrieve full schema (pkg$resources) does not have schema at first
+  # Retrieve full schema (package$resources) does not have schema at first
   pkg_schema <- jsonlite::fromJSON(
     package$`$schema`,
     simplifyDataFrame = FALSE, simplifyVector = TRUE
@@ -121,8 +120,8 @@ add_gldp_resource <- function(package,
     data <- cast_table(data, schema)
   }
 
-  pkg <- frictionless::add_resource(
-    package = pkg,
+  package <- frictionless::add_resource(
+    package = package,
     resource_name = resource_name,
     data = data,
     schema = schema,
@@ -130,5 +129,5 @@ add_gldp_resource <- function(package,
     delim = delim
   )
 
-  return(pkg)
+  return(package)
 }

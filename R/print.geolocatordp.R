@@ -124,10 +124,10 @@ print.geolocatordp <- function(x, ...) {
 
   # cli_bullets(c("*" = "{.field schema}: {.url {x$`$schema`}}"))
 
-  cli_h3("{length(x$resources)} resource{?s}{?./:/:}")
+  cli_h3("{length(x$resources)} {.field resources}")
   if (length(x$resources) > 0) {
     purrr::walk(x$resources, \(x) {
-      cat_bullet(format_inline("{x$name}"))
+      cli_bullets(c("*" = "{.field {x$name}} (n={format(nrow(x$data), big.mark=',')})"))
     })
   }
 
