@@ -13,11 +13,19 @@
 #' @export
 plot.geolocatordp <- function(x, type = NULL, ...) {
   if (is.null(type)) {
-    type <- "coverage"
+    if ("measurements" %in% frictionless::resources(x)) {
+      type <- "coverage_measurements"
+    } else if ("observations" %in% frictionless::resources(x)) {
+      type <- "coverage_observations"
+    } else {
+      cli_abort("No coverage data available in the GeoLocator Data Package.")
+    }
   }
 
-  if (type == "coverage") {
-    plot_pkg_coverage(x)
+  if (type == "coverage_measurements") {
+    plot_pkg_coverage_measurements(x)
+  } else if (type == "coverage_observations") {
+    plot_pkg_coverage_observations(x)
   }
 }
 
@@ -29,7 +37,7 @@ plot.geolocatordp <- function(x, type = NULL, ...) {
 #' @param x A GeoLocator Data Package object
 #' @return A ggplot2 object showing the coverage plot
 #' @noRd
-plot_pkg_coverage <- function(x) {
+plot_pkg_coverage_measurements <- function(x) {
   m <- measurements(x) %>%
     mutate(sensor = case_when(
       sensor %in% c(
@@ -47,7 +55,10 @@ plot_pkg_coverage <- function(x) {
     filter(!is.na(.data$datetime)) %>%
     filter(.data$tag_id %in% unique(m$tag_id))
 
-  ggplot2::ggplot(data = m, ggplot2::aes(x = .data$date, y = .data$sensor, fill = .data$has_data)) +
+  ggplot2::ggplot(
+    data = m,
+    ggplot2::aes(x = .data$date, y = .data$sensor, fill = .data$has_data)
+  ) +
     ggplot2::geom_tile() +
     ggplot2::facet_grid(.data$tag_id ~ ., scales = "free_y") +
     ggplot2::scale_fill_manual(values = c("black", "grey")) +
@@ -81,4 +92,45 @@ plot_pkg_coverage <- function(x) {
     ) + # Customize colors and legend
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90), legend.position = "bottom") +
     ggplot2::labs(x = "Date", y = "Sensor", title = "Package's Measurement Coverage")
+}
+
+
+#' Plot coverage data for a GeoLocator Data Package
+#'
+#' Internal helper function to create a coverage plot showing observations across time for all tags.
+#'
+#' @param x A GeoLocator Data Package object
+#' @return A ggplot2 object showing the coverage plot
+#' @noRd
+plot_pkg_coverage_observations <- function(x, only_measurements = TRUE) {
+  o <- observations(x) %>%
+    filter(!is.na(.data$datetime))
+
+  m <- measurements(x) %>%
+    group_by(.data$tag_id) %>%
+    summarize(
+      start = min(.data$datetime, na.rm = TRUE),
+      end = max(.data$datetime, na.rm = TRUE)
+    ) %>%
+    ungroup()
+
+
+  ggplot2::ggplot() +
+    ggplot2::geom_segment(
+      data = m, ggplot2::aes(x = .data$start, y = .data$tag_id, xend = .data$end, color = "black")
+    ) +
+    ggplot2::geom_point(
+      data = o, ggplot2::aes(x = .data$datetime, y = .data$tag_id, color = .data$observation_type)
+    ) +
+    ggplot2::scale_color_manual(
+      values = c(
+        "equipment" = "red",
+        "retrieval" = "green",
+        "capture" = "blue",
+        "sighting" = "orange",
+        "other" = "purple"
+      ),
+      name = "Observation Type"
+    ) + # Customize colors and legend
+    ggplot2::labs(x = "Date", y = "Tag ID", title = "Package's Observations Coverage")
 }
