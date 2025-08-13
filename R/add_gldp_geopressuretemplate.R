@@ -26,17 +26,16 @@
 #' @param from A character vector specifying the source of the data files. Either or both of
 #' `"raw-tag"` (for creating `tag` based on the data in `data/raw-tag/`) and `"interim"` for data
 #' in `data/interim`.
-#' @inheritParams add_gldp_resource
 #'
 #' @return The updated GLDP package object with new resources
 #' @export
 add_gldp_geopressuretemplate <- function(
     pkg,
     directory = ".",
-    from = c("raw-tag", "interim"),
-    replace = FALSE) {
+    from = c("raw-tag", "interim")) {
   # Check input
   check_gldp(pkg)
+
   # Check if the directory exists
   if (!dir.exists(directory)) {
     cli_abort(c(
@@ -44,7 +43,24 @@ add_gldp_geopressuretemplate <- function(
     ))
   }
   assertthat::assert_that(any(from %in% c("interim", "raw-tag")))
-  assertthat::assert_that(is.logical(replace))
+
+  # pkg has already data
+  if (length(frictionless::resources(pkg) > 0)) {
+    cli_bullets(
+      c("!" = "The {.pkg {pkg}} has already resources {.field {frictionless::resources(pkg)}}.")
+    )
+    res <- utils::askYesNo("Do you want to continue and overwrite the existing resources?",
+      default = "no",
+      yes = "Yes, overwrite",
+      no = "No, keep existing resources"
+    )
+    if (is.na(res) || !res) {
+      return(pkg)
+    }
+    for (r in frictionless::resources(pkg)) {
+      pkg <- frictionless::remove_resource(pkg, r)
+    }
+  }
 
   # Initiate empty resources to be able to merge interim and raw-tag as necessary
   t <- NULL
@@ -116,7 +132,7 @@ add_gldp_geopressuretemplate <- function(
         purrr::list_rbind()
 
       if (nrow(twl) > 0) {
-        pkg <- add_gldp_resource(pkg, "twilights", twl, replace = replace)
+        pkg <- add_gldp_resource(pkg, "twilights", twl)
       }
 
       # Add stap
@@ -135,7 +151,7 @@ add_gldp_geopressuretemplate <- function(
 
 
       if (nrow(staps) > 0) {
-        pkg <- add_gldp_resource(pkg, "staps", staps, replace = replace)
+        pkg <- add_gldp_resource(pkg, "staps", staps)
       }
 
       # Add Path
@@ -158,7 +174,7 @@ add_gldp_geopressuretemplate <- function(
         select(-any_of(c("start", "end", "include")))
 
       if (nrow(paths) > 0) {
-        pkg <- add_gldp_resource(pkg, "paths", paths, replace = replace)
+        pkg <- add_gldp_resource(pkg, "paths", paths)
       }
 
       # Add Edge
@@ -198,7 +214,7 @@ add_gldp_geopressuretemplate <- function(
       }
 
       if (nrow(edges) > 0) {
-        pkg <- add_gldp_resource(pkg, "edges", edges, replace = replace)
+        pkg <- add_gldp_resource(pkg, "edges", edges)
       }
 
       # Add Pressurepath
@@ -225,7 +241,7 @@ add_gldp_geopressuretemplate <- function(
         select(-any_of(c("known", "include")))
 
       if (nrow(pressurepaths) > 0) {
-        pkg <- add_gldp_resource(pkg, "pressurepaths", pressurepaths, replace = replace)
+        pkg <- add_gldp_resource(pkg, "pressurepaths", pressurepaths)
       }
     }
 
@@ -373,9 +389,9 @@ add_gldp_geopressuretemplate <- function(
     }
 
     # Use add_gldp_resource instead of tags() <- to avoid update
-    pkg <- add_gldp_resource(pkg, "tags", t, replace = replace)
-    pkg <- add_gldp_resource(pkg, "observations", o, replace = replace)
-    pkg <- add_gldp_resource(pkg, "measurements", m, replace = replace)
+    pkg <- add_gldp_resource(pkg, "tags", t)
+    pkg <- add_gldp_resource(pkg, "observations", o)
+    pkg <- add_gldp_resource(pkg, "measurements", m)
 
     pkg <- pkg %>%
       update_gldp_taxonomic() %>%
