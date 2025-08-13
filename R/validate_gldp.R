@@ -657,12 +657,8 @@ validate_gldp_coherence <- function(pkg) {
   tringmissing <- unique(t$ring_number[!(t$ring_number %in% o$ring_number)])
   if (length(tringmissing) > 1) {
     cli_alert_danger(
-      "{.field observations} is missing {.field ring_number}={.val {tringmissing}} which are \\
+      "{.field observations} is missing {.field ring_number} {.val {tringmissing}} which are \\
       present in {.field tags}."
-    )
-    cli_alert_info(
-      "All {.field ring_number} present in the resource {.field tags} need to also be present \\
-    in the resource {.field observations}."
     )
     valid <- FALSE
   }

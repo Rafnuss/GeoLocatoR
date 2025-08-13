@@ -89,6 +89,12 @@ add_gldp_geopressuretemplate <- function(
       interim <- stats::setNames(vector("list", length(var_names)), var_names)
       interim <- lapply(interim, function(x) vector("list", length(all_files)))
 
+      # Inform message
+      cli_inform(
+        "Reading {.val {length(all_files)}} interim files from
+        {.file {file.path(directory, 'data/interim')}}."
+      )
+
       # Loop through files and populate the result lists
       for (i in seq_along(all_files)) {
         save_list <- load(all_files[i])
@@ -262,10 +268,15 @@ add_gldp_geopressuretemplate <- function(
         cli_warn(
           "We did not find any tag data in {.file {file.path(directory, 'data/raw-tag')}}."
         )
+      } else {
+        cli_inform(
+          "Reading {.val {length(list_id)}} raw {?tag/tags} data from
+          {.file {file.path(directory, 'data/raw-tag')}}."
+        )
       }
 
       dtags <- list_id %>%
-        purrr::map(rawtagid2tag, .progress = list(type = "tasks"))
+        purrr::map(rawtagid2tag, .progress = list(type = "tasks", name = "Reading raw tags"))
 
       # Adding measurements resource
       m <- bind_rows(m, tags_to_measurements(dtags))
@@ -289,6 +300,9 @@ add_gldp_geopressuretemplate <- function(
 
     # STEP 3: Overwrite tags and observations if csv/xlsx files present
     if (file.exists("./data/tags.xlsx")) {
+      cli_inform(
+        "Reading tags from {.file {file.path(directory, 'data/tags.xlsx')}}."
+      )
       tf <- readxl::read_excel(
         "./data/tags.xlsx",
         col_types = c(
@@ -305,6 +319,9 @@ add_gldp_geopressuretemplate <- function(
         )
       )
     } else if (file.exists("./data/tags.csv")) {
+      cli_inform(
+        "Reading tags from {.file {file.path(directory, 'data/tags.csv')}}."
+      )
       tf <- readr::read_csv(
         "./data/tags.csv",
         col_types = readr::cols(
@@ -341,6 +358,9 @@ add_gldp_geopressuretemplate <- function(
 
 
     if (file.exists("./data/observations.xlsx")) {
+      cli_inform(
+        "Reading observations from {.file {file.path(directory, 'data/observations.xlsx')}}."
+      )
       o <- readxl::read_excel(
         "./data/observations.xlsx",
         col_types = c(
@@ -364,6 +384,9 @@ add_gldp_geopressuretemplate <- function(
         )
       )
     } else if (file.exists("./data/observations.csv")) {
+      cli_inform(
+        "Reading observations from {.file {file.path(directory, 'data/observations.csv')}}."
+      )
       o <- readr::read_csv(
         "./data/observations.csv",
         col_types = readr::cols(
