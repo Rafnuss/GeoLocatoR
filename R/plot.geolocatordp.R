@@ -26,6 +26,8 @@ plot.geolocatordp <- function(x, type = NULL, ...) {
     plot_pkg_coverage_measurements(x)
   } else if (type == "coverage_observations") {
     plot_pkg_coverage_observations(x)
+  } else if (type == "path_most_likely") {
+    plot_pkg_path_most_likely(x)
   }
 }
 
@@ -102,7 +104,7 @@ plot_pkg_coverage_measurements <- function(x) {
 #' @param x A GeoLocator Data Package object
 #' @return A ggplot2 object showing the coverage plot
 #' @noRd
-plot_pkg_coverage_observations <- function(x, only_measurements = TRUE) {
+plot_pkg_coverage_observations <- function(x) {
   o <- observations(x) %>%
     filter(!is.na(.data$datetime))
 
@@ -134,3 +136,65 @@ plot_pkg_coverage_observations <- function(x, only_measurements = TRUE) {
     ) + # Customize colors and legend
     ggplot2::labs(x = "Date", y = "Tag ID", title = "Package's Observations Coverage")
 }
+
+#' Plot coverage data for a GeoLocator Data Package
+#'
+#' Internal helper function to create a coverage plot showing observations across time for all tags.
+#'
+#' @param x A GeoLocator Data Package object
+#' @return A ggplot2 object showing the coverage plot
+#' @noRd
+plot_pkg_path_most_likely <- function(x) {
+
+
+  p <- paths(x) %>%
+    filter(type == "most_likely") %>%
+    left_join(staps(x), by=c("stap_id", "tag_id")) %>%
+    mutate(duration = stap2duration(.))
+
+    # Generate a color palette for unique tag IDs
+    tag_ids <- unique(p$tag_id)
+    n_tags <- length(tag_ids)
+    palette_fun <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(9, "Set1"))
+    color_palette <- leaflet::colorFactor(palette = palette_fun(n_tags), domain = tag_ids)
+
+    leaflet_map <- leaflet::leaflet(height = 600) %>% leaflet::addTiles()
+
+    # Add polylines and markers for each tag_id
+    for (tag in tag_ids) {
+      pid <- p %>% filter(tag_id == tag)
+      leaflet_map <- leaflet_map %>%
+        leaflet::addPolylines(
+          lng = ~lon,
+          lat = ~lat,
+          data = pid,
+          color = color_palette(tag),
+          weight = 2,
+          popup = ~paste0("Tag ID: ", tag_id, "<br>stap #", stap_id)
+        ) %>%
+        leaflet::addCircleMarkers(
+          lng = ~lon,
+          lat = ~lat,
+          data = pid,
+          color = color_palette(tag),
+          radius = ~scales::rescale(log1p(duration), to = c(3, 12)),
+          fillOpacity = 0.8,
+          popup = ~paste0("Tag ID: ", tag_id, "<br>stap #", stap_id)
+        )
+    }
+
+    # Add a legend
+    leaflet_map <- leaflet_map %>%
+      leaflet::addLegend(
+        position = "topright",
+        pal = color_palette,
+        values = tag_ids,
+        title = "Bird Trajectories",
+        opacity = 1
+      )
+
+    # Display the map
+    leaflet_map
+
+}
+
