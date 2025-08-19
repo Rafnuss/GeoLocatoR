@@ -276,7 +276,9 @@ add_gldp_geopressuretemplate <- function(
       }
 
       dtags <- list_id %>%
-        purrr::map(rawtagid2tag, .progress = list(type = "tasks", name = "Reading raw tags"))
+        purrr::map(purrr::possibly(rawtagid_to_tag, NULL),
+          .progress = list(type = "tasks", name = "Reading raw tags")
+        )
 
       # Adding measurements resource
       m <- bind_rows(m, tags_to_measurements(dtags))
@@ -437,7 +439,7 @@ add_gldp_geopressuretemplate <- function(
 #' @param display_config_error Logical indicating whether to display configuration errors
 #' @return A tag object with parameter and data information
 #' @noRd
-rawtagid2tag <- function(id, display_config_error = TRUE) {
+rawtagid_to_tag <- function(id, display_config_error = TRUE) {
   config <- tryCatch(
     {
       GeoPressureR::geopressuretemplate_config(
