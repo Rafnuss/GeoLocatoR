@@ -14,20 +14,23 @@
 plot.geolocatordp <- function(x, type = NULL, ...) {
   if (is.null(type)) {
     if ("measurements" %in% frictionless::resources(x)) {
-      type <- "coverage_measurements"
+      type <- "coverage"
     } else if ("observations" %in% frictionless::resources(x)) {
-      type <- "coverage_observations"
+      type <- "ring"
     } else {
       cli_abort("No coverage data available in the GeoLocator Data Package.")
     }
   }
 
-  if (type == "coverage_measurements") {
-    plot_pkg_coverage_measurements(x)
-  } else if (type == "coverage_observations") {
-    plot_pkg_coverage_observations(x)
-  } else if (type == "path_most_likely") {
-    plot_pkg_path_most_likely(x)
+  if (type == "coverage") {
+    plot_pkg_coverage(x)
+  } else if (type == "ring") {
+    plot_pkg_ring(x)
+  } else if (type == "map") {
+    plot_pkg_map(x)
+  } else {
+    cli_abort("Unsupported plot type: {.val {type}}.
+              Supported types are 'coverage', 'ring', and 'map'.")
   }
 }
 
@@ -39,7 +42,7 @@ plot.geolocatordp <- function(x, type = NULL, ...) {
 #' @param x A GeoLocator Data Package object
 #' @return A ggplot2 object showing the coverage plot
 #' @noRd
-plot_pkg_coverage_measurements <- function(x) {
+plot_pkg_coverage <- function(x) {
   m <- measurements(x) %>%
     mutate(sensor = case_when(
       sensor %in% c(
@@ -80,7 +83,7 @@ plot_pkg_coverage_measurements <- function(x) {
       ),
       linetype = "dashed", linewidth = 0.8
     ) + # Thinner dashed lines
-
+    ggplot2::scale_x_date(limits = range(c(m$date, as.Date(o$datetime)))) +
     # Color scheme highlighting 'equipment' and 'retrieval'
     ggplot2::scale_color_manual(
       values = c(
@@ -104,12 +107,16 @@ plot_pkg_coverage_measurements <- function(x) {
 #' @param x A GeoLocator Data Package object
 #' @return A ggplot2 object showing the coverage plot
 #' @noRd
-plot_pkg_coverage_observations <- function(x) {
+plot_pkg_ring <- function(x) {
   o <- observations(x) %>%
     filter(!is.na(.data$datetime))
 
   m <- measurements(x) %>%
-    group_by(.data$tag_id) %>%
+    left_join(
+      tags(x) %>% select(.data$ring_number, .data$tag_id),
+      by = "tag_id"
+    ) %>%
+    group_by(.data$ring_number) %>%
     summarize(
       start = min(.data$datetime, na.rm = TRUE),
       end = max(.data$datetime, na.rm = TRUE)
@@ -119,10 +126,12 @@ plot_pkg_coverage_observations <- function(x) {
 
   ggplot2::ggplot() +
     ggplot2::geom_segment(
-      data = m, ggplot2::aes(x = .data$start, y = .data$tag_id, xend = .data$end, color = "black")
+      data = m, ggplot2::aes(x = .data$start, y = .data$ring_number,
+                             xend = .data$end, color = "black")
     ) +
     ggplot2::geom_point(
-      data = o, ggplot2::aes(x = .data$datetime, y = .data$tag_id, color = .data$observation_type)
+      data = o,
+      ggplot2::aes(x = .data$datetime, y = .data$ring_number, color = .data$observation_type)
     ) +
     ggplot2::scale_color_manual(
       values = c(
@@ -134,7 +143,7 @@ plot_pkg_coverage_observations <- function(x) {
       ),
       name = "Observation Type"
     ) + # Customize colors and legend
-    ggplot2::labs(x = "Date", y = "Tag ID", title = "Package's Observations Coverage")
+    ggplot2::labs(x = "Date", y = "Ring Number", title = "Package's Observations Coverage")
 }
 
 #' Plot coverage data for a GeoLocator Data Package
@@ -144,57 +153,66 @@ plot_pkg_coverage_observations <- function(x) {
 #' @param x A GeoLocator Data Package object
 #' @return A ggplot2 object showing the coverage plot
 #' @noRd
-plot_pkg_path_most_likely <- function(x) {
-
-
+plot_pkg_map <- function(x) {
   p <- paths(x) %>%
-    filter(type == "most_likely") %>%
-    left_join(staps(x), by=c("stap_id", "tag_id")) %>%
-    mutate(duration = stap2duration(.))
+    filter(.data$type == "most_likely") %>%
+    left_join(staps(x), by = c("stap_id", "tag_id"))
 
-    # Generate a color palette for unique tag IDs
-    tag_ids <- unique(p$tag_id)
-    n_tags <- length(tag_ids)
-    palette_fun <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(9, "Set1"))
-    color_palette <- leaflet::colorFactor(palette = palette_fun(n_tags), domain = tag_ids)
+  p$duration = GeoPressureR::stap2duration(p)
 
-    leaflet_map <- leaflet::leaflet(height = 600) %>% leaflet::addTiles()
+  # Generate a color palette for unique tag IDs
+  tag_ids <- unique(p$tag_id)
+  n_tags <- length(tag_ids)
+  set1_colors <- c(
+    "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3",
+    "#FF7F00", "#FFFF33", "#A65628", "#F781BF", "#999999"
+  )
+  palette_fun <- grDevices::colorRampPalette(set1_colors)
+  color_palette <- leaflet::colorFactor(palette = palette_fun(n_tags), domain = tag_ids)
 
-    # Add polylines and markers for each tag_id
-    for (tag in tag_ids) {
-      pid <- p %>% filter(tag_id == tag)
-      leaflet_map <- leaflet_map %>%
-        leaflet::addPolylines(
-          lng = ~lon,
-          lat = ~lat,
-          data = pid,
-          color = color_palette(tag),
-          weight = 2,
-          popup = ~paste0("Tag ID: ", tag_id, "<br>stap #", stap_id)
-        ) %>%
-        leaflet::addCircleMarkers(
-          lng = ~lon,
-          lat = ~lat,
-          data = pid,
-          color = color_palette(tag),
-          radius = ~scales::rescale(log1p(duration), to = c(3, 12)),
-          fillOpacity = 0.8,
-          popup = ~paste0("Tag ID: ", tag_id, "<br>stap #", stap_id)
-        )
-    }
+  leaflet_map <- leaflet::leaflet(height = 600) %>% leaflet::addTiles()
 
-    # Add a legend
+  # Add polylines and markers for each tag_id
+  for (tag in tag_ids) {
+    pid <- p %>% filter(.data$tag_id == tag)
     leaflet_map <- leaflet_map %>%
-      leaflet::addLegend(
-        position = "topright",
-        pal = color_palette,
-        values = tag_ids,
-        title = "Bird Trajectories",
-        opacity = 1
+      leaflet::addPolylines(
+        lng = ~lon,
+        lat = ~lat,
+        data = pid,
+        color = color_palette(tag),
+        weight = 2,
+        popup = ~ paste0("Tag ID: ", tag_id, "<br>stap #", stap_id)
+      ) %>%
+      leaflet::addCircleMarkers(
+        lng = ~lon,
+        lat = ~lat,
+        data = pid,
+        color = color_palette(tag),
+        radius = ~ {
+          # linear rescaling from log1p(duration) to range 3-12
+          x <- log1p(duration)
+          min_r <- 3
+          max_r <- 12
+          min_x <- min(x, na.rm = TRUE)
+          max_x <- max(x, na.rm = TRUE)
+          (x - min_x) / (max_x - min_x) * (max_r - min_r) + min_r
+        },
+        fillOpacity = 0.8,
+        popup = ~ paste0("Tag ID: ", tag_id, "<br>stap #", stap_id)
       )
+  }
 
-    # Display the map
-    leaflet_map
+  # Add a legend
+  leaflet_map <- leaflet_map %>%
+    leaflet::addLegend(
+      position = "topright",
+      pal = color_palette,
+      values = tag_ids,
+      title = "Bird Trajectories",
+      opacity = 1
+    )
 
+  # Display the map
+  leaflet_map
 }
-
