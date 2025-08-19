@@ -451,8 +451,7 @@ rawtagid_to_tag <- function(id, display_config_error = TRUE) {
       if (display_config_error) {
         # Warn that the configuration file could not be read and display the error
         cli_warn(c(
-          "i" = "Configuration file {.file config.yml} could not be read to build the
-                datapackage.",
+          "i" = "Configuration file {.file config.yml} could not be read for {.field id}.",
           ">" = "Create the tag with default value with {.fun GeoPressureR::param_create}.",
           "!" = "Error: {e$message}"
         ))

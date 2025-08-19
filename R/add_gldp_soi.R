@@ -63,7 +63,8 @@ add_gldp_soi <- function(pkg,
   # Read tag data
   n_tags_with_data <- sum(!is.na(gdl$directory))
   cli_progress_step(
-    glue::glue("Loading tag data for {n_tags_with_data} tags with available data"))
+    glue::glue("Loading tag data for {n_tags_with_data} tags with available data")
+  )
   dtags <- gdl %>%
     filter(!is.na(.data$directory)) %>%
     select("GDL_ID", "directory") %>%

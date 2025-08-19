@@ -123,7 +123,6 @@ references:
   abstract: 'GeoPressureR: Global Positioning by Atmospheric Pressure'
   notes: Imports
   url: https://raphaelnussbaumer.com/GeoPressureR/
-  repository: https://github.com/rafnuss/GeoPressureR
   authors:
   - family-names: Nussbaumer
     given-names: Raphaël
@@ -215,6 +214,27 @@ references:
     email: csardi.gabor@gmail.com
   year: '2025'
   doi: 10.32614/CRAN.package.keyring
+- type: software
+  title: leaflet
+  abstract: 'leaflet: Create Interactive Web Maps with the JavaScript ''Leaflet''
+    Library'
+  notes: Imports
+  url: https://rstudio.github.io/leaflet/
+  repository: https://CRAN.R-project.org/package=leaflet
+  authors:
+  - family-names: Cheng
+    given-names: Joe
+    email: joe@posit.co
+  - family-names: Schloerke
+    given-names: Barret
+    email: barret@posit.co
+    orcid: https://orcid.org/0000-0001-9986-114X
+  - family-names: Karambelkar
+    given-names: Bhaskar
+  - family-names: Xie
+    given-names: Yihui
+  year: '2025'
+  doi: 10.32614/CRAN.package.leaflet
 - type: software
   title: magrittr
   abstract: 'magrittr: A Forward-Pipe Operator for R'

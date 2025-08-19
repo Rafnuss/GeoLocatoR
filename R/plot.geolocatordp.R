@@ -126,8 +126,10 @@ plot_pkg_ring <- function(x) {
 
   ggplot2::ggplot() +
     ggplot2::geom_segment(
-      data = m, ggplot2::aes(x = .data$start, y = .data$ring_number,
-                             xend = .data$end, color = "black")
+      data = m, ggplot2::aes(
+        x = .data$start, y = .data$ring_number,
+        xend = .data$end, color = "black"
+      )
     ) +
     ggplot2::geom_point(
       data = o,
@@ -158,7 +160,7 @@ plot_pkg_map <- function(x) {
     filter(.data$type == "most_likely") %>%
     left_join(staps(x), by = c("stap_id", "tag_id"))
 
-  p$duration = GeoPressureR::stap2duration(p)
+  p$duration <- GeoPressureR::stap2duration(p)
 
   # Generate a color palette for unique tag IDs
   tag_ids <- unique(p$tag_id)

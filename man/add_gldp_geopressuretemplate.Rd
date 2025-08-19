@@ -7,8 +7,7 @@
 add_gldp_geopressuretemplate(
   pkg,
   directory = ".",
-  from = c("raw-tag", "interim"),
-  replace = FALSE
+  from = c("raw-tag", "interim")
 )
 }
 \arguments{
@@ -19,9 +18,6 @@ add_gldp_geopressuretemplate(
 \item{from}{A character vector specifying the source of the data files. Either or both of
 \code{"raw-tag"} (for creating \code{tag} based on the data in \verb{data/raw-tag/}) and \code{"interim"} for data
 in \code{data/interim}.}
-
-\item{replace}{If \code{TRUE}, the added resource will replace an existing
-resource with the same name.}
 }
 \value{
 The updated GLDP package object with new resources

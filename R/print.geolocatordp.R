@@ -15,7 +15,7 @@ print.geolocatordp <- function(x, ...) {
 
   check_gldp(x)
 
-  cli_h3("A GeoLocator Data Package ({version(x)})")
+  cli_h3("A GeoLocator Data Package (v{version(x)})")
 
   cli_bullets(c("*" = "{.field title}: {.val {x$title}}"))
 
@@ -27,13 +27,13 @@ print.geolocatordp <- function(x, ...) {
     # if (!is.null(x$familyName)) {
     #  str <- paste0(str, " ", x$familyName)
     # }
-    if (!is.null(x$email)) {
+    if (!is.null(x$email) && length(x$email) > 0) {
       str <- paste0(str, " ({.email ", x$email, "})")
     }
-    if (!is.null(x$roles)) {
+    if (!is.null(x$roles) && length(x$roles) > 0) {
       str <- paste0(str, " (", paste(x$roles, collapse = ", "), ")")
     }
-    if (!is.null(x$path)) {
+    if (!is.null(x$path) && length(x$path) > 0) {
       str <- paste0(str, " - {.url ", x$path, "}")
     }
     str
