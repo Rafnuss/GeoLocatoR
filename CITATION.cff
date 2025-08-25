@@ -6,7 +6,7 @@
 cff-version: 1.2.0
 message: 'To cite package "GeoLocatoR" in publications use:'
 type: software
-license: MIT
+license: GPL-3.0-or-later
 title: 'GeoLocatoR: R package for GeoLocator Data Package'
 version: 0.2.6
 abstract: An R package to help you create and read geolocator data using the GeoLocator
