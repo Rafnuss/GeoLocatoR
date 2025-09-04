@@ -127,13 +127,15 @@ update_gldp_taxonomic <- function(pkg) {
       filter(.data$tag_id %in% sp_has_data) %>%
       pull(.data$scientific_name) %>%
       unique() %>%
-      stats::na.omit()
+      stats::na.omit() %>%
+      as.character()
   } else if ("tags" %in% frictionless::resources(pkg)) {
     pkg$taxonomic <- tags(pkg) %>%
       filter(!is.na(.data$tag_id)) %>%
       pull(.data$scientific_name) %>%
       unique() %>%
-      stats::na.omit()
+      stats::na.omit() %>%
+      as.character()
   } else {
     pkg$taxonomic <- NULL
   }
