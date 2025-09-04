@@ -50,7 +50,7 @@ add_gldp_geopressuretemplate <- function(
   assertthat::assert_that(any(from %in% c("interim", "raw-tag")))
 
   # pkg has already data
-  if (length(frictionless::resources(pkg) > 0)) {
+  if (length(frictionless::resources(pkg)) > 0) {
     cli_bullets(
       c("!" = "The {.pkg {pkg}} has already resources {.field {frictionless::resources(pkg)}}.")
     )
