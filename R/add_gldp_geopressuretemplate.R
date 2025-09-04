@@ -5,15 +5,20 @@
 #' a [GeoPressureTemplate](https://github.com/Rafnuss/GeoPressureTemplate) directories and files.
 #'
 #' The function performs the following steps:
-#' 1. If `"interim"` in `from`,  reads all interim ".RData" files, extract all resources possibles
-#' and add them to the package. `tags` and `observations` are generated automatically from `param`.
-#' 2. If `"raw-data"` in `from`, create all the possible resources from `data/raw-data/` and
-#' `data/tag-label/`. `tags` and `observations` resources are also generated from available
-#' information.
-#' 3. Reads the `tags.csv` and `observations.csv` files from the `./data` directory if they exist
-#' and overwrite the previously generated `tags` and `observations`.
+#' 1. If `"interim"` in `from`,  reads all interim ".RData" files, extract all variables and add
+#' corresponding resources to the package (`measurements`, `twilights`, `staps`, `paths`, `edges`,
+#' and `pressurepaths`). Generated automatically temporary `tags` and `observations` tables from
+#' the `param` in the interim file.
+#' 2. If `"raw-data"` in `from`, search for all tag_id in `data/raw-data/` which were not included
+#' from `interim`. It will use at least `tag_create` and if possible `tag_label` and `tag_set_map`
+#' using `config.yml` .It will also generate or update `tags` and `observations` table from the the
+#' tag data.
+#' 3. Reads the `tags.csv` (or `tags.xlsx` if present) and `observations.csv` (or
+#' `observations.xlsx` if present) from the `./data` directory if they exist and overwrite the
+#' previously generated `tags` and `observations`.
 #'
-#' You can exclude interim file to be included in the package by starting the file name with an `_`.
+#' You can exclude interim file or raw-tag folder to be included in the package by starting the
+#' file name with an `"_"`.
 #'
 #' It is possible to do a mix of some `tag` read from `"interim"` and other from `"raw-data"`
 #' simultaneously.
