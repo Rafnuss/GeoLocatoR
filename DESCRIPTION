@@ -1,12 +1,13 @@
 Package: GeoLocatoR
 Title: R package for GeoLocator Data Package
-Version: 0.2.6
+Version: 0.2.7
 Authors@R: 
     person("Raphaël", "Nussbaumer", , "rafnuss@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8185-1020"))
 Description: An R package to help you create and read geolocator data using the GeoLocator Data Package standard.
-URL: https://github.com/rafnuss/geolocator
-License: MIT + file LICENSE
+URL: https://github.com/rafnuss/geolocator,
+    https://raphaelnussbaumer.com/GeoLocatoR/
+License: GPL (>= 3)
 Imports: 
     assertthat,
     cli,
@@ -18,6 +19,7 @@ Imports:
     ggplot2,
     jsonlite,
     keyring,
+    leaflet,
     magrittr,
     purrr,
     readr,
@@ -48,3 +50,4 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Language: en-US
+Year: 2022

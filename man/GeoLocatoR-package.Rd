@@ -14,6 +14,7 @@ An R package to help you create and read geolocator data using the GeoLocator Da
 Useful links:
 \itemize{
   \item \url{https://github.com/rafnuss/geolocator}
+  \item \url{https://raphaelnussbaumer.com/GeoLocatoR/}
 }
 
 }

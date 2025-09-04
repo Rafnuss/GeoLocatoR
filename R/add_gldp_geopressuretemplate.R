@@ -5,15 +5,20 @@
 #' a [GeoPressureTemplate](https://github.com/Rafnuss/GeoPressureTemplate) directories and files.
 #'
 #' The function performs the following steps:
-#' 1. If `"interim"` in `from`,  reads all interim ".RData" files, extract all resources possibles
-#' and add them to the package. `tags` and `observations` are generated automatically from `param`.
-#' 2. If `"raw-data"` in `from`, create all the possible resources from `data/raw-data/` and
-#' `data/tag-label/`. `tags` and `observations` resources are also generated from available
-#' information.
-#' 3. Reads the `tags.csv` and `observations.csv` files from the `./data` directory if they exist
-#' and overwrite the previously generated `tags` and `observations`.
+#' 1. If `"interim"` in `from`,  reads all interim ".RData" files, extract all variables and add
+#' corresponding resources to the package (`measurements`, `twilights`, `staps`, `paths`, `edges`,
+#' and `pressurepaths`). Generated automatically temporary `tags` and `observations` tables from
+#' the `param` in the interim file.
+#' 2. If `"raw-data"` in `from`, search for all tag_id in `data/raw-data/` which were not included
+#' from `interim`. It will use at least `tag_create` and if possible `tag_label` and `tag_set_map`
+#' using `config.yml` .It will also generate or update `tags` and `observations` table from the the
+#' tag data.
+#' 3. Reads the `tags.csv` (or `tags.xlsx` if present) and `observations.csv` (or
+#' `observations.xlsx` if present) from the `./data` directory if they exist and overwrite the
+#' previously generated `tags` and `observations`.
 #'
-#' You can exclude interim file to be included in the package by starting the file name with an `_`.
+#' You can exclude interim file or raw-tag folder to be included in the package by starting the
+#' file name with an `"_"`.
 #'
 #' It is possible to do a mix of some `tag` read from `"interim"` and other from `"raw-data"`
 #' simultaneously.
@@ -26,17 +31,16 @@
 #' @param from A character vector specifying the source of the data files. Either or both of
 #' `"raw-tag"` (for creating `tag` based on the data in `data/raw-tag/`) and `"interim"` for data
 #' in `data/interim`.
-#' @inheritParams add_gldp_resource
 #'
 #' @return The updated GLDP package object with new resources
 #' @export
 add_gldp_geopressuretemplate <- function(
     pkg,
     directory = ".",
-    from = c("raw-tag", "interim"),
-    replace = FALSE) {
+    from = c("raw-tag", "interim")) {
   # Check input
   check_gldp(pkg)
+
   # Check if the directory exists
   if (!dir.exists(directory)) {
     cli_abort(c(
@@ -44,7 +48,24 @@ add_gldp_geopressuretemplate <- function(
     ))
   }
   assertthat::assert_that(any(from %in% c("interim", "raw-tag")))
-  assertthat::assert_that(is.logical(replace))
+
+  # pkg has already data
+  if (length(frictionless::resources(pkg)) > 0) {
+    cli_bullets(
+      c("!" = "The {.pkg {pkg}} has already resources {.field {frictionless::resources(pkg)}}.")
+    )
+    res <- utils::askYesNo("Do you want to continue and overwrite the existing resources?",
+      default = "no",
+      yes = "Yes, overwrite",
+      no = "No, keep existing resources"
+    )
+    if (is.na(res) || !res) {
+      return(pkg)
+    }
+    for (r in frictionless::resources(pkg)) {
+      pkg <- frictionless::remove_resource(pkg, r)
+    }
+  }
 
   # Initiate empty resources to be able to merge interim and raw-tag as necessary
   t <- NULL
@@ -72,6 +93,12 @@ add_gldp_geopressuretemplate <- function(
       # Initialize lists dynamically
       interim <- stats::setNames(vector("list", length(var_names)), var_names)
       interim <- lapply(interim, function(x) vector("list", length(all_files)))
+
+      # Inform message
+      cli_inform(
+        "Reading {.val {length(all_files)}} interim files from
+        {.file {file.path(directory, 'data/interim')}}."
+      )
 
       # Loop through files and populate the result lists
       for (i in seq_along(all_files)) {
@@ -116,7 +143,7 @@ add_gldp_geopressuretemplate <- function(
         purrr::list_rbind()
 
       if (nrow(twl) > 0) {
-        pkg <- add_gldp_resource(pkg, "twilights", twl, replace = replace)
+        pkg <- add_gldp_resource(pkg, "twilights", twl)
       }
 
       # Add stap
@@ -135,7 +162,7 @@ add_gldp_geopressuretemplate <- function(
 
 
       if (nrow(staps) > 0) {
-        pkg <- add_gldp_resource(pkg, "staps", staps, replace = replace)
+        pkg <- add_gldp_resource(pkg, "staps", staps)
       }
 
       # Add Path
@@ -158,7 +185,7 @@ add_gldp_geopressuretemplate <- function(
         select(-any_of(c("start", "end", "include")))
 
       if (nrow(paths) > 0) {
-        pkg <- add_gldp_resource(pkg, "paths", paths, replace = replace)
+        pkg <- add_gldp_resource(pkg, "paths", paths)
       }
 
       # Add Edge
@@ -198,7 +225,7 @@ add_gldp_geopressuretemplate <- function(
       }
 
       if (nrow(edges) > 0) {
-        pkg <- add_gldp_resource(pkg, "edges", edges, replace = replace)
+        pkg <- add_gldp_resource(pkg, "edges", edges)
       }
 
       # Add Pressurepath
@@ -225,7 +252,7 @@ add_gldp_geopressuretemplate <- function(
         select(-any_of(c("known", "include")))
 
       if (nrow(pressurepaths) > 0) {
-        pkg <- add_gldp_resource(pkg, "pressurepaths", pressurepaths, replace = replace)
+        pkg <- add_gldp_resource(pkg, "pressurepaths", pressurepaths)
       }
     }
 
@@ -246,10 +273,17 @@ add_gldp_geopressuretemplate <- function(
         cli_warn(
           "We did not find any tag data in {.file {file.path(directory, 'data/raw-tag')}}."
         )
+      } else {
+        cli_inform(
+          "Reading {.val {length(list_id)}} raw {?tag/tags} data from
+          {.file {file.path(directory, 'data/raw-tag')}}."
+        )
       }
 
       dtags <- list_id %>%
-        purrr::map(rawtagid2tag, .progress = list(type = "tasks"))
+        purrr::map(purrr::possibly(rawtagid_to_tag, NULL),
+          .progress = list(type = "tasks", name = "Reading raw tags")
+        )
 
       # Adding measurements resource
       m <- bind_rows(m, tags_to_measurements(dtags))
@@ -273,6 +307,9 @@ add_gldp_geopressuretemplate <- function(
 
     # STEP 3: Overwrite tags and observations if csv/xlsx files present
     if (file.exists("./data/tags.xlsx")) {
+      cli_inform(
+        "Reading tags from {.file {file.path(directory, 'data/tags.xlsx')}}."
+      )
       tf <- readxl::read_excel(
         "./data/tags.xlsx",
         col_types = c(
@@ -289,6 +326,9 @@ add_gldp_geopressuretemplate <- function(
         )
       )
     } else if (file.exists("./data/tags.csv")) {
+      cli_inform(
+        "Reading tags from {.file {file.path(directory, 'data/tags.csv')}}."
+      )
       tf <- readr::read_csv(
         "./data/tags.csv",
         col_types = readr::cols(
@@ -325,6 +365,9 @@ add_gldp_geopressuretemplate <- function(
 
 
     if (file.exists("./data/observations.xlsx")) {
+      cli_inform(
+        "Reading observations from {.file {file.path(directory, 'data/observations.xlsx')}}."
+      )
       o <- readxl::read_excel(
         "./data/observations.xlsx",
         col_types = c(
@@ -348,6 +391,9 @@ add_gldp_geopressuretemplate <- function(
         )
       )
     } else if (file.exists("./data/observations.csv")) {
+      cli_inform(
+        "Reading observations from {.file {file.path(directory, 'data/observations.csv')}}."
+      )
       o <- readr::read_csv(
         "./data/observations.csv",
         col_types = readr::cols(
@@ -373,9 +419,9 @@ add_gldp_geopressuretemplate <- function(
     }
 
     # Use add_gldp_resource instead of tags() <- to avoid update
-    pkg <- add_gldp_resource(pkg, "tags", t, replace = replace)
-    pkg <- add_gldp_resource(pkg, "observations", o, replace = replace)
-    pkg <- add_gldp_resource(pkg, "measurements", m, replace = replace)
+    pkg <- add_gldp_resource(pkg, "tags", t)
+    pkg <- add_gldp_resource(pkg, "observations", o)
+    pkg <- add_gldp_resource(pkg, "measurements", m)
 
     pkg <- pkg %>%
       update_gldp_taxonomic() %>%
@@ -398,7 +444,7 @@ add_gldp_geopressuretemplate <- function(
 #' @param display_config_error Logical indicating whether to display configuration errors
 #' @return A tag object with parameter and data information
 #' @noRd
-rawtagid2tag <- function(id, display_config_error = TRUE) {
+rawtagid_to_tag <- function(id, display_config_error = TRUE) {
   config <- tryCatch(
     {
       GeoPressureR::geopressuretemplate_config(
@@ -410,8 +456,7 @@ rawtagid2tag <- function(id, display_config_error = TRUE) {
       if (display_config_error) {
         # Warn that the configuration file could not be read and display the error
         cli_warn(c(
-          "i" = "Configuration file {.file config.yml} could not be read to build the
-                datapackage.",
+          "i" = "Configuration file {.file config.yml} could not be read for {.field id}.",
           ">" = "Create the tag with default value with {.fun GeoPressureR::param_create}.",
           "!" = "Error: {e$message}"
         ))

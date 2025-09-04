@@ -7,8 +7,7 @@
 add_gldp_geopressuretemplate(
   pkg,
   directory = ".",
-  from = c("raw-tag", "interim"),
-  replace = FALSE
+  from = c("raw-tag", "interim")
 )
 }
 \arguments{
@@ -19,9 +18,6 @@ add_gldp_geopressuretemplate(
 \item{from}{A character vector specifying the source of the data files. Either or both of
 \code{"raw-tag"} (for creating \code{tag} based on the data in \verb{data/raw-tag/}) and \code{"interim"} for data
 in \code{data/interim}.}
-
-\item{replace}{If \code{TRUE}, the added resource will replace an existing
-resource with the same name.}
 }
 \value{
 The updated GLDP package object with new resources
@@ -32,16 +28,21 @@ a \href{https://github.com/Rafnuss/GeoPressureTemplate}{GeoPressureTemplate} dir
 
 The function performs the following steps:
 \enumerate{
-\item If \code{"interim"} in \code{from},  reads all interim ".RData" files, extract all resources possibles
-and add them to the package. \code{tags} and \code{observations} are generated automatically from \code{param}.
-\item If \code{"raw-data"} in \code{from}, create all the possible resources from \verb{data/raw-data/} and
-\verb{data/tag-label/}. \code{tags} and \code{observations} resources are also generated from available
-information.
-\item Reads the \code{tags.csv} and \code{observations.csv} files from the \code{./data} directory if they exist
-and overwrite the previously generated \code{tags} and \code{observations}.
+\item If \code{"interim"} in \code{from},  reads all interim ".RData" files, extract all variables and add
+corresponding resources to the package (\code{measurements}, \code{twilights}, \code{staps}, \code{paths}, \code{edges},
+and \code{pressurepaths}). Generated automatically temporary \code{tags} and \code{observations} tables from
+the \code{param} in the interim file.
+\item If \code{"raw-data"} in \code{from}, search for all tag_id in \verb{data/raw-data/} which were not included
+from \code{interim}. It will use at least \code{tag_create} and if possible \code{tag_label} and \code{tag_set_map}
+using \code{config.yml} .It will also generate or update \code{tags} and \code{observations} table from the the
+tag data.
+\item Reads the \code{tags.csv} (or \code{tags.xlsx} if present) and \code{observations.csv} (or
+\code{observations.xlsx} if present) from the \code{./data} directory if they exist and overwrite the
+previously generated \code{tags} and \code{observations}.
 }
 
-You can exclude interim file to be included in the package by starting the file name with an \verb{_}.
+You can exclude interim file or raw-tag folder to be included in the package by starting the
+file name with an \code{"_"}.
 
 It is possible to do a mix of some \code{tag} read from \code{"interim"} and other from \code{"raw-data"}
 simultaneously.

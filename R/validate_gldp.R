@@ -27,6 +27,7 @@ validate_gldp <- function(pkg, quiet = FALSE) {
   valid <- valid & validate_gldp_coherence(pkg)
   valid <- valid & validate_gldp_observations(observations(pkg))
 
+  cli_h2("Overall Package Validation")
   if (valid) {
     cli_alert_success("Package is valid.")
   } else {
@@ -608,7 +609,7 @@ check_type <- function(value, type, field) {
 
 #' @noRd
 validate_gldp_coherence <- function(pkg) {
-  cli_h3("Check GeoLocator DataPackage Coherence")
+  cli_h2("Check GeoLocator DataPackage Coherence")
   valid <- TRUE
 
   min_res_required <- c("tags", "observations", "measurements")
@@ -624,7 +625,8 @@ validate_gldp_coherence <- function(pkg) {
   o <- observations(pkg)
   m <- measurements(pkg)
 
-  # different scientific_name on the same ring_number
+  # Check for conflicting species assignments:
+  # A single ring_number should be linked to only one scientific_name.
   t %>%
     filter(!is.na(.data$ring_number)) %>%
     group_by(.data$ring_number) %>%
@@ -635,7 +637,8 @@ validate_gldp_coherence <- function(pkg) {
       "Multiple scientific names used for ring_number {.strong {}}", .
     ))
 
-  # Missing tag_id in tags while present measurements
+  # Check for measurements with tag_id not present in the tags table.
+  # All tag_id entries in measurements must be declared in tags.
   midmissing <- unique(m$tag_id[!(m$tag_id %in% t$tag_id)])
   if (length(midmissing) > 1) {
     cli_alert_danger(
@@ -649,22 +652,19 @@ validate_gldp_coherence <- function(pkg) {
     valid <- FALSE
   }
 
-  # Missing ring_number in observations while present in tags
+  # Check for ring_number present in tags but missing from observations.
+  # All birds with a ring_number in tags should have at least one corresponding observation.
   tringmissing <- unique(t$ring_number[!(t$ring_number %in% o$ring_number)])
   if (length(tringmissing) > 1) {
     cli_alert_danger(
-      "{.field observations} is missing {.field ring_number}={.val {tringmissing}} which are \\
+      "{.field observations} is missing {.field ring_number} {.val {tringmissing}} which are \\
       present in {.field tags}."
-    )
-    cli_alert_info(
-      "All {.field ring_number} present in the resource {.field tags} need to also be present \\
-    in the resource {.field observations}."
     )
     valid <- FALSE
   }
 
-  # Observations
-  # Check for combinations in 'o' that are not present in 't'
+  # Check for mismatched tag_id and ring_number combinations between tags and observations.
+  # If a combination exists in observations, it must also exist in tags.
   invalid_combinations <- o %>%
     filter(!is.na(.data$tag_id)) %>%
     anti_join(t, by = c("tag_id", "ring_number"))
@@ -674,6 +674,42 @@ validate_gldp_coherence <- function(pkg) {
       {.field observation} are not present in {.field tags}:"
     )
     print(invalid_combinations)
+    valid <- FALSE
+  }
+
+  # Check for tag_id present in tags but missing from observations.
+  # Each tag_id should have at least one observation record.
+  tidmissing <- setdiff(t$tag_id, unique(o$tag_id))
+  if (length(tidmissing) > 0) {
+    cli_alert_warning(
+      "No observations found for {.val {tidmissing}} declared in {.field tags}."
+    )
+    # Still valid
+    # valid <- FALSE
+  }
+
+  # Check for missing equipment or retrieval while measurement are present
+  # If measurements are present, there should be at least one equipment or retrieval observation.
+  tidmissingequip <- setdiff(
+    unique(m$tag_id),
+    unique(o$tag_id[o$observation_type == "equipment"])
+  )
+  if (length(tidmissingequip) > 0) {
+    cli_alert_danger(
+      "No equipment found for {.val {tidmissingequip}} in in {.field observations} while \\
+      data present in {.field measurements}."
+    )
+    valid <- FALSE
+  }
+  tidmissingret <- setdiff(
+    unique(m$tag_id),
+    unique(o$tag_id[o$observation_type == "retrieval"])
+  )
+  if (length(tidmissingret) > 0) {
+    cli_alert_danger(
+      "No retrieval found for {.val {tidmissingret}} in in {.field observations} while \\
+      data present in {.field measurements}."
+    )
     valid <- FALSE
   }
 
@@ -689,7 +725,7 @@ validate_gldp_coherence <- function(pkg) {
 
 #' @noRd
 validate_gldp_observations <- function(o) {
-  cli_h3("Check Observations Coherence")
+  cli_h2("Check Observations Coherence")
   valid <- TRUE
 
   o <- o %>%

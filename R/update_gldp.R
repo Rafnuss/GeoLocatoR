@@ -120,8 +120,22 @@ update_gldp_spatial <- function(pkg) {
 #' @export
 update_gldp_taxonomic <- function(pkg) {
   check_gldp(pkg)
-  if ("tags" %in% frictionless::resources(pkg)) {
-    pkg$taxonomic <- stats::na.omit(unique(tags(pkg)$scientific_name))
+  if ("measurements" %in% frictionless::resources(pkg)) {
+    # Only use the list of species with data
+    sp_has_data <- unique(measurements(pkg)$tag_id)
+    pkg$taxonomic <- tags(pkg) %>%
+      filter(.data$tag_id %in% sp_has_data) %>%
+      pull(.data$scientific_name) %>%
+      unique() %>%
+      stats::na.omit() %>%
+      as.character()
+  } else if ("tags" %in% frictionless::resources(pkg)) {
+    pkg$taxonomic <- tags(pkg) %>%
+      filter(!is.na(.data$tag_id)) %>%
+      pull(.data$scientific_name) %>%
+      unique() %>%
+      stats::na.omit() %>%
+      as.character()
   } else {
     pkg$taxonomic <- NULL
   }

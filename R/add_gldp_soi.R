@@ -39,6 +39,7 @@ add_gldp_soi <- function(pkg,
 
   # Retrieve directory of all data and display warning message if absent
   if (!("directory" %in% names(gdl))) {
+    cli_progress_step("Retrieving data directories for SOI tags")
     gdl <- add_gldp_soi_directory(gdl, directory_data)
   }
 
@@ -60,6 +61,10 @@ add_gldp_soi <- function(pkg,
   }
 
   # Read tag data
+  n_tags_with_data <- sum(!is.na(gdl$directory))
+  cli_progress_step(
+    glue::glue("Loading tag data for {n_tags_with_data} tags with available data")
+  )
   dtags <- gdl %>%
     filter(!is.na(.data$directory)) %>%
     select("GDL_ID", "directory") %>%
@@ -90,7 +95,8 @@ add_gldp_soi <- function(pkg,
         )
       },
       .progress = list(
-        type = "tasks"
+        type = "tasks",
+        name = "Loading tags from SOI data"
       )
     )
 
@@ -98,7 +104,10 @@ add_gldp_soi <- function(pkg,
   m <- bind_rows(m, tags_to_measurements(dtags))
 
   if (nrow(m) > 0) {
-    pkg <- add_gldp_resource(pkg, "measurements", m, replace = TRUE)
+    cli_progress_step("Add {.field measurements} to {.pkg pkg}")
+    pkg <- add_gldp_resource(pkg, "measurements", m,
+      replace = "measurements" %in% frictionless::resources(pkg)
+    )
   }
 
 
@@ -190,6 +199,7 @@ add_gldp_soi <- function(pkg,
   t <- bind_rows(t, t_gdl)
 
   if (nrow(t) > 0) {
+    cli_progress_step("Add {.field tags} to {.pkg pkg}")
     pkg <- add_gldp_resource(pkg, "tags", t,
       replace = "tags" %in% frictionless::resources(pkg)
     )
@@ -233,6 +243,7 @@ add_gldp_soi <- function(pkg,
   o <- bind_rows(o, o_gdl)
 
   if (nrow(o) > 0) {
+    cli_progress_step("Add {.field observations} to {.pkg pkg}")
     pkg <- add_gldp_resource(pkg, "observations", o,
       replace = "observations" %in% frictionless::resources(pkg)
     )
@@ -244,6 +255,8 @@ add_gldp_soi <- function(pkg,
     update_gldp_number_tags() %>%
     update_gldp_spatial() %>%
     update_gldp_temporal()
+
+  cli_progress_done()
 
   return(pkg)
 }

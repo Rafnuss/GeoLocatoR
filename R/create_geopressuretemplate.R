@@ -374,6 +374,7 @@ create_geopressuretemplate_config <- function(pkg) {
 
       # Add sex if unique and defined (i.e., not U)
       usex <- unique(k$sex)
+      usex <- usex[!is.na(usex)]
       if (length(usex) == 1 && usex != "U") {
         co$sex <- usex
       }

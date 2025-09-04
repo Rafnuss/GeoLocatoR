@@ -11,7 +11,9 @@ test_that("read_gldp correctly reads and processes GeoLocator Data Package", {
 
   validate_gldp(pkg)
 
-  plot(pkg)
+  plot(pkg, "coverage")
+  plot(pkg, "ring")
+  plot(pkg, "map")
 
   print(pkg)
 
