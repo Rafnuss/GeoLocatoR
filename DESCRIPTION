@@ -5,7 +5,8 @@ Authors@R:
     person("Raphaël", "Nussbaumer", , "rafnuss@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8185-1020"))
 Description: An R package to help you create and read geolocator data using the GeoLocator Data Package standard.
-URL: https://github.com/rafnuss/geolocator
+URL: https://github.com/rafnuss/geolocator,
+    https://raphaelnussbaumer.com/GeoLocatoR/
 License: GPL (>= 3)
 Imports: 
     assertthat,
