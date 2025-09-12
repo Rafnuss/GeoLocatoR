@@ -8,7 +8,7 @@ message: 'To cite package "GeoLocatoR" in publications use:'
 type: software
 license: GPL-3.0-or-later
 title: 'GeoLocatoR: R package for GeoLocator Data Package'
-version: 0.2.7
+version: 0.2.8
 abstract: An R package to help you create and read geolocator data using the GeoLocator
   Data Package standard.
 authors:
@@ -233,6 +233,10 @@ references:
     given-names: Bhaskar
   - family-names: Xie
     given-names: Yihui
+  - family-names: Aden-Buie
+    given-names: Garrick
+    email: garrick@posit.co
+    orcid: https://orcid.org/0000-0002-7111-0077
   year: '2025'
   doi: 10.32614/CRAN.package.leaflet
 - type: software
@@ -467,6 +471,9 @@ references:
     email: hadley@posit.co
   - family-names: Gjoneski
     given-names: Oliver
+  - family-names: Couch
+    given-names: Simon
+    email: simon.couch@posit.co
   year: '2025'
   doi: 10.32614/CRAN.package.odbc
 - type: software
