@@ -52,7 +52,8 @@ add_gldp_geopressuretemplate <- function(
   # pkg has already data
   if (length(frictionless::resources(pkg)) > 0) {
     cli_bullets(
-      c("!" = "The {.pkg {pkg}} has already resources {.field {frictionless::resources(pkg)}}.")
+      c("!" = "The {.pkg pkg} has already resources
+        {.field {purrr::map_vec(pkg$resources, ~.x$name)}}.")
     )
     res <- utils::askYesNo("Do you want to continue and overwrite the existing resources?",
       default = "no",
@@ -94,21 +95,26 @@ add_gldp_geopressuretemplate <- function(
       interim <- stats::setNames(vector("list", length(var_names)), var_names)
       interim <- lapply(interim, function(x) vector("list", length(all_files)))
 
-      # Inform message
-      cli_inform(
-        "Reading {.val {length(all_files)}} interim files from
-        {.file {file.path(directory, 'data/interim')}}."
-      )
-
       # Loop through files and populate the result lists
-      for (i in seq_along(all_files)) {
-        save_list <- load(all_files[i])
-        for (var in var_names) {
-          if (var %in% save_list) {
-            interim[[var]][[i]] <- get(var)
-          }
-        }
-      }
+      all_files %>%
+        purrr::iwalk(
+          \(f, idx) {
+            save_list <- load(f)
+            for (var in var_names) {
+              if (var %in% save_list) {
+                interim[[var]][[idx]] <<- get(var)
+              }
+            }
+          },
+          .progress = list(
+            type = "custom",
+            format = "{cli::pb_spin} Reading {cli::pb_current}/{cli::pb_total} interim tag{?s}.",
+            format_done = "{cli::col_green(cli::symbol$tick)} Read {.val {cli::pb_total}} interim \\
+            tag{?s}.",
+            clear = FALSE
+          )
+        )
+
 
       # Check for required variables
       for (var in var_names_required) {
@@ -273,17 +279,20 @@ add_gldp_geopressuretemplate <- function(
         cli_warn(
           "We did not find any tag data in {.file {file.path(directory, 'data/raw-tag')}}."
         )
-      } else {
-        cli_inform(
-          "Reading {.val {length(list_id)}} raw {?tag/tags} data from
-          {.file {file.path(directory, 'data/raw-tag')}}."
-        )
       }
 
+      # Read raw tag data with rawtagid_to_tag function
       dtags <- list_id %>%
         purrr::map(purrr::possibly(rawtagid_to_tag, NULL),
-          .progress = list(type = "tasks", name = "Reading raw tags")
-        )
+          .progress = list(
+            type = "custom",
+            format = "{cli::pb_spin} Reading {cli::pb_current}/{cli::pb_total} raw tag{?s}.",
+            format_done = "{cli::col_green(cli::symbol$tick)} Read {.val {cli::pb_total}} raw \\
+            tag{?s}.",
+            clear = FALSE
+          )
+        ) %>%
+        purrr::compact()
 
       # Adding measurements resource
       m <- bind_rows(m, tags_to_measurements(dtags))
@@ -306,12 +315,10 @@ add_gldp_geopressuretemplate <- function(
     }
 
     # STEP 3: Overwrite tags and observations if csv/xlsx files present
-    if (file.exists("./data/tags.xlsx")) {
-      cli_inform(
-        "Reading tags from {.file {file.path(directory, 'data/tags.xlsx')}}."
-      )
+    if (file.exists("data/tags.xlsx")) {
+      file <- "data/tags.xlsx"
       tf <- readxl::read_excel(
-        "./data/tags.xlsx",
+        file,
         col_types = c(
           tag_id = "text",
           ring_number = "text",
@@ -325,12 +332,13 @@ add_gldp_geopressuretemplate <- function(
           tag_comments = "text"
         )
       )
-    } else if (file.exists("./data/tags.csv")) {
-      cli_inform(
-        "Reading tags from {.file {file.path(directory, 'data/tags.csv')}}."
+      cli_alert_success(
+        "Reading tags from {.file {file.path(directory, file)}}."
       )
-      tf <- readr::read_csv(
-        "./data/tags.csv",
+    } else if (file.exists("data/tags.csv")) {
+      file <- "data/tags.csv"
+      tf <- readr::read_delim(
+        file,
         col_types = readr::cols(
           tag_id = "c",
           ring_number = "c",
@@ -344,14 +352,20 @@ add_gldp_geopressuretemplate <- function(
           tag_comments = "c"
         )
       )
+      cli_alert_success(
+        "Reading tags from {.file {file.path(directory, file)}}."
+      )
     } else {
       tf <- t
     }
 
+
     # Check that all tag_id are in tf
     if (!all(t$tag_id %in% tf$tag_id)) {
+      missing_tag_ids <- setdiff(t$tag_id, tf$tag_id) # nolint
       cli_warn(c(
-        "!" = "Not all {.var tag_id} in {.file {file}} are present in the interim/raw data.",
+        "!" = "The following tag_id from interim/raw data are missing in {.file {file}}: \\
+        {missing_tag_ids}",
         "i" = "We will proceed with a merge of the two.",
         ">" = "Please, fix {.file {file}}"
       ))
@@ -365,9 +379,6 @@ add_gldp_geopressuretemplate <- function(
 
 
     if (file.exists("./data/observations.xlsx")) {
-      cli_inform(
-        "Reading observations from {.file {file.path(directory, 'data/observations.xlsx')}}."
-      )
       o <- readxl::read_excel(
         "./data/observations.xlsx",
         col_types = c(
@@ -390,11 +401,11 @@ add_gldp_geopressuretemplate <- function(
           observation_comments = "text" # observation_comments: character
         )
       )
-    } else if (file.exists("./data/observations.csv")) {
-      cli_inform(
-        "Reading observations from {.file {file.path(directory, 'data/observations.csv')}}."
+      cli_alert_success(
+        "Reading observations from {.file {file.path(directory, 'data/observations.xlsx')}}."
       )
-      o <- readr::read_csv(
+    } else if (file.exists("./data/observations.csv")) {
+      o <- readr::read_delim(
         "./data/observations.csv",
         col_types = readr::cols(
           ring_number = "c",
@@ -415,6 +426,9 @@ add_gldp_geopressuretemplate <- function(
           additional_metric = "c",
           observation_comments = "c"
         )
+      )
+      cli_alert_success(
+        "Reading observations from {.file {file.path(directory, 'data/observations.csv')}}."
       )
     }
 
@@ -456,7 +470,7 @@ rawtagid_to_tag <- function(id, display_config_error = TRUE) {
       if (display_config_error) {
         # Warn that the configuration file could not be read and display the error
         cli_warn(c(
-          "i" = "Configuration file {.file config.yml} could not be read for {.field id}.",
+          "i" = "Configuration file {.file config.yml} could not be read for {.field {id}}}.",
           ">" = "Create the tag with default value with {.fun GeoPressureR::param_create}.",
           "!" = "Error: {e$message}"
         ))
