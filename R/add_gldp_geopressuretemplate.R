@@ -56,7 +56,7 @@ add_gldp_geopressuretemplate <- function(
         {.field {purrr::map_vec(pkg$resources, ~.x$name)}}.")
     )
     res <- utils::askYesNo("Do you want to continue and overwrite the existing resources?",
-      default = "no",
+      default = FALSE,
       yes = "Yes, overwrite",
       no = "No, keep existing resources"
     )
