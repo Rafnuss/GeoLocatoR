@@ -178,6 +178,7 @@ add_gldp_geopressuretemplate <- function(
             purrr::imap(function(p, i) {
               if (!is.null(p)) {
                 p %>%
+                  select(-any_of(c("start", "end", "include"))) %>%
                   mutate(
                     type = sub("path_", "", x),
                     tag_id = interim$tag[[i]]$param$id
@@ -187,8 +188,7 @@ add_gldp_geopressuretemplate <- function(
             purrr::list_rbind()
         }) %>%
         purrr::list_rbind() %>%
-        tibble::tibble() %>%
-        select(-any_of(c("start", "end", "include")))
+        tibble::tibble()
 
       if (nrow(paths) > 0) {
         pkg <- add_gldp_resource(pkg, "paths", paths)
