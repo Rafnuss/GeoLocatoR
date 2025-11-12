@@ -291,8 +291,20 @@ add_gldp_geopressuretemplate <- function(
             tag{?s}.",
             clear = FALSE
           )
-        ) %>%
-        purrr::compact()
+        )
+
+      # Check for failed tag reads and warn
+      failed_tags <- list_id[sapply(dtags, is.null)]
+      if (length(failed_tags) > 0) {
+        cli_warn(c(
+          "!" = "Failed to read {.val {length(failed_tags)}} {?tag/tags}:",
+          "i" = "{.field {failed_tags}}",
+          ">" = "These tags will be skipped."
+        ))
+      }
+
+      # Remove NULL entries
+      dtags <- purrr::compact(dtags)
 
       # Adding measurements resource
       m <- bind_rows(m, tags_to_measurements(dtags))
