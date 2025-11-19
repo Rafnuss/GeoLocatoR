@@ -13,6 +13,7 @@ reference:
       - read_gldp
       - merge_gldp
       - update_gldp
+      - gldp_to_tag
   - title: Accessor (and assignment) functions
     contents:
       - tags
