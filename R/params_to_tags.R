@@ -12,36 +12,115 @@
 #'
 #' @export
 params_to_tags <- function(params) {
-  params %>%
-    purrr::map(\(param) {
-      t <- tibble::tibble(
-        tag_id = param$id,
-        manufacturer = param$tag_create$manufacturer,
-        scientific_name = param$bird_create$scientific_name,
-        ring_number = NA_character_
+  if (length(params) == 0) {
+    return(tibble::tibble(
+      tag_id = character(),
+      manufacturer = character(),
+      scientific_name = character(),
+      ring_number = character(),
+      model = character(),
+      firmware = character()
+    ))
+  }
+
+  tag_list <- list()
+  for (i in seq_along(params)) {
+    param <- params[[i]]
+    t <- tryCatch(
+      {
+        tibble::tibble(
+          tag_id = param$id,
+          manufacturer = param$tag_create$manufacturer,
+          scientific_name = param$bird_create$scientific_name,
+          ring_number = NA_character_
+        )
+      },
+      error = function(e) {
+        cli::cli_abort(
+          c(
+            glue::glue(
+              "Error in {{.code params_to_tags}} for param {{.val {i}}}:"
+            ),
+            "x" = e$message
+          )
+        )
+      }
+    )
+
+    # Standardize manufacturer names (only if manufacturer column exists)
+    if ("manufacturer" %in% names(t)) {
+      t <- dplyr::mutate(
+        t,
+        manufacturer = dplyr::case_when(
+          .data$manufacturer == "soi" ~ "Swiss Ornithological Institute",
+          .data$manufacturer == "migratetech" ~ "Migrate Technology",
+          .data$manufacturer == "lund" ~ "Lund CAnMove",
+          .default = .data$manufacturer
+        )
       )
+    }
 
-      t$manufacturer[t$manufacturer == "soi"] <- "Swiss Ornithological Institute"
-      t$manufacturer[t$manufacturer == "migratetech"] <- "Migrate Technology"
-      t$manufacturer[t$manufacturer == "lund"] <- "Lund CAnMove"
-
-      if ("soi_settings" %in% names(param)) {
-        s <- param$soi_settings
-        t <- t %>%
-          mutate(
-            model = s$`HW Version`,
-            firmware = s$`FW Version`
+    # Add model/firmware if soi_settings present
+    if ("soi_settings" %in% names(param)) {
+      s <- param$soi_settings
+      t <- tryCatch(
+        {
+          dplyr::mutate(t, model = s$`HW Version`, firmware = s$`FW Version`)
+        },
+        error = function(e) {
+          cli::cli_abort(
+            c(
+              glue::glue(
+                "Error in {{.code params_to_tags}} for param {{.val {i}}} (soi_settings):"
+              ),
+              "x" = e$message
+            )
           )
-      }
+        }
+      )
+    }
 
-      if ("migratec_model" %in% names(param)) {
-        t <- t %>%
-          mutate(
-            model = param$migratec_model
+    # Add model if migratec_model present
+    if ("migratec_model" %in% names(param)) {
+      t <- tryCatch(
+        {
+          dplyr::mutate(t, model = param$migratec_model)
+        },
+        error = function(e) {
+          cli::cli_abort(
+            c(
+              glue::glue(
+                "Error in {{.code params_to_tags}} for param {{.val {i}}} (migratec_model):"
+              ),
+              "x" = e$message
+            )
           )
-      }
+        }
+      )
+    }
 
-      t
-    }) %>%
-    purrr::list_rbind()
+    tag_list[[i]] <- t
+  }
+
+  # Combine all tags, with error reporting for type mismatches
+  tags_df <- tryCatch(
+    {
+      dplyr::bind_rows(tag_list)
+    },
+    error = function(e) {
+      col_types <- sapply(tag_list, function(x) {
+        paste(sapply(x, class), collapse = ", ")
+      })
+      cli::cli_abort(
+        c(
+          "Type mismatch when combining tags in {.code params_to_tags}:",
+          "i" = glue::glue(
+            "Column types: {paste(col_types, collapse = ' | ')}"
+          ),
+          "x" = e$message
+        )
+      )
+    }
+  )
+  tags_df
 }
