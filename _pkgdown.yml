@@ -49,11 +49,9 @@ reference:
       - params_to_tags
       - params_to_observations
 
-
-
 navbar:
   structure:
-    left:  [reference, geopressure-manual, geolocator-dp]
+    left: [reference, geopressure-manual, geolocator-dp]
   components:
     geopressure-manual:
       text: User Guide
@@ -61,7 +59,6 @@ navbar:
     geolocator-dp:
       text: GeolocatorDP
       href: https://raphaelnussbaumer.com/GeoLocator-DP/
-
 
 vignettes:
   toc: false
