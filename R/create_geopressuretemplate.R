@@ -186,6 +186,9 @@ create_geopressuretemplate_licences <- function(licenses) {
   }
 
   # 3. Match and apply the license using usethis functions
+  # Force usethis to recognize current directory as project root
+  usethis::proj_set(getwd(), force = TRUE)
+
   licenses$name <- tolower(licenses$name)
 
   if (grepl("mit", licenses$name)) {
