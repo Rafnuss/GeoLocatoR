@@ -26,9 +26,11 @@
 create_geopressuretemplate <- function(path,
                                        pkg = NULL,
                                        open = interactive()) {
-  path <- gert::git_clone("https://github.com/Rafnuss/GeoPressureTemplate/",
-    path = path, verbose = FALSE
-  )
+  path <- tempfile()
+  system(sprintf(
+    "git clone --depth 1 https://github.com/Rafnuss/GeoPressureTemplate %s",
+    shQuote(path)
+  ))
   cli_bullets(c(
     "v" = "Cloning repo from {.url https://github.com/Rafnuss/GeoPressureTemplate/} \\
     into {.path {path}}."

@@ -32,7 +32,6 @@ Imports:
     zen4R
 Suggests: 
     covr,
-    gert,
     odbc,
     DBI,
     knitr,
