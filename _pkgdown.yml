@@ -28,6 +28,7 @@ reference:
       - create_gldp_geopressuretemplate
       - add_gldp_geopressuretemplate
       - create_geopressuretemplate
+      - config2tibble
   - title: SOI
     contents:
       - add_gldp_soi
