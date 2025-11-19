@@ -91,24 +91,36 @@ merge_gldp <- function(x, y) {
   res <- unique(c(res_x, res_y)) # Combine resource names without duplicates
 
   # Iterate over all resources and merge their data if available
-  xy <- purrr::reduce(res, function(xy, r) {
-    # Read resource data if it exists in x or y
-    data_x <- if (r %in% res_x) frictionless::read_resource(x, resource_name = r) else NULL
-    data_y <- if (r %in% res_y) frictionless::read_resource(y, resource_name = r) else NULL
+  xy <- purrr::reduce(
+    res,
+    function(xy, r) {
+      # Read resource data if it exists in x or y
+      data_x <- if (r %in% res_x) {
+        frictionless::read_resource(x, resource_name = r)
+      } else {
+        NULL
+      }
+      data_y <- if (r %in% res_y) {
+        frictionless::read_resource(y, resource_name = r)
+      } else {
+        NULL
+      }
 
-    # Only add the resource if data is available in either x or y
-    if (!is.null(data_x) | !is.null(data_y)) {
-      combined_data <- bind_rows(data_x, data_y) # Combine data from x and y
-      xy <- add_gldp_resource(
-        package = xy,
-        resource_name = r,
-        data = combined_data,
-        cast_type = TRUE # Ensure data types are correctly cast
-      )
-    }
+      # Only add the resource if data is available in either x or y
+      if (!is.null(data_x) | !is.null(data_y)) {
+        combined_data <- bind_rows(data_x, data_y) # Combine data from x and y
+        xy <- add_gldp_resource(
+          package = xy,
+          resource_name = r,
+          data = combined_data,
+          cast_type = TRUE # Ensure data types are correctly cast
+        )
+      }
 
-    xy
-  }, .init = xy)
+      xy
+    },
+    .init = xy
+  )
 
   # Final update for any remaining metadata or properties
   xy <- update_gldp(xy)

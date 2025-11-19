@@ -28,25 +28,29 @@ params_to_observations <- function(params) {
       )
 
       if (!is.null(param$tag_create$crop_start)) {
-        oe <- o0 %>% mutate(
-          datetime = as.POSIXct(param$tag_create$crop_start, tz = "UTC"),
-          observation_type = "equipment"
-        )
+        oe <- o0 %>%
+          mutate(
+            datetime = as.POSIXct(param$tag_create$crop_start, tz = "UTC"),
+            observation_type = "equipment"
+          )
       } else {
-        oe <- o0 %>% mutate(
-          observation_type = "equipment"
-        )
+        oe <- o0 %>%
+          mutate(
+            observation_type = "equipment"
+          )
       }
 
       if (!is.null(param$tag_create$crop_end)) {
-        or <- o0 %>% mutate(
-          datetime = as.POSIXct(param$tag_create$crop_end, tz = "UTC"),
-          observation_type = "retrieval"
-        )
+        or <- o0 %>%
+          mutate(
+            datetime = as.POSIXct(param$tag_create$crop_end, tz = "UTC"),
+            observation_type = "retrieval"
+          )
       } else {
-        or <- o0 %>% mutate(
-          observation_type = "retrieval"
-        )
+        or <- o0 %>%
+          mutate(
+            observation_type = "retrieval"
+          )
       }
 
       if ("known" %in% names(param$tag_set_map)) {
@@ -54,22 +58,22 @@ params_to_observations <- function(params) {
 
         id <- known$stap_id == 1
         if (any(id)) {
-          oe <- oe %>% mutate(
-            longitude = known$known_lon[id],
-            latitude = known$known_lat[id],
-            observation_comments =
-              "Automatically computed from `known$stap_id==1` with `params_to_observations()`"
-          )
+          oe <- oe %>%
+            mutate(
+              longitude = known$known_lon[id],
+              latitude = known$known_lat[id],
+              observation_comments = "Automatically computed from `known$stap_id==1` with `params_to_observations()`"
+            )
         }
 
         id <- known$stap_id == -1
         if (any(id)) {
-          or <- or %>% mutate(
-            longitude = known$known_lon[id],
-            latitude = known$known_lat[id],
-            observation_comments =
-              "Automatically computed from `known$stap_id==-1` with `params_to_observations()`"
-          )
+          or <- or %>%
+            mutate(
+              longitude = known$known_lon[id],
+              latitude = known$known_lat[id],
+              observation_comments = "Automatically computed from `known$stap_id==-1` with `params_to_observations()`"
+            )
         }
       }
 

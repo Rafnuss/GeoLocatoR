@@ -41,13 +41,28 @@ tags_to_measurements <- function(tags) {
   }
 
   sensor_types <- c(
-    "pressure", "acceleration", "light", "temperature_external",
-    "temperature_internal", "magnetic"
+    "pressure",
+    "acceleration",
+    "light",
+    "temperature_external",
+    "temperature_internal",
+    "magnetic"
   )
   select_cols <- c(
-    "pressure", "activity", "pitch", "light", "temperature_external",
-    "temperature_internal", "acceleration_x", "acceleration_y", "acceleration_z",
-    "magnetic_x", "magnetic_y", "magnetic_z", "date", "label"
+    "pressure",
+    "activity",
+    "pitch",
+    "light",
+    "temperature_external",
+    "temperature_internal",
+    "acceleration_x",
+    "acceleration_y",
+    "acceleration_z",
+    "magnetic_x",
+    "magnetic_y",
+    "magnetic_z",
+    "date",
+    "label"
   )
   all_measurements <- list()
 
@@ -75,9 +90,11 @@ tags_to_measurements <- function(tags) {
       # Pivot longer
       long_df <- tryCatch(
         {
-          tidyr::pivot_longer(df,
+          tidyr::pivot_longer(
+            df,
             cols = setdiff(colnames(df), c("date", "label")),
-            names_to = "sensor", values_to = "value"
+            names_to = "sensor",
+            values_to = "value"
           )
         },
         error = function(e) {

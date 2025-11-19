@@ -33,7 +33,12 @@ version <- function(x) {
   match <- grep(pattern, profile)
   if (length(match) > 0) {
     extracted_version <- regmatches(profile, regexpr(pattern, profile))
-    extracted_version <- sub("GeoLocator-DP/", "", extracted_version, fixed = TRUE)
+    extracted_version <- sub(
+      "GeoLocator-DP/",
+      "",
+      extracted_version,
+      fixed = TRUE
+    )
     extracted_version <- sub("/", "", extracted_version, fixed = TRUE)
     extracted_version
   } else {

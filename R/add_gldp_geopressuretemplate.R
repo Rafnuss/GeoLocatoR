@@ -35,9 +35,10 @@
 #' @return The updated GLDP package object with new resources
 #' @export
 add_gldp_geopressuretemplate <- function(
-    pkg,
-    directory = ".",
-    from = c("raw-tag", "interim")) {
+  pkg,
+  directory = ".",
+  from = c("raw-tag", "interim")
+) {
   # Check input
   check_gldp(pkg)
 
@@ -52,10 +53,13 @@ add_gldp_geopressuretemplate <- function(
   # pkg has already data
   if (length(frictionless::resources(pkg)) > 0) {
     cli_bullets(
-      c("!" = "The {.pkg pkg} has already resources
-        {.field {purrr::map_vec(pkg$resources, ~.x$name)}}.")
+      c(
+        "!" = "The {.pkg pkg} has already resources
+        {.field {purrr::map_vec(pkg$resources, ~.x$name)}}."
+      )
     )
-    res <- utils::askYesNo("Do you want to continue and overwrite the existing resources?",
+    res <- utils::askYesNo(
+      "Do you want to continue and overwrite the existing resources?",
       default = FALSE,
       yes = "Yes, overwrite",
       no = "No, keep existing resources"
@@ -78,18 +82,39 @@ add_gldp_geopressuretemplate <- function(
   pkg <- withr::with_dir(directory, {
     # STEP 1: Read all interim file available
     if ("interim" %in% from) {
-      all_files <- list.files(path = "./data/interim/", pattern = "\\.RData$", full.names = TRUE)
+      all_files <- list.files(
+        path = "./data/interim/",
+        pattern = "\\.RData$",
+        full.names = TRUE
+      )
       # Exclude folder starting with _
       all_files <- all_files[!grepl("^_", basename(all_files))]
 
       # List of variable names to be processed
       var_names_required <- c("tag", "param")
-      var_names_path <- c("path_simulation", "path_tag", "path_most_likely", "path_geopressureviz")
-      var_names_edges <- c("edge_most_likely", "edge_simulation", "edge_geopressureviz", "edge_tag")
-      var_names_pressurepath <- c(
-        "pressurepath_most_likely", "pressurepath_geopressureviz", "pressurepath_geopressureviz"
+      var_names_path <- c(
+        "path_simulation",
+        "path_tag",
+        "path_most_likely",
+        "path_geopressureviz"
       )
-      var_names <- c(var_names_required, var_names_path, var_names_edges, var_names_pressurepath)
+      var_names_edges <- c(
+        "edge_most_likely",
+        "edge_simulation",
+        "edge_geopressureviz",
+        "edge_tag"
+      )
+      var_names_pressurepath <- c(
+        "pressurepath_most_likely",
+        "pressurepath_geopressureviz",
+        "pressurepath_geopressureviz"
+      )
+      var_names <- c(
+        var_names_required,
+        var_names_path,
+        var_names_edges,
+        var_names_pressurepath
+      )
 
       # Initialize lists dynamically
       interim <- stats::setNames(vector("list", length(var_names)), var_names)
@@ -114,7 +139,6 @@ add_gldp_geopressuretemplate <- function(
             clear = FALSE
           )
         )
-
 
       # Check for required variables
       for (var in var_names_required) {
@@ -165,7 +189,6 @@ add_gldp_geopressuretemplate <- function(
         purrr::compact() %>% # Remove NULLs
         purrr::list_rbind() %>%
         select(-any_of(c("duration", "nb_sample")))
-
 
       if (nrow(staps) > 0) {
         pkg <- add_gldp_resource(pkg, "staps", staps)
@@ -283,7 +306,8 @@ add_gldp_geopressuretemplate <- function(
 
       # Read raw tag data with rawtagid_to_tag function
       dtags <- list_id %>%
-        purrr::map(purrr::possibly(rawtagid_to_tag, NULL),
+        purrr::map(
+          purrr::possibly(rawtagid_to_tag, NULL),
           .progress = list(
             type = "custom",
             format = "{cli::pb_spin} Reading {cli::pb_current}/{cli::pb_total} raw tag{?s}.",
@@ -371,7 +395,6 @@ add_gldp_geopressuretemplate <- function(
       tf <- t
     }
 
-
     # Check that all tag_id are in tf
     if (!all(t$tag_id %in% tf$tag_id)) {
       missing_tag_ids <- setdiff(t$tag_id, tf$tag_id) # nolint
@@ -388,7 +411,6 @@ add_gldp_geopressuretemplate <- function(
     } else {
       t <- tf
     }
-
 
     if (file.exists("./data/observations.xlsx")) {
       o <- readxl::read_excel(
@@ -488,17 +510,21 @@ rawtagid_to_tag <- function(id, display_config_error = TRUE) {
         ))
         display_config_error <- FALSE
       }
-      GeoPressureR::param_create(id,
+      GeoPressureR::param_create(
+        id,
         default = TRUE,
         tag_create = list(assert_pressure = FALSE)
       )
     }
   )
 
-  tag <- do.call(GeoPressureR::tag_create, c(
-    list(id = id, quiet = TRUE),
-    config$tag_create
-  ))
+  tag <- do.call(
+    GeoPressureR::tag_create,
+    c(
+      list(id = id, quiet = TRUE),
+      config$tag_create
+    )
+  )
 
   tag <- tryCatch(
     {
@@ -513,10 +539,13 @@ rawtagid_to_tag <- function(id, display_config_error = TRUE) {
         file = config$tag_label$file
       )
 
-      tag <- do.call(GeoPressureR::tag_set_map, c(
-        list(tag = tag),
-        config$tag_set_map
-      ))
+      tag <- do.call(
+        GeoPressureR::tag_set_map,
+        c(
+          list(tag = tag),
+          config$tag_set_map
+        )
+      )
 
       tag # return the value
     },

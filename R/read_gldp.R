@@ -40,7 +40,9 @@ read_gldp <- function(file = "datapackage.json", force_read = TRUE) {
   class(pkg) <- c("geolocatordp", class(pkg))
 
   if (!grepl("geolocator-dp-profile\\.json$", pkg$`$schema`)) {
-    cli_warn("The datapackage provided does not seem to be a GeoLocator Data Package.")
+    cli_warn(
+      "The datapackage provided does not seem to be a GeoLocator Data Package."
+    )
   }
 
   pkg

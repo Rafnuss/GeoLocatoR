@@ -125,23 +125,24 @@
 #'
 #' @export
 create_gldp <- function(
-    title = "",
-    contributors = list(list(title = "")),
-    embargo = "1970-01-01",
-    licenses = list(list(
-      name = "CC-BY-4.0",
-      title = "Creative Commons Attribution 4.0",
-      path = "https://creativecommons.org/licenses/by/4.0/"
-    )),
-    id = NULL,
-    description = NULL,
-    version = NULL,
-    relatedIdentifiers = NULL,
-    grants = NULL,
-    keywords = NULL,
-    created = format(as.POSIXct(Sys.time(), tz = "UTC"), "%Y-%m-%dT%H:%M:%SZ"),
-    bibliographicCitation = NULL,
-    schema = NULL) {
+  title = "",
+  contributors = list(list(title = "")),
+  embargo = "1970-01-01",
+  licenses = list(list(
+    name = "CC-BY-4.0",
+    title = "Creative Commons Attribution 4.0",
+    path = "https://creativecommons.org/licenses/by/4.0/"
+  )),
+  id = NULL,
+  description = NULL,
+  version = NULL,
+  relatedIdentifiers = NULL,
+  grants = NULL,
+  keywords = NULL,
+  created = format(as.POSIXct(Sys.time(), tz = "UTC"), "%Y-%m-%dT%H:%M:%SZ"),
+  bibliographicCitation = NULL,
+  schema = NULL
+) {
   # Assertions to check input validity
 
   # Check title
@@ -171,7 +172,9 @@ create_gldp <- function(
         "i" = "See {.url https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#contributors}"
       ))
     }
-    if (is.null(contributors[[i]]$title) || !is.character(contributors[[i]]$title)) {
+    if (
+      is.null(contributors[[i]]$title) || !is.character(contributors[[i]]$title)
+    ) {
       cli_abort(c(
         "x" = "Contributor {i} is missing a {.field title}.",
         "!" = "The {.field title} field is required for each contributor.",
@@ -230,9 +233,15 @@ create_gldp <- function(
   }
 
   # Check description
-  if (is.null(description) || description == "") description <- NULL
+  if (is.null(description) || description == "") {
+    description <- NULL
+  }
   if (!is.null(description)) {
-    if (!is.character(description) || length(description) != 1 || is.na(description)) {
+    if (
+      !is.character(description) ||
+        length(description) != 1 ||
+        is.na(description)
+    ) {
       cli_abort(c(
         "x" = "{.arg description} must be a string or {.val NULL}.",
         "!" = "Provide a markdown-formatted description of your data package.",
@@ -243,7 +252,12 @@ create_gldp <- function(
 
   # Check version
   if (!is.null(version)) {
-    if (!is.character(version) || length(version) != 1 || is.na(version) || version == "") {
+    if (
+      !is.character(version) ||
+        length(version) != 1 ||
+        is.na(version) ||
+        version == ""
+    ) {
       cli_abort(c(
         "x" = "{.arg version} must be a non-empty string or {.val NULL}.",
         ">" = "Use semantic versioning: {.val '1.0.0'}, {.val '1.2.3'}, {.val '2.0.0-beta.1'}",
@@ -315,7 +329,9 @@ create_gldp <- function(
 
   # Check keywords
   if (!is.null(keywords)) {
-    if (!is.character(keywords) || any(is.na(keywords)) || any(keywords == "")) {
+    if (
+      !is.character(keywords) || any(is.na(keywords)) || any(keywords == "")
+    ) {
       cli_abort(c(
         "x" = "{.arg keywords} must be a character vector with non-empty strings.",
         ">" = "Provide keywords to help users find your data package. Example:
@@ -328,7 +344,8 @@ create_gldp <- function(
   # Check created datetime
   tryCatch(
     {
-      created_time <- as.POSIXct(created,
+      created_time <- as.POSIXct(
+        created,
         tryFormats = c(
           "%Y-%m-%dT%H:%M:%SZ",
           "%Y-%m-%d %H:%M:%OS",
@@ -361,8 +378,12 @@ create_gldp <- function(
 
   # Check bibliographicCitation
   if (!is.null(bibliographicCitation)) {
-    if (!is.character(bibliographicCitation) || length(bibliographicCitation) != 1 ||
-      is.na(bibliographicCitation) || bibliographicCitation == "") {
+    if (
+      !is.character(bibliographicCitation) ||
+        length(bibliographicCitation) != 1 ||
+        is.na(bibliographicCitation) ||
+        bibliographicCitation == ""
+    ) {
       cli_abort(c(
         "x" = "{.arg bibliographicCitation} must be a non-empty string.",
         ">" = "Provide a properly formatted citation for your data package. Example:
@@ -379,7 +400,12 @@ create_gldp <- function(
       "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/main/geolocator-dp-profile.json"
   }
 
-  if (!is.character(schema) || length(schema) != 1 || is.na(schema) || schema == "") {
+  if (
+    !is.character(schema) ||
+      length(schema) != 1 ||
+      is.na(schema) ||
+      schema == ""
+  ) {
     cli_abort(c(
       "x" = "{.arg schema} must be a non-empty string.",
       ">" = "Provide a URL to a valid JSON schema.",
@@ -395,7 +421,6 @@ create_gldp <- function(
     ))
   }
 
-
   # Create the descriptor list
   descriptor <- list(
     title = title,
@@ -407,13 +432,27 @@ create_gldp <- function(
   )
 
   # Conditionally add optional elements
-  if (!is.null(id)) descriptor$id <- id
-  if (!is.null(description)) descriptor$description <- description
-  if (!is.null(version)) descriptor$version <- version
-  if (!is.null(keywords)) descriptor$keywords <- keywords
-  if (!is.null(bibliographicCitation)) descriptor$bibliographicCitation <- bibliographicCitation
-  if (!is.null(grants)) descriptor$grants <- grants
-  if (!is.null(relatedIdentifiers)) descriptor$relatedIdentifiers <- relatedIdentifiers
+  if (!is.null(id)) {
+    descriptor$id <- id
+  }
+  if (!is.null(description)) {
+    descriptor$description <- description
+  }
+  if (!is.null(version)) {
+    descriptor$version <- version
+  }
+  if (!is.null(keywords)) {
+    descriptor$keywords <- keywords
+  }
+  if (!is.null(bibliographicCitation)) {
+    descriptor$bibliographicCitation <- bibliographicCitation
+  }
+  if (!is.null(grants)) {
+    descriptor$grants <- grants
+  }
+  if (!is.null(relatedIdentifiers)) {
+    descriptor$relatedIdentifiers <- relatedIdentifiers
+  }
 
   # Create frictionless package
   pkg <- frictionless::create_package(descriptor = descriptor)

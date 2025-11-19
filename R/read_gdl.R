@@ -39,10 +39,12 @@
 #' and exports them to temporary CSV files.
 #'
 #' @export
-read_gdl <- function(access_file = NA,
-                     data_file = NA,
-                     order_file = NA,
-                     filter_col = TRUE) {
+read_gdl <- function(
+  access_file = NA,
+  data_file = NA,
+  order_file = NA,
+  filter_col = TRUE
+) {
   if (!is.na(access_file)) {
     if (!is.na(data_file) || !is.na(order_file)) {
       cli_warn(c(
@@ -73,7 +75,6 @@ read_gdl <- function(access_file = NA,
     o <- read_gdl_orders(order_file)
   }
 
-
   o <- o %>%
     group_by(.data$OrderName) %>%
     summarize(
@@ -86,10 +87,7 @@ read_gdl <- function(access_file = NA,
     ) %>%
     select(-c("GDL_Type", "Species"))
 
-  gdl <- left_join(d, o,
-    by = c("OrderName"),
-    suffix = c("_data", "_order")
-  )
+  gdl <- left_join(d, o, by = c("OrderName"), suffix = c("_data", "_order"))
 
   if (is.logical(filter_col)) {
     if (filter_col) {
@@ -147,7 +145,10 @@ read_gdl_orders <- function(order_file) {
       Client = readr::col_character(),
       ResponsibleP3 = readr::col_character(),
       ClientCategory = readr::col_factor(c(
-        "own", "cooperation", "coop", "purchase"
+        "own",
+        "cooperation",
+        "coop",
+        "purchase"
       )),
       GDL_Type = readr::col_character(),
       # readr::col_factor(c("GDL1", "GDL2", "GDL3pam", "uTag")),
@@ -207,10 +208,10 @@ read_gdl_orders <- function(order_file) {
       PrioritySensor = readr::col_logical(),
       PriorityMemory = readr::col_double()
     )
-  ) %>% arrange(.data$OrderName)
+  ) %>%
+    arrange(.data$OrderName)
   o
 }
-
 
 
 #' @rdname read_gdl
@@ -304,9 +305,11 @@ read_gdl_data <- function(data_file) {
 
 #' @rdname read_gdl
 #' @export
-read_gdl_access <- function(access_file,
-                            data_file = tempfile("GDL_Data", fileext = ".csv"),
-                            order_file = tempfile("GDL_Orders", fileext = ".csv")) {
+read_gdl_access <- function(
+  access_file,
+  data_file = tempfile("GDL_Data", fileext = ".csv"),
+  order_file = tempfile("GDL_Orders", fileext = ".csv")
+) {
   # Check Access file
   if (!file.exists(access_file)) {
     cli_abort(c(
@@ -339,16 +342,18 @@ read_gdl_access <- function(access_file,
       ))
     }
   } else if (.Platform$OS.type == "windows") {
-    con <- DBI::dbConnect(odbc::odbc(),
+    con <- DBI::dbConnect(
+      odbc::odbc(),
       .connection_string = paste0(
         "Driver={Microsoft Access Driver (*.mdb, *.accdb)};",
-        "Dbq=", access_file, ";"
+        "Dbq=",
+        access_file,
+        ";"
       )
     )
     readr::write_csv(DBI::dbReadTable(con, "GDL_Orders"), order_file)
     readr::write_csv(DBI::dbReadTable(con, "GDL_Data"), data_file)
   }
-
 
   invisible(c(data_file, order_file))
 }

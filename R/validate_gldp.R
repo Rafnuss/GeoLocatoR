@@ -19,7 +19,7 @@ validate_gldp <- function(pkg, quiet = FALSE) {
   check_gldp(pkg)
 
   if (quiet) {
-    options(cli.default_handler = function(...) { })
+    options(cli.default_handler = function(...) {})
   }
 
   valid <- validate_gldp_profile(pkg)
@@ -84,11 +84,20 @@ validate_gldp_resources <- function(pkg) {
   for (i in seq_along(pkg$resources)) {
     resource <- pkg$resources[[i]]
 
-    if (resource$profile == "tabular-data-resource" &&
-      (resource$name %in% c(
-        "tags", "observations", "measurements", "staps", "twilights", "paths",
-        "edges", "pressurepaths"
-      ))) {
+    if (
+      resource$profile == "tabular-data-resource" &&
+        (resource$name %in%
+          c(
+            "tags",
+            "observations",
+            "measurements",
+            "staps",
+            "twilights",
+            "paths",
+            "edges",
+            "pressurepaths"
+          ))
+    ) {
       valid <- valid & validate_gldp_table(resource$data, resource$schema)
     } else {
       cli_h2("Check GeoLocator DataPackage Resources {.field {resource$name}}")
@@ -120,7 +129,11 @@ validate_gldp_table <- function(data, schema) {
     sapply(schema$fields, \(x) x$name)
   )
 
-  valid <- validate_gldp_fields_match(names(schema_fields), names(data), schema$fieldsMatch[[1]])
+  valid <- validate_gldp_fields_match(
+    names(schema_fields),
+    names(data),
+    schema$fieldsMatch[[1]]
+  )
 
   fields <- intersect(names(schema_fields), names(data))
 
@@ -131,13 +144,22 @@ validate_gldp_table <- function(data, schema) {
       prop$constraints <- NULL # Remove the 'constraints' field after merging
     }
 
-    valid <- valid & validate_gldp_item(data[[field]], prop, glue::glue("{schema$name}${field}"))
+    valid <- valid &
+      validate_gldp_item(
+        data[[field]],
+        prop,
+        glue::glue("{schema$name}${field}")
+      )
   }
 
   if (valid) {
-    cli_alert_success("Table {.field {schema$name}} is consistent with the schema.")
+    cli_alert_success(
+      "Table {.field {schema$name}} is consistent with the schema."
+    )
   } else {
-    cli_alert_danger("Table {.field {schema$name}} is not consistent with the schema.")
+    cli_alert_danger(
+      "Table {.field {schema$name}} is not consistent with the schema."
+    )
   }
 
   invisible(valid)
@@ -161,17 +183,27 @@ validate_gldp_object <- function(obj, required, properties, name = "") {
   for (field in names(obj)) {
     if (field %in% names(properties)) {
       valid <- valid &
-        validate_gldp_item(obj[[field]], properties[[field]], glue::glue("{name}{field}"))
+        validate_gldp_item(
+          obj[[field]],
+          properties[[field]],
+          glue::glue("{name}{field}")
+        )
 
       if (properties[[field]]$type == "object") {
         if ("$ref" %in% names(properties[[field]])) {
           # Not easy to implement as rely on more complex schema with anyOf, allOf etc...
           # prop <- jsonlite::fromJSON(properties[[field]]$`$ref`, simplifyVector = FALSE)
-          cli_alert_warning("{.field {field}} cannot be validated (external schema).")
-        } else {
-          valid <- valid & validate_gldp_object(
-            obj[[field]], properties[[field]]$required, properties[[field]]$properties, field
+          cli_alert_warning(
+            "{.field {field}} cannot be validated (external schema)."
           )
+        } else {
+          valid <- valid &
+            validate_gldp_object(
+              obj[[field]],
+              properties[[field]]$required,
+              properties[[field]]$properties,
+              field
+            )
         }
       }
 
@@ -211,7 +243,6 @@ validate_gldp_item <- function(item, prop, field) {
   # valid format
   valid <- valid && check_format(item, prop$format, field)
 
-
   # Check if 'required' property exists and is TRUE
   required <- FALSE
   if (!is.null(prop$required) && is.logical(prop$required) && prop$required) {
@@ -224,7 +255,9 @@ validate_gldp_item <- function(item, prop, field) {
 
       # If any NULL or NA items exist, report and set valid to FALSE
       if (any(nn)) {
-        cli_alert_danger("{.field {field}} is required but {sum(nn)} item{?s} are {.val NA}")
+        cli_alert_danger(
+          "{.field {field}} is required but {sum(nn)} item{?s} are {.val NA}"
+        )
         valid <- FALSE
       }
     }
@@ -236,7 +269,9 @@ validate_gldp_item <- function(item, prop, field) {
     duplicates <- duplicated(item) & !is.na(item)
 
     if (any(duplicates)) {
-      cli_alert_danger("{.field {field}} must be unique but {sum(duplicates)} duplicate{?s} found.")
+      cli_alert_danger(
+        "{.field {field}} must be unique but {sum(duplicates)} duplicate{?s} found."
+      )
       valid <- FALSE
     }
   }
@@ -247,8 +282,10 @@ validate_gldp_item <- function(item, prop, field) {
     too_short <- lengths < prop$minLength
 
     if (any(too_short)) {
-      cli_alert_danger("{.field {field}} has {sum(too_short)} item{?s} shorter than the minimum
-                       length of {prop$minLength}.")
+      cli_alert_danger(
+        "{.field {field}} has {sum(too_short)} item{?s} shorter than the minimum
+                       length of {prop$minLength}."
+      )
       valid <- FALSE
     }
   }
@@ -259,8 +296,10 @@ validate_gldp_item <- function(item, prop, field) {
     too_long <- lengths > prop$maxLength
 
     if (any(too_long)) {
-      cli_alert_danger("{.field {field}} has {sum(too_long)} item{?s} longer than the maximum
-                       length of {prop$maxLength}.")
+      cli_alert_danger(
+        "{.field {field}} has {sum(too_long)} item{?s} longer than the maximum
+                       length of {prop$maxLength}."
+      )
       valid <- FALSE
     }
   }
@@ -268,8 +307,10 @@ validate_gldp_item <- function(item, prop, field) {
   # Check if 'minItems' property exists and is specified
   if (!is.null(prop$minItems)) {
     if (length(item) < prop$minItems) {
-      cli_alert_danger("{.field {field}} must contain at least {prop$minItems} item{?s}, but only
-                       {length(item)} item{?s} provided.")
+      cli_alert_danger(
+        "{.field {field}} must contain at least {prop$minItems} item{?s}, but only
+                       {length(item)} item{?s} provided."
+      )
       valid <- FALSE
     }
   }
@@ -277,8 +318,10 @@ validate_gldp_item <- function(item, prop, field) {
   # Check if 'maxItems' property exists and is specified
   if (!is.null(prop$maxItems)) {
     if (length(item) > prop$maxItems) {
-      cli_alert_danger("{.field {field}} must contain no more than {prop$maxItems} item{?s}, but
-                       {length(item)} item{?s} provided.")
+      cli_alert_danger(
+        "{.field {field}} must contain no more than {prop$maxItems} item{?s}, but
+                       {length(item)} item{?s} provided."
+      )
       valid <- FALSE
     }
   }
@@ -288,8 +331,10 @@ validate_gldp_item <- function(item, prop, field) {
     below_min <- item < prop$minimum
 
     if (any(below_min, na.rm = TRUE)) {
-      cli_alert_danger("{.field {field}} has {sum(below_min, na.rm = TRUE)} item{?s} below the
-                       minimum value of {prop$minimum}.")
+      cli_alert_danger(
+        "{.field {field}} has {sum(below_min, na.rm = TRUE)} item{?s} below the
+                       minimum value of {prop$minimum}."
+      )
       valid <- FALSE
     }
   }
@@ -299,8 +344,10 @@ validate_gldp_item <- function(item, prop, field) {
     above_max <- item > prop$maximum
 
     if (any(above_max, na.rm = TRUE)) {
-      cli_alert_danger("{.field {field}} has {sum(above_max, na.rm = TRUE)} item{?s} above the
-                       maximum value of {prop$maximum}.")
+      cli_alert_danger(
+        "{.field {field}} has {sum(above_max, na.rm = TRUE)} item{?s} above the
+                       maximum value of {prop$maximum}."
+      )
       valid <- FALSE
     }
   }
@@ -314,7 +361,6 @@ validate_gldp_item <- function(item, prop, field) {
       # Allow NA if not required
       in_enum <- (item %in% unlist(prop$enum)) | is.na(item)
     }
-
 
     if (any(!in_enum)) {
       invalid_values <- item[!in_enum] # nolint
@@ -338,8 +384,10 @@ validate_gldp_item <- function(item, prop, field) {
       not_matching <- !pattern_match
 
       if (any(not_matching)) {
-        cli_alert_danger("{.field {field}} has {sum(not_matching)} item{?s} that do not match the
-                         required pattern: {.val {prop$pattern}}.")
+        cli_alert_danger(
+          "{.field {field}} has {sum(not_matching)} item{?s} that do not match the
+                         required pattern: {.val {prop$pattern}}."
+        )
         valid <- FALSE
       }
     }
@@ -349,14 +397,16 @@ validate_gldp_item <- function(item, prop, field) {
     cli_alert_success("{.field {field}} is valid.")
   }
 
-
   valid
 }
 
 
-
 #' @noRd
-validate_gldp_fields_match <- function(schema_fields, data_fields, fields_match) {
+validate_gldp_fields_match <- function(
+  schema_fields,
+  data_fields,
+  fields_match
+) {
   if (is.null(fields_match)) {
     fields_match <- "exact"
   }
@@ -365,14 +415,18 @@ validate_gldp_fields_match <- function(schema_fields, data_fields, fields_match)
   # Perform the check based on the fieldsMatch value
   if (fields_match == "exact") {
     if (!identical(schema_fields, data_fields)) {
-      cli_alert_danger("Exact match failed. Schema fields: {schema_fields}, Data fields:
-                       {data_fields}")
+      cli_alert_danger(
+        "Exact match failed. Schema fields: {schema_fields}, Data fields:
+                       {data_fields}"
+      )
       valid <- FALSE
     }
   } else if (fields_match == "equal") {
     if (!setequal(schema_fields, data_fields)) {
-      cli_alert_danger("Equal match failed. Schema fields: {schema_fields}, Data fields:
-                       {data_fields}")
+      cli_alert_danger(
+        "Equal match failed. Schema fields: {schema_fields}, Data fields:
+                       {data_fields}"
+      )
       valid <- FALSE
     }
   } else if (fields_match == "subset") {
@@ -439,12 +493,17 @@ check_format <- function(value, format, field) {
       email_pattern <- "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
       all(is.na(v) | grepl(email_pattern, v))
     },
-    `ip-address` = function(v) all(is.na(v) | grepl("^\\d{1,3}(\\.\\d{1,3}){3}$", v)),
-    ipv6 = function(v) all(is.na(v) | grepl("^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$", v)),
+    `ip-address` = function(v) {
+      all(is.na(v) | grepl("^\\d{1,3}(\\.\\d{1,3}){3}$", v))
+    },
+    ipv6 = function(v) {
+      all(is.na(v) | grepl("^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$", v))
+    },
     `host-name` = function(v) all(is.na(v) | grepl("^[a-zA-Z0-9.-]+$", v)),
-    textarea = function(v) all(is.na(v) | grepl("^(\\S.*(?:\\r?\\n\\S.*)*)$", v) | v == "")
+    textarea = function(v) {
+      all(is.na(v) | grepl("^(\\S.*(?:\\r?\\n\\S.*)*)$", v) | v == "")
+    }
   )
-
 
   valid <- TRUE
   if (format %in% names(format_map)) {
@@ -452,12 +511,16 @@ check_format <- function(value, format, field) {
     # valid the value using the corresponding validation function
     format_check_result <- format_func(value)
     if (!all(format_check_result)) {
-      cli_alert_danger("Format mismatch for {.field {field}}: Expected format {.val {format}},
-                       but got {.val {value}}.")
+      cli_alert_danger(
+        "Format mismatch for {.field {field}}: Expected format {.val {format}},
+                       but got {.val {value}}."
+      )
       valid <- FALSE
     }
   } else {
-    cli_alert_danger("Unknown expected format {.val {format}} for {.field {field}}.")
+    cli_alert_danger(
+      "Unknown expected format {.val {format}} for {.field {field}}."
+    )
     valid <- FALSE
   }
   valid
@@ -472,7 +535,9 @@ check_type <- function(value, type, field) {
   type_map <- list(
     string = function(v) is.character(v),
     number = function(v) is.numeric(v) && !is.logical(v),
-    integer = function(v) is.integer(v) || (is.numeric(v) && all(v == floor(v), na.rm = TRUE)),
+    integer = function(v) {
+      is.integer(v) || (is.numeric(v) && all(v == floor(v), na.rm = TRUE))
+    },
     boolean = function(v) is.logical(v),
     object = function(v) is.list(v) && !is.data.frame(v),
     array = function(v) is.vector(v) || is.list(v),
@@ -482,7 +547,10 @@ check_type <- function(value, type, field) {
         return(TRUE)
       }
       if (is.character(v)) {
-        return(all(grepl("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", v), na.rm = TRUE))
+        return(all(
+          grepl("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", v),
+          na.rm = TRUE
+        ))
       }
       FALSE
     },
@@ -553,9 +621,16 @@ check_type <- function(value, type, field) {
         # Extract coordinates and validate ranges using base R
         regex_matches <- regexec(pattern, valid_vals[matches])
         coords <- regmatches(valid_vals[matches], regex_matches)
-        lat <- as.numeric(sapply(coords, function(x) if (length(x) > 1) x[2] else NA))
-        lon <- as.numeric(sapply(coords, function(x) if (length(x) > 2) x[3] else NA))
-        valid_coords <- all(lat >= -90 & lat <= 90 & lon >= -180 & lon <= 180, na.rm = TRUE)
+        lat <- as.numeric(sapply(coords, function(x) {
+          if (length(x) > 1) x[2] else NA
+        }))
+        lon <- as.numeric(sapply(coords, function(x) {
+          if (length(x) > 2) x[3] else NA
+        }))
+        valid_coords <- all(
+          lat >= -90 & lat <= 90 & lon >= -180 & lon <= 180,
+          na.rm = TRUE
+        )
         return(all(matches) && valid_coords)
       }
       all(matches)
@@ -576,8 +651,10 @@ check_type <- function(value, type, field) {
           {
             json_obj <- jsonlite::fromJSON(x, simplifyVector = FALSE)
             return(
-              !is.null(json_obj$type) && json_obj$type == "Feature" &&
-                !is.null(json_obj$geometry) && !is.null(json_obj$geometry$type) &&
+              !is.null(json_obj$type) &&
+                json_obj$type == "Feature" &&
+                !is.null(json_obj$geometry) &&
+                !is.null(json_obj$geometry$type) &&
                 !is.null(json_obj$geometry$coordinates)
             )
           },
@@ -588,14 +665,15 @@ check_type <- function(value, type, field) {
     any = function(v) TRUE # 'any' accepts everything
   )
 
-
   valid <- TRUE
   # Check if the expected type is in the type_map
   if (type %in% names(type_map)) {
     type_check_result <- type_map[[type]](value)
     if (!all(type_check_result)) {
-      cli_alert_danger("Type mismatch for {.field {field}}: Expected `{type}`, but got
-                       `{typeof(value)}`.")
+      cli_alert_danger(
+        "Type mismatch for {.field {field}}: Expected `{type}`, but got
+                       `{typeof(value)}`."
+      )
       valid <- FALSE
     }
   } else {
@@ -613,10 +691,14 @@ validate_gldp_coherence <- function(pkg) {
   valid <- TRUE
 
   min_res_required <- c("tags", "observations", "measurements")
-  res_missing <- min_res_required[!(min_res_required %in% sapply(pkg$resources, \(x) x$name))]
+  res_missing <- min_res_required[
+    !(min_res_required %in% sapply(pkg$resources, \(x) x$name))
+  ]
   if (length(res_missing) > 0) {
-    cli_alert_warning("{.pkg pkg} is missing {.val {res_missing}}. \\
-                      We could not check package coherence.")
+    cli_alert_warning(
+      "{.pkg pkg} is missing {.val {res_missing}}. \\
+                      We could not check package coherence."
+    )
     valid <- FALSE
     return(valid)
   }
@@ -633,9 +715,12 @@ validate_gldp_coherence <- function(pkg) {
     filter(n_distinct(.data$scientific_name) > 1) %>%
     distinct(.data$ring_number) %>%
     pull(.data$ring_number) %>%
-    purrr::walk(~ cli_alert_danger(
-      "Multiple scientific names used for ring_number {.strong {}}", .
-    ))
+    purrr::walk(
+      ~ cli_alert_danger(
+        "Multiple scientific names used for ring_number {.strong {}}",
+        .
+      )
+    )
 
   # Check for measurements with tag_id not present in the tags table.
   # All tag_id entries in measurements must be declared in tags.
@@ -730,8 +815,10 @@ validate_gldp_observations <- function(o) {
 
   o <- o %>%
     arrange(
-      .data$ring_number, .data$datetime,
-      factor(.data$observation_type,
+      .data$ring_number,
+      .data$datetime,
+      factor(
+        .data$observation_type,
         levels = c("capture", "retrieval", "equipment", "sighting", "other")
       )
     )
@@ -744,39 +831,54 @@ validate_gldp_observations <- function(o) {
     filter(.data$unique_ring_numbers > 1)
 
   if (nrow(inconsistent_tag_ids) > 0) {
-    cli_alert_danger("{nrow(inconsistent_tag_ids)} tag_id{?s} {?is/are} associated with multiple \\
-                     ring_numbers. Check: {.field {inconsistent_tag_ids$tag_id}}")
+    cli_alert_danger(
+      "{nrow(inconsistent_tag_ids)} tag_id{?s} {?is/are} associated with multiple \\
+                     ring_numbers. Check: {.field {inconsistent_tag_ids$tag_id}}"
+    )
     valid <- FALSE
   }
 
   # Check 2: equipment or retrieval must have a tag_id
   missing_tag_id <- o %>%
-    filter(.data$observation_type %in% c("equipment", "retrieval") & is.na(.data$tag_id))
+    filter(
+      .data$observation_type %in%
+        c("equipment", "retrieval") &
+        is.na(.data$tag_id)
+    )
 
   if (nrow(missing_tag_id) > 0) {
     error_tag <- unique(missing_tag_id$tag_id) # nolint
-    cli_alert_danger("{length(error_tag)} equipment or retrieval observation{?s} {?is/are} \\
-                          missing a tag_id. Check: {.field {error_tag}}")
+    cli_alert_danger(
+      "{length(error_tag)} equipment or retrieval observation{?s} {?is/are} \\
+                          missing a tag_id. Check: {.field {error_tag}}"
+    )
     valid <- FALSE
   }
 
   # Check 3: equipment and retrieval can only have a device status present.
   obs_equi_retrieval_without_present <- o %>%
-    filter(.data$observation_type %in% c("equipment", "retrieval") &
-      .data$device_status != "present")
+    filter(
+      .data$observation_type %in%
+        c("equipment", "retrieval") &
+        .data$device_status != "present"
+    )
 
   if (nrow(obs_equi_retrieval_without_present) > 0) {
     error_tag <- unique(obs_equi_retrieval_without_present$tag_id) # nolint
-    cli_alert_danger("{length(error_tag)} equipment or retrieval observation{?s} don't have a  \\
-                    device status 'present'. Check: {.field {error_tag}}")
+    cli_alert_danger(
+      "{length(error_tag)} equipment or retrieval observation{?s} don't have a  \\
+                    device status 'present'. Check: {.field {error_tag}}"
+    )
     valid <- FALSE
   }
 
   # Check 4: capture-missing and capture-present must have a tag_id
   missing_tag_id <- o %>%
-    filter(.data$observation_type == "capture" &
-      (.data$device_status %in% c("missing", "present")) &
-      is.na(.data$tag_id))
+    filter(
+      .data$observation_type == "capture" &
+        (.data$device_status %in% c("missing", "present")) &
+        is.na(.data$tag_id)
+    )
 
   if (nrow(missing_tag_id) > 0) {
     error_ring_number <- unique(missing_tag_id$ring_number) # nolint
@@ -790,10 +892,15 @@ validate_gldp_observations <- function(o) {
   # Check 5: No second tag_id attached without a prior retrieval (or capture with missing.)
   multiple_tags_without_retrieval <- o %>%
     group_by(.data$ring_number) %>%
-    filter((.data$observation_type %in% c("retrieval", "equipment")) |
-      (.data$observation_type == "capture" & .data$device_status == "missing")) %>%
-    filter((lag(.data$tag_id) != .data$tag_id) & !(lag(.data$observation_type) == "retrieval" |
-      lag(.data$device_status) == "missing"))
+    filter(
+      (.data$observation_type %in% c("retrieval", "equipment")) |
+        (.data$observation_type == "capture" & .data$device_status == "missing")
+    ) %>%
+    filter(
+      (lag(.data$tag_id) != .data$tag_id) &
+        !(lag(.data$observation_type) == "retrieval" |
+          lag(.data$device_status) == "missing")
+    )
 
   if (nrow(multiple_tags_without_retrieval) > 0) {
     error_ring_number <- unique(multiple_tags_without_retrieval$ring_number) # nolint
@@ -843,9 +950,11 @@ validate_gldp_observations <- function(o) {
     filter(
       (.data$device_status == "missing" & is.na(.data$previous_status)) |
         (.data$device_status == "missing" & .data$previous_status == "none") |
-        (.data$device_status == "none" & .data$previous_status == "present" &
+        (.data$device_status == "none" &
+          .data$previous_status == "present" &
           .data$previous_type != "retrieval") |
-        (.data$device_status == "present" & .data$previous_status == "none" &
+        (.data$device_status == "present" &
+          .data$previous_status == "none" &
           .data$observation_type != "equipment")
     )
 
@@ -896,10 +1005,12 @@ validate_gldp_observations <- function(o) {
 #' @return NULL. The function performs validation as a side effect and does not return a value.
 #'
 #' @export
-validate_gldp_py <- function(pkg,
-                             path = "/Users/rafnuss/anaconda3/bin/",
-                             only_package = NULL,
-                             pkg_dir = tempdir()) {
+validate_gldp_py <- function(
+  pkg,
+  path = "/Users/rafnuss/anaconda3/bin/",
+  only_package = NULL,
+  pkg_dir = tempdir()
+) {
   if (is.null(only_package)) {
     only_package <- length(pkg$resources) == 0
   }

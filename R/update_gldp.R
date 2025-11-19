@@ -68,19 +68,21 @@ update_gldp_spatial <- function(pkg) {
     if ("paths" %in% frictionless::resources(pkg)) {
       spatial <- bind_rows(
         spatial,
-        paths(pkg) %>% transmute(
-          latitude = .data$lat,
-          longitude = .data$lon
-        )
+        paths(pkg) %>%
+          transmute(
+            latitude = .data$lat,
+            longitude = .data$lon
+          )
       )
     }
     if ("pressurepaths" %in% frictionless::resources(pkg)) {
       spatial <- bind_rows(
         spatial,
-        pressurepaths(pkg) %>% transmute(
-          latitude = .data$lat,
-          longitude = .data$lon
-        )
+        pressurepaths(pkg) %>%
+          transmute(
+            latitude = .data$lat,
+            longitude = .data$lon
+          )
       )
     }
 
@@ -103,8 +105,16 @@ update_gldp_spatial <- function(pkg) {
       type = "Polygon",
       coordinates = array(
         c(
-          long_min, long_max, long_max, long_min, long_min,
-          lat_min, lat_min, lat_max, lat_max, lat_min
+          long_min,
+          long_max,
+          long_max,
+          long_min,
+          long_min,
+          lat_min,
+          lat_min,
+          lat_max,
+          lat_max,
+          lat_min
         ),
         dim = c(1, 5, 2)
       )
@@ -167,9 +177,15 @@ update_gldp_number_tags <- function(pkg) {
       length(unique(m$tag_id[m$sensor == "temperature_external"]))
     pkg$numberTags$temperature_internal <-
       length(unique(m$tag_id[m$sensor == "temperature_internal"]))
-    pkg$numberTags$magnetic <- length(unique(m$tag_id[m$sensor == "magnetic_x"]))
-    pkg$numberTags$wet_count <- length(unique(m$tag_id[m$sensor == "wet_count"]))
-    pkg$numberTags$conductivity <- length(unique(m$tag_id[m$sensor == "conductivity"]))
+    pkg$numberTags$magnetic <- length(unique(m$tag_id[
+      m$sensor == "magnetic_x"
+    ]))
+    pkg$numberTags$wet_count <- length(unique(m$tag_id[
+      m$sensor == "wet_count"
+    ]))
+    pkg$numberTags$conductivity <- length(unique(m$tag_id[
+      m$sensor == "conductivity"
+    ]))
   }
 
   if ("paths" %in% frictionless::resources(pkg)) {
@@ -191,7 +207,11 @@ update_gldp_bibliographic_citation <- function(pkg, ...) {
     "Misc", # should be "dataset" but not available
     author = contributors2persons(pkg$contributors),
     doi = pkg$id,
-    publisher = ifelse(grepl("zenodo", pkg$id, ignore.case = TRUE), "Zenodo", NULL),
+    publisher = ifelse(
+      grepl("zenodo", pkg$id, ignore.case = TRUE),
+      "Zenodo",
+      NULL
+    ),
     title = pkg$title,
     year = format(as.Date(pkg$created), "%Y"),
     publisher = "Zenodo"
@@ -232,7 +252,10 @@ update_gldp_metadata <- function(pkg) {
   # Order properties according to the schema
   schema <- jsonlite::fromJSON(pkg$`$schema`, simplifyVector = FALSE)
   properties <- names(schema$allOf[[2]]$properties)
-  sorted_pkg <- c(pkg[intersect(properties, names(pkg))], pkg[setdiff(names(pkg), properties)])
+  sorted_pkg <- c(
+    pkg[intersect(properties, names(pkg))],
+    pkg[setdiff(names(pkg), properties)]
+  )
   # Ensure the class attribute is preserved
   class(sorted_pkg) <- class(pkg)
 

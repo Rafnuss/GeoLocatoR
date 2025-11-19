@@ -78,7 +78,10 @@ print.geolocatordp <- function(x, ...) {
 
   if (!is.null(x$relatedIdentifiers)) {
     ris <- sapply(x$relatedIdentifiers, \(x) {
-      if (x$relatedIdentifierType == "doi" && !grepl("^https?://", x$relatedIdentifier)) {
+      if (
+        x$relatedIdentifierType == "doi" &&
+          !grepl("^https?://", x$relatedIdentifier)
+      ) {
         x$relatedIdentifier <- paste0("https://doi.org/", x$relatedIdentifier)
       }
       paste0(x$relationType, " {.url ", x$relatedIdentifier, "}")
@@ -97,21 +100,31 @@ print.geolocatordp <- function(x, ...) {
     cli_bullets(c("*" = "{.field keywords}: {.val {x$keywords}}"))
   }
 
-  created_datetime <- as.POSIXct(x$created, format = "%Y-%m-%dT%H:%M:%SZ", tz = "UTC") # nolint
+  created_datetime <- as.POSIXct(
+    x$created,
+    format = "%Y-%m-%dT%H:%M:%SZ",
+    tz = "UTC"
+  ) # nolint
   cli_bullets(c("*" = "{.field created}: {.val {created_datetime}}"))
 
   if (!is.null(x$bibliographicCitation)) {
-    cli_bullets(c("*" = "{.field bibliographicCitation}: {.val {x$bibliographicCitation}}"))
+    cli_bullets(c(
+      "*" = "{.field bibliographicCitation}: {.val {x$bibliographicCitation}}"
+    ))
   }
 
   cli_bullets(c("*" = "{.field spatial}: {.val {x$spatial}}"))
   cli_bullets(
-    c("*" = "{.field temporal}: {.val {x$temporal$start}} to {.val {x$temporal$end}}")
+    c(
+      "*" = "{.field temporal}: {.val {x$temporal$start}} to {.val {x$temporal$end}}"
+    )
   )
   cli_bullets(c("*" = "{.field taxonomic}: {.val {x$taxonomic}}"))
 
   if (!is.null(x$referenceLocation)) {
-    cli_bullets(c("*" = "{.field referenceLocation}: {.val {x$referenceLocation}}"))
+    cli_bullets(c(
+      "*" = "{.field referenceLocation}: {.val {x$referenceLocation}}"
+    ))
   }
 
   cli_bullets(c("*" = "{.field numberTags}:"))
@@ -121,13 +134,14 @@ print.geolocatordp <- function(x, ...) {
     }
   }
 
-
   # cli_bullets(c("*" = "{.field schema}: {.url {x$`$schema`}}"))
 
   cli_h3("{length(x$resources)} {.field resources}")
   if (length(x$resources) > 0) {
     purrr::walk(x$resources, \(x) {
-      cli_bullets(c("*" = "{.field {x$name}} (n={format(nrow(x$data), big.mark=',')})"))
+      cli_bullets(c(
+        "*" = "{.field {x$name}} (n={format(nrow(x$data), big.mark=',')})"
+      ))
     })
   }
 

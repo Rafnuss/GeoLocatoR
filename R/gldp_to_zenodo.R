@@ -15,13 +15,17 @@
 #' @return A ZenodoRecord object updated with the metadata from `pkg`.
 #'
 #' @export
-gldp_to_zenodo <- function(pkg,
-                           zenodo_record = zen4R::ZenodoRecord$new(),
-                           token = keyring::key_get(service = "ZENODO_PAT")) {
+gldp_to_zenodo <- function(
+  pkg,
+  zenodo_record = zen4R::ZenodoRecord$new(),
+  token = keyring::key_get(service = "ZENODO_PAT")
+) {
   check_gldp(pkg)
 
   z <- zenodo_record
-  assertthat::assert_that(all(c("ZenodoRecord", "zen4RLogger", "R6") %in% class(z)))
+  assertthat::assert_that(all(
+    c("ZenodoRecord", "zen4RLogger", "R6") %in% class(z)
+  ))
 
   # Initialize the ZenodoManager with the provided token. This is necessary to check and convert
   # some metadata.
@@ -49,11 +53,28 @@ gldp_to_zenodo <- function(pkg,
     }
 
     allowed_roles <- c(
-      "contactperson", "datacollector", "datacurator", "datamanager", "distributor",
-      "editor", "funder", "hostinginstitution", "producer", "projectleader",
-      "projectmanager", "projectmember", "registrationagency", "registrationauthority",
-      "relatedperson", "researcher", "researchgroup", "rightsholder", "supervisor",
-      "sponsor", "workpackageleader", "other"
+      "contactperson",
+      "datacollector",
+      "datacurator",
+      "datamanager",
+      "distributor",
+      "editor",
+      "funder",
+      "hostinginstitution",
+      "producer",
+      "projectleader",
+      "projectmanager",
+      "projectmember",
+      "registrationagency",
+      "registrationauthority",
+      "relatedperson",
+      "researcher",
+      "researchgroup",
+      "rightsholder",
+      "supervisor",
+      "sponsor",
+      "workpackageleader",
+      "other"
     )
 
     if (length(c$roles) > 0 & !warn_role) {
@@ -84,7 +105,11 @@ gldp_to_zenodo <- function(pkg,
 
   # Set embargo, Visibility, AccessPolicy
   if (as.Date(pkg$embargo) > Sys.Date()) {
-    z$setAccessPolicyEmbargo(active = TRUE, until = as.Date(pkg$embargo), reason = "")
+    z$setAccessPolicyEmbargo(
+      active = TRUE,
+      until = as.Date(pkg$embargo),
+      reason = ""
+    )
     z$setAccessPolicyFiles(access = "restricted")
   } else {
     z$setAccessPolicyEmbargo(active = FALSE, until = NULL, reason = "")
