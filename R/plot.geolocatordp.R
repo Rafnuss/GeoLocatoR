@@ -29,8 +29,10 @@ plot.geolocatordp <- function(x, type = NULL, ...) {
   } else if (type == "map") {
     plot_pkg_map(x)
   } else {
-    cli_abort("Unsupported plot type: {.val {type}}.
-              Supported types are 'coverage', 'ring', and 'map'.")
+    cli_abort(
+      "Unsupported plot type: {.val {type}}.
+              Supported types are 'coverage', 'ring', and 'map'."
+    )
   }
 }
 
@@ -44,13 +46,21 @@ plot.geolocatordp <- function(x, type = NULL, ...) {
 #' @noRd
 plot_pkg_coverage <- function(x) {
   m <- measurements(x) %>%
-    mutate(sensor = case_when(
-      sensor %in% c(
-        "magnetic_x", "magnetic_y", "magnetic_z", "acceleration_x", "acceleration_y",
-        "acceleration_z", "pitch"
-      ) ~ "magnetic",
-      TRUE ~ sensor # Keep other sensor names unchanged
-    )) %>%
+    mutate(
+      sensor = case_when(
+        sensor %in%
+          c(
+            "magnetic_x",
+            "magnetic_y",
+            "magnetic_z",
+            "acceleration_x",
+            "acceleration_y",
+            "acceleration_z",
+            "pitch"
+          ) ~ "magnetic",
+        TRUE ~ sensor # Keep other sensor names unchanged
+      )
+    ) %>%
     mutate(date = as.Date(.data$datetime)) %>%
     group_by(.data$tag_id, .data$sensor, .data$date) %>% # Group by tag_id, sensor, and date
     summarize(has_data = sum(!is.na(.data$value)) > 0) %>% # Check if there is data (non-NA)
@@ -68,20 +78,24 @@ plot_pkg_coverage <- function(x) {
     ggplot2::facet_grid(.data$tag_id ~ ., scales = "free_y") +
     ggplot2::scale_fill_manual(values = c("black", "grey")) +
     ggplot2::geom_vline(
-      data = o %>% filter(.data$observation_type %in% c("equipment", "retrieval")),
+      data = o %>%
+        filter(.data$observation_type %in% c("equipment", "retrieval")),
       ggplot2::aes(
         xintercept = as.numeric(as.Date(.data$datetime)),
         color = .data$observation_type
       ),
-      linetype = "solid", linewidth = 1.2
+      linetype = "solid",
+      linewidth = 1.2
     ) +
     ggplot2::geom_vline(
-      data = o %>% filter(.data$observation_type %in% c("capture", "sighting", "other")),
+      data = o %>%
+        filter(.data$observation_type %in% c("capture", "sighting", "other")),
       ggplot2::aes(
         xintercept = as.numeric(as.Date(.data$datetime)),
         color = .data$observation_type
       ),
-      linetype = "dashed", linewidth = 0.8
+      linetype = "dashed",
+      linewidth = 0.8
     ) + # Thinner dashed lines
     ggplot2::scale_x_date(limits = range(c(m$date, as.Date(o$datetime)))) +
     # Color scheme highlighting 'equipment' and 'retrieval'
@@ -95,8 +109,15 @@ plot_pkg_coverage <- function(x) {
       ),
       name = "Observation Type"
     ) + # Customize colors and legend
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90), legend.position = "bottom") +
-    ggplot2::labs(x = "Date", y = "Sensor", title = "Package's Measurement Coverage")
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(angle = 90),
+      legend.position = "bottom"
+    ) +
+    ggplot2::labs(
+      x = "Date",
+      y = "Sensor",
+      title = "Package's Measurement Coverage"
+    )
 }
 
 
@@ -113,7 +134,7 @@ plot_pkg_ring <- function(x) {
 
   m <- measurements(x) %>%
     left_join(
-      tags(x) %>% select(.data$ring_number, .data$tag_id),
+      tags(x) %>% select("ring_number", "tag_id"),
       by = "tag_id"
     ) %>%
     group_by(.data$ring_number) %>%
@@ -123,17 +144,23 @@ plot_pkg_ring <- function(x) {
     ) %>%
     ungroup()
 
-
   ggplot2::ggplot() +
     ggplot2::geom_segment(
-      data = m, ggplot2::aes(
-        x = .data$start, y = .data$ring_number,
-        xend = .data$end, color = "black"
+      data = m,
+      ggplot2::aes(
+        x = .data$start,
+        y = .data$ring_number,
+        xend = .data$end,
+        color = "black"
       )
     ) +
     ggplot2::geom_point(
       data = o,
-      ggplot2::aes(x = .data$datetime, y = .data$ring_number, color = .data$observation_type)
+      ggplot2::aes(
+        x = .data$datetime,
+        y = .data$ring_number,
+        color = .data$observation_type
+      )
     ) +
     ggplot2::scale_color_manual(
       values = c(
@@ -145,7 +172,11 @@ plot_pkg_ring <- function(x) {
       ),
       name = "Observation Type"
     ) + # Customize colors and legend
-    ggplot2::labs(x = "Date", y = "Ring Number", title = "Package's Observations Coverage")
+    ggplot2::labs(
+      x = "Date",
+      y = "Ring Number",
+      title = "Package's Observations Coverage"
+    )
 }
 
 #' Plot coverage data for a GeoLocator Data Package
@@ -166,11 +197,21 @@ plot_pkg_map <- function(x) {
   tag_ids <- unique(p$tag_id)
   n_tags <- length(tag_ids)
   set1_colors <- c(
-    "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3",
-    "#FF7F00", "#FFFF33", "#A65628", "#F781BF", "#999999"
+    "#E41A1C",
+    "#377EB8",
+    "#4DAF4A",
+    "#984EA3",
+    "#FF7F00",
+    "#FFFF33",
+    "#A65628",
+    "#F781BF",
+    "#999999"
   )
   palette_fun <- grDevices::colorRampPalette(set1_colors)
-  color_palette <- leaflet::colorFactor(palette = palette_fun(n_tags), domain = tag_ids)
+  color_palette <- leaflet::colorFactor(
+    palette = palette_fun(n_tags),
+    domain = tag_ids
+  )
 
   leaflet_map <- leaflet::leaflet(height = 600) %>% leaflet::addTiles()
 

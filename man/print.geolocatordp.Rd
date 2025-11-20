@@ -16,6 +16,6 @@
 }
 \description{
 Prints a human-readable summary of a GeoLocator Data Package, as an
-extension of \code{\link[=print.datapackage]{print.datapackage()}}.
+extension of \code{\link[frictionless:print.datapackage]{frictionless::print.datapackage()}}.
 }
 \concept{print functions}

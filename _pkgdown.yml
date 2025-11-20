@@ -13,6 +13,7 @@ reference:
       - read_gldp
       - merge_gldp
       - update_gldp
+      - gldp_to_tag
   - title: Accessor (and assignment) functions
     contents:
       - tags
@@ -28,6 +29,7 @@ reference:
       - create_gldp_geopressuretemplate
       - add_gldp_geopressuretemplate
       - create_geopressuretemplate
+      - config2tibble
   - title: SOI
     contents:
       - add_gldp_soi
@@ -47,11 +49,9 @@ reference:
       - params_to_tags
       - params_to_observations
 
-
-
 navbar:
   structure:
-    left:  [reference, geopressure-manual, geolocator-dp]
+    left: [reference, geopressure-manual, geolocator-dp]
   components:
     geopressure-manual:
       text: User Guide
@@ -59,7 +59,6 @@ navbar:
     geolocator-dp:
       text: GeolocatorDP
       href: https://raphaelnussbaumer.com/GeoLocator-DP/
-
 
 vignettes:
   toc: false

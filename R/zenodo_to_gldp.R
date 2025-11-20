@@ -17,10 +17,11 @@
 #' @return An updated or new Geolocator Data Package object with metadata from the zenodo record.
 #'
 #' @export
-zenodo_to_gldp <- function(zenodo_record,
-                           pkg = NULL) {
+zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
   z <- zenodo_record
-  assertthat::assert_that(all(c("ZenodoRecord", "zen4RLogger", "R6") %in% class(z)))
+  assertthat::assert_that(all(
+    c("ZenodoRecord", "zen4RLogger", "R6") %in% class(z)
+  ))
 
   # Process contributors
   contributors <- purrr::map(z$metadata$creators, \(c) {
@@ -28,11 +29,16 @@ zenodo_to_gldp <- function(zenodo_record,
       title = c$person_or_org$name,
       givenName = c$person_or_org$given_name,
       familyName = c$person_or_org$family_name,
-      path = glue::glue("https://orcid.org/{purrr::pluck(purrr::keep(c$person_or_org$identifiers,
-                        ~ .x$scheme == 'orcid'), 1)$identifier}"),
+      path = glue::glue(
+        "https://orcid.org/{purrr::pluck(purrr::keep(c$person_or_org$identifiers,
+                        ~ .x$scheme == 'orcid'), 1)$identifier}"
+      ),
       email = NULL,
       roles = c(c$role$id),
-      organization = glue::glue_collapse(purrr::map_chr(c$affiliations, "name"), sep = ", ")
+      organization = glue::glue_collapse(
+        purrr::map_chr(c$affiliations, "name"),
+        sep = ", "
+      )
     )
   })
 

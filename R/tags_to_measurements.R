@@ -30,54 +30,127 @@
 #'
 #' @export
 tags_to_measurements <- function(tags) {
-  if (length(tags) > 0) {
-    m <- tags %>%
-      purrr::map(function(tag) {
-        tag %>%
-          purrr::keep(names(tag) %in% c(
-            "pressure", "acceleration", "light", "temperature_external",
-            "temperature_internal", "magnetic"
-          )) %>%
-          purrr::imap(\(df, sensor) {
-            if (sensor == "acceleration") {
-              sensor <- "activity"
-            }
-            if ("value" %in% colnames(df)) {
-              names(df)[names(df) == "value"] <- sensor
-            }
-            # Add 'label' column if it doesn't exist
-            if (!"label" %in% colnames(df)) {
-              df <- df %>% mutate(label = NA_character_)
-            }
-            df
-          }) %>%
-          purrr::map(~ select(.x, any_of(
-            c(
-              "pressure", "activity", "pitch", "light", "temperature_external",
-              "temperature_internal", "acceleration_x", "acceleration_y", "acceleration_z",
-              "magnetic_x", "magnetic_y", "magnetic_z", "date", "label"
-            )
-          ))) %>%
-          purrr::map(~ tidyr::pivot_longer(.x,
-            cols = -c(date, label), names_to = "sensor",
-            values_to = "value"
-          )) %>%
-          bind_rows() %>%
-          mutate(tag_id = tag$param$id)
-      }) %>%
-      purrr::list_rbind() %>%
-      mutate() %>%
-      rename(
-        datetime = date
-      )
-  } else {
-    m <- tibble::tibble(
+  if (length(tags) == 0) {
+    return(tibble::tibble(
       tag_id = character(),
       sensor = character(),
       datetime = as.POSIXct(character()),
       value = numeric(),
       label = character()
-    )
+    ))
   }
+
+  sensor_types <- c(
+    "pressure",
+    "acceleration",
+    "light",
+    "temperature_external",
+    "temperature_internal",
+    "magnetic"
+  )
+  select_cols <- c(
+    "pressure",
+    "activity",
+    "pitch",
+    "light",
+    "temperature_external",
+    "temperature_internal",
+    "acceleration_x",
+    "acceleration_y",
+    "acceleration_z",
+    "magnetic_x",
+    "magnetic_y",
+    "magnetic_z",
+    "date",
+    "label"
+  )
+  all_measurements <- list()
+
+  for (i in seq_along(tags)) {
+    tag <- tags[[i]]
+    tag_id <- tryCatch(
+      {
+        tag$param$id
+      },
+      error = function(e) NA
+    )
+    tag_measurements <- list()
+    tag_sensors <- names(tag)[names(tag) %in% sensor_types]
+    for (sensor in tag_sensors) {
+      df <- tag[[sensor]]
+      sensor_name <- ifelse(sensor == "acceleration", "activity", sensor)
+      if ("value" %in% colnames(df)) {
+        names(df)[names(df) == "value"] <- sensor_name
+      }
+      if (!"label" %in% colnames(df)) {
+        df$label <- NA_character_
+      }
+      # Select only relevant columns
+      df <- df[, intersect(colnames(df), select_cols), drop = FALSE]
+      # Pivot longer
+      long_df <- tryCatch(
+        {
+          tidyr::pivot_longer(
+            df,
+            cols = setdiff(colnames(df), c("date", "label")),
+            names_to = "sensor",
+            values_to = "value"
+          )
+        },
+        error = function(e) {
+          cli::cli_abort(
+            c(
+              "x" = paste0(
+                "Error in {.fun tags_to_measurements} for tag {.val {tag_id}}, ",
+                "sensor {.val {sensor}}:"
+              ),
+              ">" = e$message
+            )
+          )
+        }
+      )
+      long_df$tag_id <- tag_id
+      tag_measurements[[sensor]] <- long_df
+    }
+    # Combine all sensors for this tag
+    if (length(tag_measurements) > 0) {
+      tag_df <- tryCatch(
+        {
+          dplyr::bind_rows(tag_measurements)
+        },
+        error = function(e) {
+          value_types <- sapply(tag_measurements, function(x) class(x$value)[1]) # nolint
+          cli::cli_abort(
+            c(
+              "x" = paste0(
+                "Type mismatch in {.fun tags_to_measurements} for tag {.val {tag_id}}, ",
+                "sensor {.val {sensor}}:"
+              ),
+              "i" = "value column types: {.val {value_types}}",
+              ">" = e$message
+            )
+          )
+        }
+      )
+      all_measurements[[i]] <- tag_df
+    }
+  }
+  # Combine all tags
+  m <- tryCatch(
+    {
+      dplyr::bind_rows(all_measurements)
+    },
+    error = function(e) {
+      value_types <- sapply(all_measurements, function(x) class(x$value)[1]) # nolint
+      cli::cli_abort(
+        c(
+          "Type mismatch when combining tags in {.fun tags_to_measurements}:",
+          "i" = "value column types: {.val {value_types}}",
+          "x" = e$message
+        )
+      )
+    }
+  )
+  m <- dplyr::rename(m, datetime = date)
   m
 }

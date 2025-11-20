@@ -25,21 +25,26 @@
 #' @return The updated GeoLocator Data Package object with the new resource added.
 #'
 #' @export
-add_gldp_resource <- function(package,
-                              resource_name,
-                              data,
-                              cast_type = FALSE,
-                              replace = FALSE,
-                              delim = ",") {
+add_gldp_resource <- function(
+  package,
+  resource_name,
+  data,
+  cast_type = FALSE,
+  replace = FALSE,
+  delim = ","
+) {
   check_gldp(package)
 
   # Retrieve full schema (package$resources) does not have schema at first
   pkg_schema <- jsonlite::fromJSON(
     package$`$schema`,
-    simplifyDataFrame = FALSE, simplifyVector = TRUE
+    simplifyDataFrame = FALSE,
+    simplifyVector = TRUE
   )
   possible_resources <-
-    pkg_schema$allOf[[2]]$properties$resources$items$oneOf[[1]]$properties$name$enum
+    pkg_schema$allOf[[2]]$properties$resources$items$oneOf[[
+      1
+    ]]$properties$name$enum
 
   if (!resource_name %in% possible_resources) {
     cli_abort(c(
@@ -49,10 +54,14 @@ add_gldp_resource <- function(package,
   }
 
   # Retrieve the resource schema
-  schema <- jsonlite::fromJSON(glue::glue(
-    "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/{version(package)}/{resource_name}",
-    "-table-schema.json"
-  ), simplifyDataFrame = FALSE, simplifyVector = TRUE)
+  schema <- jsonlite::fromJSON(
+    glue::glue(
+      "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/{version(package)}/{resource_name}",
+      "-table-schema.json"
+    ),
+    simplifyDataFrame = FALSE,
+    simplifyVector = TRUE
+  )
 
   # We need to massage a bit the data to make it adequate for add_resource in v1.
   # https://github.com/frictionlessdata/frictionless-r/issues/254
@@ -93,7 +102,8 @@ add_gldp_resource <- function(package,
     for (i in seq_along(schema_fields)) {
       # Check if column already exists
       if (!(schema_fields[i] %in% names(data))) {
-        na_type <- switch(schema_types[i],
+        na_type <- switch(
+          schema_types[i],
           string = NA_character_,
           number = NA_real_,
           integer = NA_integer_,
