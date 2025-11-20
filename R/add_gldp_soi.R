@@ -72,8 +72,9 @@ add_gldp_soi <- function(
     filter(!is.na(.data$directory)) %>%
     select("GDL_ID", "directory") %>%
     purrr::pmap(
+      # nolint start
       \(GDL_ID, directory) {
-        # nolint
+        # nolint end
         tryCatch(
           {
             if (grepl("\\.glf$", directory)) {
@@ -263,7 +264,7 @@ add_gldp_soi <- function(
 
   # Adding sensor resource
   o_gdl <- bind_rows(
-    gdl_attach <- gdl_to %>%
+    gdl_to %>%
       transmute(
         # nolint
         ring_number = if ("RingNumber" %in% names(gdl_to)) {
@@ -300,7 +301,7 @@ add_gldp_soi <- function(
         age_class = "0",
         sex = "U"
       ),
-    gdl_retrieve <- gdl_to %>%
+    gdl_to %>%
       transmute(
         # nolint
         ring_number = if ("RingNumber" %in% names(gdl_to)) {
@@ -359,7 +360,7 @@ add_gldp_soi <- function(
 
   cli_progress_done()
 
-  return(pkg)
+  pkg
 }
 
 

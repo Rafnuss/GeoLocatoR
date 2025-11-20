@@ -62,6 +62,7 @@ config2tibble <- function(
     paste(x, collapse = ", ")
   }
 
+  # nolint start
   col_transforms <- list(
     "id" = as.character,
     "tag_create.manufacturer" = as.character, # NULL -> keep flexible character
@@ -129,6 +130,7 @@ config2tibble <- function(
     "geopressuretemplate.pressurepath" = \(x) paste(x, collapse = ", "),
     "tag_comments" = as.character
   )
+  # nolint end
 
   list_id <- utils::tail(
     names(yaml::yaml.load_file(file, eval.expr = FALSE)),

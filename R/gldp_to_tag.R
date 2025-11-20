@@ -93,7 +93,7 @@ gldp_to_tag <- function(pkg, tag_id = NULL) {
 
   # Validate tag_id
   if (!all(tag_id %in% all_tag_ids)) {
-    missing_ids <- setdiff(tag_id, all_tag_ids)
+    missing_ids <- setdiff(tag_id, all_tag_ids) # nolint
     cli::cli_abort(c(
       "x" = "Tag ID(s) not found in package: {.val {missing_ids}}",
       "i" = "Available tag IDs: {.val {all_tag_ids}}"
@@ -322,5 +322,5 @@ gldp_to_tag_single <- function(pkg, tid) {
     ))
   }
 
-  return(tag)
+  tag
 }

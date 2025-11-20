@@ -100,11 +100,13 @@ print.geolocatordp <- function(x, ...) {
     cli_bullets(c("*" = "{.field keywords}: {.val {x$keywords}}"))
   }
 
+  # nolint start
   created_datetime <- as.POSIXct(
     x$created,
     format = "%Y-%m-%dT%H:%M:%SZ",
     tz = "UTC"
-  ) # nolint
+  )
+  # nolint end
   cli_bullets(c("*" = "{.field created}: {.val {created_datetime}}"))
 
   if (!is.null(x$bibliographicCitation)) {
