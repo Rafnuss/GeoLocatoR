@@ -108,7 +108,7 @@ config2tibble <- function(
     "graph_set_movement.location" = as.numeric,
     "graph_set_movement.power2prob" = parse_fun,
     "graph_set_movement.low_speed_fix" = as.numeric,
-    "graph_set_movement.type" = as.character,
+    "graph_set_movement.type" = parse_fun,
     "graph_set_movement.zero_speed_ratio" = as.numeric,
     "bird_create.mass" = as.numeric,
     "bird_create.wing_span" = as.numeric,
@@ -171,6 +171,18 @@ config2tibble <- function(
         }
       }
     )
+
+    # detect problematic elements
+    idx <- lengths(c) > 1
+
+    if (any(idx)) {
+      cli::cli_warn(
+        "The following fields had length > 1 and were truncated: {paste(names(c)[idx], collapse = ', ')}"
+      )
+
+      # correction: keep only first element
+      c[idx] <- lapply(c[idx], `[`, 1)
+    }
 
     as_tibble(c)
   })
