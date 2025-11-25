@@ -464,9 +464,7 @@ create_geopressuretemplate_config <- function(pkg) {
       ) {
         rm_col <- c(rm_col, "device_status")
       }
-      if (
-        all(is.na(k$condition) | k$condition == "" | k$condition == "unknown")
-      ) {
+      if (all(is.na(k$condition) | k$condition == "" | k$condition == "unknown")) {
         rm_col <- c(rm_col, "condition")
       }
       if (

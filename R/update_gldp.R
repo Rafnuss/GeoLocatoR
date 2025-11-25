@@ -214,7 +214,6 @@ update_gldp_bibliographic_citation <- function(pkg, ...) {
     ),
     title = pkg$title,
     year = format(as.Date(pkg$created), "%Y"),
-    publisher = "Zenodo"
   )
 
   # Merge the defaults with the overrides

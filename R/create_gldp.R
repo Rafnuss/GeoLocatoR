@@ -172,9 +172,7 @@ create_gldp <- function(
         "i" = "See {.url https://raphaelnussbaumer.com/GeoLocator-DP/datapackage/#contributors}"
       ))
     }
-    if (
-      is.null(contributors[[i]]$title) || !is.character(contributors[[i]]$title)
-    ) {
+    if (is.null(contributors[[i]]$title) || !is.character(contributors[[i]]$title)) {
       cli_abort(c(
         "x" = "Contributor {i} is missing a {.field title}.",
         "!" = "The {.field title} field is required for each contributor.",
@@ -317,7 +315,7 @@ create_gldp <- function(
 
   # Check grants
   if (!is.null(grants)) {
-    if (!is.character(grants) || any(is.na(grants)) || any(grants == "")) {
+    if (!is.character(grants) || anyNA(grants) || any(grants == "")) {
       cli_abort(c(
         "x" = "{.arg grants} must be a character vector with non-empty strings.",
         ">" = "Provide grant information as character strings. Example:
@@ -329,9 +327,7 @@ create_gldp <- function(
 
   # Check keywords
   if (!is.null(keywords)) {
-    if (
-      !is.character(keywords) || any(is.na(keywords)) || any(keywords == "")
-    ) {
+    if (!is.character(keywords) || anyNA(keywords) || any(keywords == "")) {
       cli_abort(c(
         "x" = "{.arg keywords} must be a character vector with non-empty strings.",
         ">" = "Provide keywords to help users find your data package. Example:

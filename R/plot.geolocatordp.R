@@ -57,7 +57,8 @@ plot_pkg_coverage <- function(x) {
             "acceleration_y",
             "acceleration_z",
             "pitch"
-          ) ~ "magnetic",
+          ) ~
+          "magnetic",
         TRUE ~ sensor # Keep other sensor names unchanged
       )
     ) %>%
