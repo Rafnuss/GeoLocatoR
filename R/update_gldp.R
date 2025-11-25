@@ -213,7 +213,7 @@ update_gldp_bibliographic_citation <- function(pkg, ...) {
       NULL
     ),
     title = pkg$title,
-    year = format(as.Date(pkg$created), "%Y"),
+    year = format(as.Date(pkg$created), "%Y")
   )
 
   # Merge the defaults with the overrides

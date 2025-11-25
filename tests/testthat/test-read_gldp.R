@@ -10,9 +10,10 @@ test_that("read_gldp correctly reads a GeoLocator Data Package", {
 })
 
 test_that("read_gldp correctly reads a GeoLocator Data Package from all input types", {
+  skip("Skipping test to avoid network download")
   # Local file
-  # pkg_local <- read_gldp("datapackage.json")
-  # expect_s3_class(pkg_local, "datapackage")
+  pkg_local <- read_gldp("datapackage.json")
+  expect_s3_class(pkg_local, "datapackage")
   # Zenodo DOI
   pkg_doi <- read_gldp("10.5281/zenodo.17257521")
   expect_s3_class(pkg_doi, "datapackage")
