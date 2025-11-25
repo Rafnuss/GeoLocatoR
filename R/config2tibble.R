@@ -140,6 +140,7 @@ config2tibble <- function(
   cfg <- purrr::map_df(list_id, \(id) {
     c <- GeoPressureR::geopressuretemplate_config(
       id,
+      config = file,
       assert_tag = FALSE,
       assert_graph = FALSE
     )

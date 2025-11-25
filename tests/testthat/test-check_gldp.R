@@ -4,10 +4,7 @@ library(GeoLocatoR)
 # pkg_shared is loaded from setup.R
 
 test_that("check_gldp validates a valid geolocatordp", {
-  pkg <- pkg_shared
-
-  # Should not throw an error for valid package
-  expect_no_error(GeoLocatoR:::check_gldp(pkg))
+  expect_no_error(GeoLocatoR:::check_gldp(pkg_shared))
 })
 
 test_that("check_gldp errors on invalid input", {
