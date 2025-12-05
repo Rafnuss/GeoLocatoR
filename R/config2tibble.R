@@ -117,6 +117,7 @@ config2tibble <- function(
     "bird_create.body_frontal_area" = as.numeric,
     "bird_create.scientific_name" = as.character,
     "graph_add_wind.file" = parse_fun,
+    "graph_add_wind.variable" = \(x) paste(x, collapse = ", "),
     "graph_add_wind.rounding_interval" = as.numeric,
     "graph_add_wind.interp_spatial_linear" = as.logical,
     "graph_add_wind.thr_as" = as.numeric,
