@@ -587,6 +587,22 @@ references:
   year: '2025'
   doi: 10.32614/CRAN.package.rmarkdown
 - type: software
+  title: spelling
+  abstract: 'spelling: Tools for Spell Checking in R'
+  notes: Suggests
+  url: https://ropensci.r-universe.dev/spelling
+  repository: https://CRAN.R-project.org/package=spelling
+  authors:
+  - family-names: Ooms
+    given-names: Jeroen
+    email: jeroenooms@gmail.com
+    orcid: https://orcid.org/0000-0002-4035-0289
+  - family-names: Hester
+    given-names: Jim
+    email: james.hester@rstudio.com
+  year: '2025'
+  doi: 10.32614/CRAN.package.spelling
+- type: software
   title: testthat
   abstract: 'testthat: Unit Testing for R'
   notes: Suggests
@@ -611,4 +627,36 @@ references:
     email: hadley@rstudio.com
   year: '2025'
   doi: 10.32614/CRAN.package.tidyverse
+- type: software
+  title: EML
+  abstract: 'EML: Read and Write Ecological Metadata Language Files'
+  notes: Suggests
+  url: https://docs.ropensci.org/EML/
+  repository: https://CRAN.R-project.org/package=EML
+  authors:
+  - family-names: Boettiger
+    given-names: Carl
+    email: cboettig@gmail.com
+    orcid: https://orcid.org/0000-0002-1642-628X
+  - family-names: Jones
+    given-names: Matthew B.
+    orcid: https://orcid.org/0000-0003-0077-4738
+  year: '2025'
+  doi: 10.32614/CRAN.package.EML
+- type: software
+  title: uuid
+  abstract: 'uuid: Tools for Generating and Handling of UUIDs'
+  notes: Suggests
+  url: https://www.rforge.net/uuid
+  repository: https://CRAN.R-project.org/package=uuid
+  authors:
+  - family-names: Urbanek
+    given-names: Simon
+    email: Simon.Urbanek@r-project.org
+    orcid: https://orcid.org/0000-0003-2297-1732
+  - family-names: Ts'o
+    given-names: Theodore
+    email: tytso@thunk.org
+  year: '2025'
+  doi: 10.32614/CRAN.package.uuid
 

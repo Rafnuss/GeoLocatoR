@@ -44,7 +44,9 @@ Suggests:
     rmarkdown,
     spelling,
     testthat (>= 3.0.0),
-    tidyverse
+    tidyverse,
+    EML,
+    uuid
 Remotes: 
   rafnuss/GeoPressureR
 Config/testthat/edition: 3
