@@ -164,7 +164,7 @@ gldp_to_dwc <- function(package, directory, path_type = "most_likely") {
   if (!("life_stage" %in% names(occurrence))) {
     occurrence$life_stage <- NA_character_
   }
-   if (!("coordinateUncertaintyInMeters" %in% names(occurrence))) {
+  if (!("coordinateUncertaintyInMeters" %in% names(occurrence))) {
     occurrence$coordinateUncertaintyInMeters <- NA_real_
   }
 

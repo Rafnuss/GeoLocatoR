@@ -1,4 +1,4 @@
-# Workflow derived from hhttps://jarl.etiennebacher.com/integrations
+# Workflow derived from https://jarl.etiennebacher.com/integrations
 
 on:
   push:

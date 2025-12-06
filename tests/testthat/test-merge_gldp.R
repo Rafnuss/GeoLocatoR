@@ -16,7 +16,9 @@ test_that("merge_gldp merges two packages", {
   expect_s3_class(pkg_merged, "geolocatordp")
 
   # Should validate
-  expect_no_error(validate_gldp(pkg_merged))
+  suppressMessages({
+    expect_no_error(validate_gldp(pkg_merged))
+  })
 
   # Should have tags from both packages
   merged_tags <- tags(pkg_merged)

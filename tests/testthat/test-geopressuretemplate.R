@@ -5,16 +5,20 @@ library(GeoLocatoR)
 
 test_that("create_gldp_geopressuretemplate and add_gldp_geopressuretemplate work", {
   # Create project
-  project_dir <- create_geopressuretemplate(
-    path = tempfile(),
-    pkg = pkg_shared,
-    open = FALSE
-  )
+  suppressMessages({
+    project_dir <- create_geopressuretemplate(
+      path = tempfile(),
+      pkg = pkg_shared,
+      open = FALSE
+    )
+  })
 
   # Re-create the pkg from geopressuretemplate
   expect_no_error({
-    create_gldp_geopressuretemplate(project_dir) %>%
-      add_gldp_geopressuretemplate(project_dir)
+    suppressMessages({
+      create_gldp_geopressuretemplate(project_dir) %>%
+        add_gldp_geopressuretemplate(project_dir)
+    })
   })
 
   t <- config2tibble(file = file.path(project_dir, "config.yml"))

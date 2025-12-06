@@ -15,9 +15,6 @@
 #' @return A GeoLocator Data Package object created from a file/url
 #'
 #' @examples
-#' #' # Local file
-#' read_gldp("datapackage.json")
-## @examples
 #' \dontrun{
 #' # Local file
 #' read_gldp("datapackage.json")
@@ -43,7 +40,7 @@ read_gldp <- function(x = "datapackage.json", force_read = TRUE) {
     doi_pattern <- "^10\\.5281/zenodo\\.(\\d+)$"
     doi_url_pattern <- "^https?://doi\\.org/10\\.5281/zenodo\\.(\\d+)$"
     zenodo_pattern <- "^https?://zenodo\\.org/records/(\\d+)"
-    record_pattern <- "^(\\d{7,})$"
+    record_pattern <- "^(\\d+)$"
     rec_id <- NULL
     if (grepl(doi_pattern, x)) {
       rec_id <- sub(doi_pattern, "\\1", x)

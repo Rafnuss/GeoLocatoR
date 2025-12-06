@@ -12,7 +12,9 @@ test_that("gldp_to_eml writes eml.xml and returns EML-like object", {
   pkg$description <- paste0(pkg$description, " with non-breaking space: &nbsp;")
   tmp <- withr::local_tempdir()
 
-  eml <- gldp_to_eml(pkg, directory = tmp)
+  suppressMessages({
+    eml <- gldp_to_eml(pkg, directory = tmp)
+  })
 
   # File is written
   expect_true(file.exists(file.path(tmp, "eml.xml")))

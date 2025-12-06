@@ -144,7 +144,9 @@ test_that("gldp_to_tag works with GeoPressureR functions", {
   expect_no_error(GeoPressureR::tag_assert(tag, "tag"))
 
   # Test print method
-  print(tag)
+  suppressMessages({
+    expect_no_error(print(tag))
+  })
 })
 
 test_that("gldp_to_tag extracts stap and twilight data correctly", {

@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file and use devtools::build_readme()-->
+<!-- README.md is generated from README.Rmd. Please edit that file and use devtools::build_readme() -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -49,6 +49,9 @@ You can install GeoLocatoR from GitHub:
 ```r
 # install.packages("pak")
 pak::pkg_install("Rafnuss/GeoLocatoR")
+
+# Install development version 
+pak::pkg_install("Rafnuss/GeoLocatoR@dev")
 ```
 
 ## 📖 Usage

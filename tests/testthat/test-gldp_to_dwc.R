@@ -7,7 +7,9 @@ test_that("gldp_to_dwc writes occurrence.csv and returns occurrence data", {
   pkg <- pkg_shared
   tmp <- withr::local_tempdir()
 
-  occurrence <- gldp_to_dwc(pkg, directory = tmp, path_type = "most_likely")
+  suppressMessages({
+    occurrence <- gldp_to_dwc(pkg, directory = tmp, path_type = "most_likely")
+  })
 
   # File is written
   expect_true(file.exists(file.path(tmp, "occurrence.csv")))
@@ -57,33 +59,38 @@ test_that("gldp_to_dwc writes occurrence.csv and returns occurrence data", {
 })
 
 test_that("gldp_to_dwc works for all valid path_type values", {
-  pkg <- pkg_shared
-  tmp <- withr::local_tempdir()
-  occ_mean <- expect_no_error(
-    gldp_to_dwc(pkg, directory = tmp, path_type = "mean_simulation")
-  )
-  tmp <- withr::local_tempdir()
-  occ_median <- expect_no_error(
-    gldp_to_dwc(pkg, directory = tmp, path_type = "median_simulation")
-  )
+  suppressMessages({
+    occ_mean <- expect_no_error(
+      gldp_to_dwc(pkg_shared, directory = withr::local_tempdir(), path_type = "mean_simulation")
+    )
+  })
+  suppressMessages({
+    occ_median <- expect_no_error(
+      gldp_to_dwc(pkg_shared, directory = withr::local_tempdir(), path_type = "median_simulation")
+    )
+  })
+
   expect_error(
-    gldp_to_dwc(pkg, directory = tmp, path_type = "invalid_type"),
+    gldp_to_dwc(pkg_shared, directory = tmp, path_type = "invalid_type"),
     "path_type"
   )
 })
 
 test_that("gldp_to_dwc works second pkg", {
-  pkg <- pkg2_shared
-  tmp <- withr::local_tempdir()
-  expect_no_error(
-    gldp_to_dwc(pkg, directory = tmp, path_type = "mean_simulation")
-  )
-  tmp <- withr::local_tempdir()
-  expect_no_error(
-    gldp_to_dwc(pkg, directory = tmp, path_type = "median_simulation")
-  )
-  tmp <- withr::local_tempdir()
-  expect_no_error(
-    gldp_to_dwc(pkg, directory = tmp, path_type = "most_likely")
-  )
+  suppressMessages({
+    expect_no_error(
+      gldp_to_dwc(pkg2_shared, directory = withr::local_tempdir(), path_type = "mean_simulation")
+    )
+  })
+  suppressMessages({
+    expect_no_error(
+      gldp_to_dwc(pkg2_shared, directory = withr::local_tempdir(), path_type = "median_simulation")
+    )
+  })
+  tmp <-
+    suppressMessages({
+      expect_no_error(
+        gldp_to_dwc(pkg2_shared, directory = withr::local_tempdir(), path_type = "most_likely")
+      )
+    })
 })

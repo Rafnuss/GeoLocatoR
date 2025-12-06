@@ -5,5 +5,7 @@ library(GeoLocatoR)
 
 test_that("print.geolocatordp displays package information", {
   # Should print without error
-  expect_output(print(pkg_shared))
+  suppressMessages({
+    expect_output(print(pkg_shared))
+  })
 })
