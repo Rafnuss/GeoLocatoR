@@ -1,4 +1,5 @@
 test_that("zenodo_to_gldp works with valid token", {
+  skip("Zenodo API token not working currently")
   token <- Sys.getenv("ZENODO_TOKEN")
   if (token == "") {
     skip("ZENODO_TOKEN not set")

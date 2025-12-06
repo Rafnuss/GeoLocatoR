@@ -1,5 +1,5 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file and use devtools::build_readme()-->
+<!-- README.md is generated from README.Rmd. Please edit that file and use devtools::build_readme() -->
 
 # GeoLocatoR 🕊️📦 <a href="https://github.com/rafnuss/geolocator"><img src="man/figures/logo.png" align="right" height="139" alt="GeoLocatoR website" /></a>
 
@@ -64,6 +64,9 @@ You can install GeoLocatoR from GitHub:
 ``` r
 # install.packages("pak")
 pak::pkg_install("Rafnuss/GeoLocatoR")
+
+# Install development version 
+pak::pkg_install("Rafnuss/GeoLocatoR@dev")
 ```
 
 ## 📖 Usage
