@@ -23,8 +23,6 @@ the Data Package metadata and its Data Resources. The function wraps the functio
 \code{"geolocatordp"} to the datapackage read.
 }
 \examples{
-#' # Local file
-read_gldp("datapackage.json")
 \dontrun{
 # Local file
 read_gldp("datapackage.json")
