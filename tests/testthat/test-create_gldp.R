@@ -30,7 +30,8 @@ test_that("create_gldp creates a valid GeoLocator Data Package", {
     ),
     id = "https://doi.org/10.5281/zenodo.13829929",
     licenses = list(list(
-      name = "CC-BY-4.0", title = "Creative Commons Attribution 4.0",
+      name = "CC-BY-4.0",
+      title = "Creative Commons Attribution 4.0",
       path = "https://creativecommons.org/licenses/by/4.0/"
     )),
     description = "test",

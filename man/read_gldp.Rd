@@ -4,11 +4,11 @@
 \alias{read_gldp}
 \title{Read a GeoLocator Data Package}
 \usage{
-read_gldp(file = "datapackage.json", force_read = TRUE)
+read_gldp(x = "datapackage.json", force_read = TRUE)
 }
 \arguments{
-\item{file}{A string specifying the path to the JSON file containing the GeoLocator Data Package
-metadata. Defaults to \code{"datapackage.json"}. Can also be a URL.}
+\item{x}{A string specifying the path to the JSON file containing the GeoLocator Data Package
+metadata. Defaults to \code{"datapackage.json"}. Also accepts direct urls, Zenodo DOI, Zenodo link, or Zenodo record number.}
 
 \item{force_read}{Logical indicating whether to force the reading of the data from path/URL to
 memory. Defaults to \code{TRUE}.}
@@ -23,6 +23,18 @@ the Data Package metadata and its Data Resources. The function wraps the functio
 \code{"geolocatordp"} to the datapackage read.
 }
 \examples{
+\dontrun{
+# Local file
+read_gldp("datapackage.json")
+# Zenodo DOI
+read_gldp("10.5281/zenodo.15259676")
+# Zenodo DOI URL
+read_gldp("https://doi.org/10.5281/zenodo.15259676")
+# Zenodo record link
+read_gldp("https://zenodo.org/records/15259676")
+# Zenodo record number
+read_gldp("15259676")
+}
 # Read a datapackage.json file
 pkg <- read_gldp("https://zenodo.org/records/14099115/files/datapackage.json")
 

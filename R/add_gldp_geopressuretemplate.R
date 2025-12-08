@@ -297,57 +297,52 @@ add_gldp_geopressuretemplate <- function(
       # Remove tag_id already present in t
       list_id <- list_id[!(list_id %in% t$tag_id)]
 
-      # Not sure about this warning
-      if (length(list_id) == 0 && FALSE) {
-        cli_warn(
-          "We did not find any tag data in {.file {file.path(directory, 'data/raw-tag')}}."
-        )
-      }
-
-      # Read raw tag data with rawtagid_to_tag function
-      dtags <- list_id %>%
-        purrr::map(
-          purrr::possibly(rawtagid_to_tag, NULL),
-          .progress = list(
-            type = "custom",
-            format = "{cli::pb_spin} Reading {cli::pb_current}/{cli::pb_total} raw tag{?s}.",
-            format_done = "{cli::col_green(cli::symbol$tick)} Read {.val {cli::pb_total}} raw \\
+      if (length(list_id) > 0) {
+        # Read raw tag data with rawtagid_to_tag function
+        dtags <- list_id %>%
+          purrr::map(
+            purrr::possibly(rawtagid_to_tag, NULL),
+            .progress = list(
+              type = "custom",
+              format = "{cli::pb_spin} Reading {cli::pb_current}/{cli::pb_total} raw tag{?s}.",
+              format_done = "{cli::col_green(cli::symbol$tick)} Read {.val {cli::pb_total}} raw \\
             tag{?s}.",
-            clear = FALSE
+              clear = FALSE
+            )
           )
+
+        # Check for failed tag reads and warn
+        failed_tags <- list_id[sapply(dtags, is.null)]
+        if (length(failed_tags) > 0) {
+          cli_warn(c(
+            "!" = "Failed to read {.val {length(failed_tags)}} {?tag/tags}:",
+            "i" = "{.field {failed_tags}}",
+            ">" = "These tags will be skipped."
+          ))
+        }
+
+        # Remove NULL entries
+        dtags <- purrr::compact(dtags)
+
+        # Adding measurements resource
+        m <- bind_rows(m, tags_to_measurements(dtags))
+
+        # Adding tag resource
+        t <- bind_rows(
+          t,
+          dtags %>%
+            purrr::map(~ .x$param) %>%
+            params_to_tags()
         )
 
-      # Check for failed tag reads and warn
-      failed_tags <- list_id[sapply(dtags, is.null)]
-      if (length(failed_tags) > 0) {
-        cli_warn(c(
-          "!" = "Failed to read {.val {length(failed_tags)}} {?tag/tags}:",
-          "i" = "{.field {failed_tags}}",
-          ">" = "These tags will be skipped."
-        ))
+        # Adding observations resource
+        o <- bind_rows(
+          o,
+          dtags %>%
+            purrr::map(~ .x$param) %>%
+            params_to_observations()
+        )
       }
-
-      # Remove NULL entries
-      dtags <- purrr::compact(dtags)
-
-      # Adding measurements resource
-      m <- bind_rows(m, tags_to_measurements(dtags))
-
-      # Adding tag resource
-      t <- bind_rows(
-        t,
-        dtags %>%
-          purrr::map(~ .x$param) %>%
-          params_to_tags()
-      )
-
-      # Adding observations resource
-      o <- bind_rows(
-        o,
-        dtags %>%
-          purrr::map(~ .x$param) %>%
-          params_to_observations()
-      )
     }
 
     # STEP 3: Overwrite tags and observations if csv/xlsx files present

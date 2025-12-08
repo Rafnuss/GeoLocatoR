@@ -108,7 +108,7 @@ config2tibble <- function(
     "graph_set_movement.location" = as.numeric,
     "graph_set_movement.power2prob" = parse_fun,
     "graph_set_movement.low_speed_fix" = as.numeric,
-    "graph_set_movement.type" = as.character,
+    "graph_set_movement.type" = parse_fun,
     "graph_set_movement.zero_speed_ratio" = as.numeric,
     "bird_create.mass" = as.numeric,
     "bird_create.wing_span" = as.numeric,
@@ -117,6 +117,7 @@ config2tibble <- function(
     "bird_create.body_frontal_area" = as.numeric,
     "bird_create.scientific_name" = as.character,
     "graph_add_wind.file" = parse_fun,
+    "graph_add_wind.variable" = \(x) paste(x, collapse = ", "),
     "graph_add_wind.rounding_interval" = as.numeric,
     "graph_add_wind.interp_spatial_linear" = as.logical,
     "graph_add_wind.thr_as" = as.numeric,
@@ -140,6 +141,7 @@ config2tibble <- function(
   cfg <- purrr::map_df(list_id, \(id) {
     c <- GeoPressureR::geopressuretemplate_config(
       id,
+      config = file,
       assert_tag = FALSE,
       assert_graph = FALSE
     )
@@ -171,6 +173,18 @@ config2tibble <- function(
         }
       }
     )
+
+    # detect problematic elements
+    idx <- lengths(c) > 1
+
+    if (any(idx)) {
+      cli::cli_warn(
+        "The following fields had length > 1 and were truncated: {paste(names(c)[idx], collapse = ', ')}"
+      )
+
+      # correction: keep only first element
+      c[idx] <- lapply(c[idx], `[`, 1)
+    }
 
     as_tibble(c)
   })

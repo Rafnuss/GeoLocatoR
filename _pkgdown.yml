@@ -38,6 +38,10 @@ reference:
     contents:
       - gldp_to_zenodo
       - zenodo_to_gldp
+  - title: Export
+    contents:
+      - gldp_to_eml
+      - gldp_to_dwc
   - title: Miscellaneous functions
     contents:
       - print.geolocatordp

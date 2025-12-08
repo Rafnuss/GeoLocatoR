@@ -57,7 +57,8 @@ plot_pkg_coverage <- function(x) {
             "acceleration_y",
             "acceleration_z",
             "pitch"
-          ) ~ "magnetic",
+          ) ~
+          "magnetic",
         TRUE ~ sensor # Keep other sensor names unchanged
       )
     ) %>%
@@ -81,7 +82,7 @@ plot_pkg_coverage <- function(x) {
       data = o %>%
         filter(.data$observation_type %in% c("equipment", "retrieval")),
       ggplot2::aes(
-        xintercept = as.numeric(as.Date(.data$datetime)),
+        xintercept = as.Date(.data$datetime),
         color = .data$observation_type
       ),
       linetype = "solid",
@@ -91,7 +92,7 @@ plot_pkg_coverage <- function(x) {
       data = o %>%
         filter(.data$observation_type %in% c("capture", "sighting", "other")),
       ggplot2::aes(
-        xintercept = as.numeric(as.Date(.data$datetime)),
+        xintercept = as.Date(.data$datetime),
         color = .data$observation_type
       ),
       linetype = "dashed",

@@ -24,7 +24,24 @@
 #'
 #' @export
 create_geopressuretemplate <- function(path, pkg = NULL, open = interactive()) {
-  path <- tempfile()
+  # Expand `~` and similar user paths so git and file checks
+  # operate on the intended directory.
+  path <- path.expand(path)
+
+  if (dir.exists(path)) {
+    existing <- list.files(path, all.files = TRUE, no.. = TRUE)
+
+    if (length(existing) > 0) {
+      cli_abort(c(
+        "x" = "Directory {.path {path}} already exists and is not empty.",
+        "i" = "Please choose a new path or empty the directory before creating a GeoPressureTemplate project."
+      ))
+    } else {
+      # `git clone` cannot clone into an existing directory, even if empty
+      unlink(path, recursive = TRUE)
+    }
+  }
+
   system(sprintf(
     "git clone --depth 1 https://github.com/Rafnuss/GeoPressureTemplate %s",
     shQuote(path)
@@ -464,9 +481,7 @@ create_geopressuretemplate_config <- function(pkg) {
       ) {
         rm_col <- c(rm_col, "device_status")
       }
-      if (
-        all(is.na(k$condition) | k$condition == "" | k$condition == "unknown")
-      ) {
+      if (all(is.na(k$condition) | k$condition == "" | k$condition == "unknown")) {
         rm_col <- c(rm_col, "condition")
       }
       if (

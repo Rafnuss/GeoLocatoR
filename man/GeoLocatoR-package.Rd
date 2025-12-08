@@ -15,6 +15,7 @@ Useful links:
 \itemize{
   \item \url{https://github.com/rafnuss/geolocator}
   \item \url{https://raphaelnussbaumer.com/GeoLocatoR/}
+  \item Report bugs at \url{https://github.com/Rafnuss/GeoLocatoR/issues}
 }
 
 }

@@ -362,7 +362,7 @@ validate_gldp_item <- function(item, prop, field) {
       in_enum <- (item %in% unlist(prop$enum)) | is.na(item)
     }
 
-    if (any(!in_enum)) {
+    if (!all(in_enum)) {
       invalid_values <- item[!in_enum] # nolint
       cli_alert_danger(
         "{.field {field}} has {sum(!in_enum)} item{?s} that are not in the allowed values:

@@ -7,7 +7,9 @@ test_that("plot.geolocatordp creates coverage plot", {
   pkg <- pkg_shared
 
   # Coverage plot
-  expect_no_error(p <- plot(pkg, "coverage"))
+  expect_no_error({
+    p <- plot(pkg, "coverage")
+  })
   expect_s3_class(p, "ggplot")
 })
 
@@ -15,7 +17,9 @@ test_that("plot.geolocatordp creates ring plot", {
   pkg <- pkg_shared
 
   # Ring plot
-  expect_no_error(p <- plot(pkg, "ring"))
+  expect_no_error({
+    p <- plot(pkg, "ring")
+  })
   expect_s3_class(p, "ggplot")
 })
 
@@ -23,7 +27,9 @@ test_that("plot.geolocatordp creates map plot", {
   pkg <- pkg_shared
 
   # Map plot
-  expect_no_error(p <- plot(pkg, "map"))
+  expect_no_error({
+    p <- plot(pkg, "map")
+  })
   # Map plot might be leaflet or ggplot depending on implementation
 })
 

@@ -12,7 +12,9 @@ test_that("tags getter and setter work correctly", {
   expect_true("tag_id" %in% names(tag_data))
 
   # Set tags (should not error)
-  expect_no_error(tags(pkg) <- tag_data)
+  expect_no_error({
+    tags(pkg) <- tag_data
+  })
 })
 
 test_that("observations getter and setter work correctly", {
@@ -29,7 +31,9 @@ test_that("observations getter and setter work correctly", {
   expect_true(is.data.frame(obs_data))
 
   # Set observations (should not error)
-  expect_no_error(observations(pkg) <- obs_data)
+  expect_no_error({
+    observations(pkg) <- obs_data
+  })
 })
 
 test_that("measurements getter and setter work correctly", {
@@ -46,7 +50,9 @@ test_that("measurements getter and setter work correctly", {
   expect_true(is.data.frame(meas_data))
 
   # Set measurements (should not error)
-  expect_no_error(measurements(pkg) <- meas_data)
+  expect_no_error({
+    measurements(pkg) <- meas_data
+  })
 })
 
 test_that("staps getter and setter work correctly", {
@@ -63,7 +69,9 @@ test_that("staps getter and setter work correctly", {
   expect_true(is.data.frame(staps_data))
 
   # Set staps (should not error)
-  expect_no_error(staps(pkg) <- staps_data)
+  expect_no_error({
+    staps(pkg) <- staps_data
+  })
 })
 
 test_that("twilights getter and setter work correctly", {
@@ -80,7 +88,9 @@ test_that("twilights getter and setter work correctly", {
   expect_true(is.data.frame(twl_data))
 
   # Set twilights (should not error)
-  expect_no_error(twilights(pkg) <- twl_data)
+  expect_no_error({
+    twilights(pkg) <- twl_data
+  })
 })
 
 test_that("paths getter and setter work correctly", {
@@ -97,7 +107,9 @@ test_that("paths getter and setter work correctly", {
   expect_true(is.data.frame(paths_data))
 
   # Set paths (should not error)
-  expect_no_error(paths(pkg) <- paths_data)
+  expect_no_error({
+    paths(pkg) <- paths_data
+  })
 })
 
 test_that("edges getter and setter work correctly", {
@@ -114,7 +126,9 @@ test_that("edges getter and setter work correctly", {
   expect_true(is.data.frame(edges_data))
 
   # Set edges (should not error)
-  expect_no_error(edges(pkg) <- edges_data)
+  expect_no_error({
+    edges(pkg) <- edges_data
+  })
 })
 
 test_that("pressurepaths getter and setter work correctly", {
@@ -131,5 +145,7 @@ test_that("pressurepaths getter and setter work correctly", {
   expect_true(is.data.frame(pp_data))
 
   # Set pressurepaths (should not error)
-  expect_no_error(pressurepaths(pkg) <- pp_data)
+  expect_no_error({
+    pressurepaths(pkg) <- pp_data
+  })
 })

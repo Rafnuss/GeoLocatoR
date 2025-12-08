@@ -148,9 +148,7 @@ add_gldp_soi <- function(
           vars <- pick(everything())
           paste0(
             c(
-              if (
-                "Harness_data" %in% names(vars) && !is.na(.data$Harness_data)
-              ) {
+              if ("Harness_data" %in% names(vars) && !is.na(.data$Harness_data)) {
                 .data$Harness_data
               },
               if (

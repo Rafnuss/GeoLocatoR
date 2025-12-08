@@ -1,0 +1,3 @@
+exclude:
+  - R/read_gdl.R
+  - R/add_gldp_soi.R
