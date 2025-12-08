@@ -9,16 +9,17 @@ and assigns the class `"geolocatordp"` to the datapackage read.
 ## Usage
 
 ``` r
-read_gldp(file = "datapackage.json", force_read = TRUE)
+read_gldp(x = "datapackage.json", force_read = TRUE)
 ```
 
 ## Arguments
 
-- file:
+- x:
 
   A string specifying the path to the JSON file containing the
   GeoLocator Data Package metadata. Defaults to `"datapackage.json"`.
-  Can also be a URL.
+  Also accepts direct urls, Zenodo DOI, Zenodo link, or Zenodo record
+  number.
 
 - force_read:
 
@@ -32,6 +33,18 @@ A GeoLocator Data Package object created from a file/url
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
+# Local file
+read_gldp("datapackage.json")
+# Zenodo DOI
+read_gldp("10.5281/zenodo.15259676")
+# Zenodo DOI URL
+read_gldp("https://doi.org/10.5281/zenodo.15259676")
+# Zenodo record link
+read_gldp("https://zenodo.org/records/15259676")
+# Zenodo record number
+read_gldp("15259676")
+} # }
 # Read a datapackage.json file
 pkg <- read_gldp("https://zenodo.org/records/14099115/files/datapackage.json")
 

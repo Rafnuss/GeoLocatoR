@@ -49,6 +49,9 @@ You can install GeoLocatoR from GitHub:
 ``` r
 # install.packages("pak")
 pak::pkg_install("Rafnuss/GeoLocatoR")
+
+# Install development version 
+pak::pkg_install("Rafnuss/GeoLocatoR@dev")
 ```
 
 ## 📖 Usage

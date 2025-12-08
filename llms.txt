@@ -49,6 +49,9 @@ You can install GeoLocatoR from GitHub:
 ``` r
 # install.packages("pak")
 pak::pkg_install("Rafnuss/GeoLocatoR")
+
+# Install development version 
+pak::pkg_install("Rafnuss/GeoLocatoR@dev")
 ```
 
 ## 📖 Usage
@@ -152,6 +155,13 @@ If you use GeoLocatoR in your research, please cite it as follows:
 - [`zenodo_to_gldp()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/zenodo_to_gldp.md)
   : Create or update the metadata of a GeoLocator Data Package based on
   a Zenodo Record
+
+## Export
+
+- [`gldp_to_eml()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/gldp_to_eml.md)
+  : Transform a GeoLocator Data Package to EML
+- [`gldp_to_dwc()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/gldp_to_dwc.md)
+  : Transform a GeoLocator Data Package to Darwin Core
 
 ## Miscellaneous functions
 

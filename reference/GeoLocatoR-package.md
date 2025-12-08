@@ -11,6 +11,8 @@ Useful links:
 
 - <https://raphaelnussbaumer.com/GeoLocatoR/>
 
+- Report bugs at <https://github.com/Rafnuss/GeoLocatoR/issues>
+
 ## Author
 
 **Maintainer**: Raphaël Nussbaumer <rafnuss@gmail.com>

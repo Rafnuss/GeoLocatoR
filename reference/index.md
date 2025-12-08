@@ -79,6 +79,13 @@
   : Create or update the metadata of a GeoLocator Data Package based on
   a Zenodo Record
 
+## Export
+
+- [`gldp_to_eml()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/gldp_to_eml.md)
+  : Transform a GeoLocator Data Package to EML
+- [`gldp_to_dwc()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/gldp_to_dwc.md)
+  : Transform a GeoLocator Data Package to Darwin Core
+
 ## Miscellaneous functions
 
 - [`print(`*`<geolocatordp>`*`)`](https://raphaelnussbaumer.com/GeoLocatoR/reference/print.geolocatordp.md)
