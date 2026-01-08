@@ -9,8 +9,8 @@
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![R-CMD-check](https://github.com/Rafnuss/GeoLocatoR/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/R-CMD-check.yaml)
 [![pkgdown.yaml](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/pkgdown.yaml)
-[![lint](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/jarl-check.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/jarl-check.yaml)
-[![format](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/format-check.yaml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/format-check.yaml)
+[![jarl](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/jarl-check.yml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/jarl-check.yml)
+[![format](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/format-check.yml/badge.svg)](https://github.com/Rafnuss/GeoLocatoR/actions/workflows/format-check.yml)
 [![Codecov test
 coverage](https://codecov.io/gh/Rafnuss/GeoLocatoR/graph/badge.svg)](https://app.codecov.io/gh/Rafnuss/GeoLocatoR)
 <!-- badges: end -->
