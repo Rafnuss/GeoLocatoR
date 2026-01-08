@@ -203,7 +203,7 @@ add_gldp_geopressuretemplate <- function(
                 p %>%
                   select(-any_of(c("start", "end", "include"))) %>%
                   mutate(
-                    type = sub("path_", "", x),
+                    type = sub("path_", "", x, fixed = TRUE),
                     tag_id = interim$tag[[i]]$param$id
                   )
               }
@@ -225,7 +225,7 @@ add_gldp_geopressuretemplate <- function(
               if (!is.null(e)) {
                 e %>%
                   mutate(
-                    type = sub("edge_", "", x),
+                    type = sub("edge_", "", x, fixed = TRUE),
                     tag_id = interim$tag[[i]]$param$id
                   )
               }
@@ -265,13 +265,11 @@ add_gldp_geopressuretemplate <- function(
               if (!is.null(p)) {
                 p %>%
                   mutate(
-                    type = sub("pressurepath_", "", x),
-                    tag_id = interim$tag[[i]]$param$id
-                  ) %>%
-                  select(-any_of("datetime")) %>%
-                  rename(
+                    type = sub("pressurepath_", "", x, fixed = TRUE),
+                    tag_id = interim$tag[[i]]$param$id,
                     datetime = date
-                  )
+                  ) %>%
+                  select(-any_of("datetime"))
               }
             }) %>%
             purrr::list_rbind()
