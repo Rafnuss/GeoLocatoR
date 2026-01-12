@@ -33,7 +33,7 @@ zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
         "https://orcid.org/{purrr::pluck(purrr::keep(c$person_or_org$identifiers,
                         ~ .x$scheme == 'orcid'), 1)$identifier}"
       ),
-      email = NULL,
+      # email = NULL,
       roles = c(c$role$id),
       organization = glue::glue_collapse(
         purrr::map_chr(c$affiliations, "name"),
