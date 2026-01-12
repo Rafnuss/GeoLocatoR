@@ -55,7 +55,7 @@ merge_gldp <- function(x, y) {
   # Merge related identifiers (DOIs, if available, will be added)
   relatedIdentifiers <- unique(c(x$relatedIdentifiers, y$relatedIdentifiers))
   add_related_id <- function(id, related_ids) {
-    if (grepl("doi", id %||% "")) {
+    if (grepl("doi", id %||% "", fixed = TRUE)) {
       new_related_id <- list(
         relationType = "isDerivedFrom",
         relatedIdentifier = id,
@@ -107,7 +107,7 @@ merge_gldp <- function(x, y) {
       }
 
       # Only add the resource if data is available in either x or y
-      if (!is.null(data_x) | !is.null(data_y)) {
+      if (!is.null(data_x) || !is.null(data_y)) {
         combined_data <- bind_rows(data_x, data_y) # Combine data from x and y
         xy <- add_gldp_resource(
           package = xy,
