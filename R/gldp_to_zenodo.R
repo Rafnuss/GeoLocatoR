@@ -77,7 +77,7 @@ gldp_to_zenodo <- function(
       "other"
     )
 
-    if (length(c$roles) > 0 & !warn_role) {
+    if (length(c$roles) > 0 && !warn_role) {
       cli_warn(c(
         "!" = "Zenodo's creator can only have a single {.field role}.",
         ">" = "Only the first role will be kept"
