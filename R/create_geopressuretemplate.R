@@ -245,34 +245,23 @@ create_geopressuretemplate_licences <- function(licenses) {
   # Force usethis to recognize current directory as project root
   usethis::proj_set(getwd(), force = TRUE)
 
-  licenses$name <- tolower(licenses$name)
+  rules <- list(
+    list("agpl", usethis::use_agpl_license),
+    list("lgpl", usethis::use_lgpl_license),
+    list("\\bgpl\\b", usethis::use_gpl_license),
+    list("\\bmit\\b", usethis::use_mit_license),
+    list("apache", usethis::use_apache_license),
+    list("cc[- ]?0", usethis::use_cc0_license),
+    list("cc[- ]?by", usethis::use_ccby_license),
+    list("proprietary", usethis::use_proprietary_license)
+  )
 
-  if (grepl("mit", licenses$name)) {
-    usethis::use_mit_license()
-  } else if (grepl("gpl", licenses$name)) {
-    usethis::use_gpl_license()
-  } else if (grepl("agpl", licenses$name)) {
-    usethis::use_agpl_license()
-  } else if (grepl("lgpl", licenses$name)) {
-    usethis::use_lgpl_license()
-  } else if (grepl("apache", licenses$name)) {
-    usethis::use_apache_license()
-  } else if (
-    grepl("cc0", licenses$name) ||
-      grepl("cc-0", licenses$name) ||
-      grepl("cc 0", licenses$name)
-  ) {
-    usethis::use_cc0_license()
-  } else if (
-    grepl("ccby", licenses$name) ||
-      grepl("cc-by", licenses$name) ||
-      grepl("cc by", licenses$name)
-  ) {
-    usethis::use_ccby_license()
-  } else if (grepl("proprietary", licenses$name)) {
-    usethis::use_proprietary_license()
+  idx <- match(TRUE, vapply(rules, function(r) grepl(r[[1]], name), logical(1)))
+
+  if (!is.na(idx)) {
+    rules[[idx]][[2]]()
   } else {
-    cli_warn(c(
+    cli::cli_warn(c(
       "!" = "No matching license found in {.pkg usethis}.",
       ">" = "License file not created."
     ))
