@@ -57,7 +57,7 @@ merge_gldp <- function(x, y) {
   add_related_id <- function(id, related_ids) {
     if (grepl("doi", id %||% "", fixed = TRUE)) {
       new_related_id <- list(
-        relationType = "isDerivedFrom",
+        relationType = "IsCompiledBy",
         relatedIdentifier = id,
         resourceTypeGeneral = "Dataset",
         relatedIdentifierType = "DOI"
