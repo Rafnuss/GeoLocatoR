@@ -106,6 +106,15 @@ merge_gldp <- function(x, y) {
         NULL
       }
 
+      if (r == "tags") {
+        if (!is.null(data_x)) {
+          data_x <- data_x |> mutate(datapackage_id = x$id)
+        }
+        if (!is.null(data_y)) {
+          data_y <- data_y |> mutate(datapackage_id = y$id)
+        }
+      }
+
       # Only add the resource if data is available in either x or y
       if (!is.null(data_x) || !is.null(data_y)) {
         combined_data <- bind_rows(data_x, data_y) # Combine data from x and y
