@@ -342,10 +342,13 @@ read_gdl_access <- function(
       ))
     }
   } else if (.Platform$OS.type == "windows") {
-    if (!requireNamespace("DBI", quietly = TRUE) ||
-      !requireNamespace("odbc", quietly = TRUE)
+    if (
+      !requireNamespace("DBI", quietly = TRUE) ||
+        !requireNamespace("odbc", quietly = TRUE)
     ) {
-      cli_abort("The {.pkg DBI} and {.pkg odbc} packages are required to read Access files on Windows.")
+      cli_abort(
+        "The {.pkg DBI} and {.pkg odbc} packages are required to read Access files on Windows."
+      )
     }
     con <- DBI::dbConnect(
       odbc::odbc(),

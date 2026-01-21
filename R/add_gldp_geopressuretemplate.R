@@ -410,7 +410,9 @@ add_gldp_geopressuretemplate <- function(
 
     if (file.exists("./data/observations.xlsx")) {
       if (!requireNamespace("readxl", quietly = TRUE)) {
-        cli::cli_abort("The {.pkg readxl} package is required to read {.file data/observations.xlsx}.")
+        cli::cli_abort(
+          "The {.pkg readxl} package is required to read {.file data/observations.xlsx}."
+        )
       }
       o <- readxl::read_excel(
         "./data/observations.xlsx",
