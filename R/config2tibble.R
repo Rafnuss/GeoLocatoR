@@ -56,6 +56,9 @@ config2tibble <- function(
   filter_return = TRUE
 ) {
   parse_fun <- \(x) {
+    if (is.null(x) || (length(x) == 1 && is.na(x))) {
+      return(NA_character_)
+    }
     if (is.function(x) || is.call(x)) {
       x <- deparse(x)
     }
@@ -117,14 +120,14 @@ config2tibble <- function(
     "bird_create.body_frontal_area" = as.numeric,
     "bird_create.scientific_name" = as.character,
     "graph_add_wind.file" = parse_fun,
-    "graph_add_wind.variable" = \(x) paste(x, collapse = ", "),
+    "graph_add_wind.variable" = parse_fun,
     "graph_add_wind.rounding_interval" = as.numeric,
     "graph_add_wind.interp_spatial_linear" = as.logical,
     "graph_add_wind.thr_as" = as.numeric,
     "graph_simulation.nj" = as.numeric,
     "pressurepath_create.solar_dep" = as.numeric,
     "pressurepath_create.era5_dataset" = as.character,
-    "pressurepath_create.variable" = \(x) paste(x, collapse = ", "),
+    "pressurepath_create.variable" = parse_fun,
     "GeoPressureR_version" = as.character,
     "geopressuretemplate.likelihood" = \(x) paste(x, collapse = ", "),
     "geopressuretemplate.outputs" = \(x) paste(x, collapse = ", "),
@@ -166,7 +169,7 @@ config2tibble <- function(
 
         if (nm %in% names(col_transforms)) {
           col_transforms[[nm]](v)
-        } else if (is.function(v)) {
+        } else if (is.function(v) || is.call(v)) {
           parse_fun(v)
         } else {
           v
