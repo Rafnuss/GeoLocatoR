@@ -110,6 +110,9 @@ create_geopressuretemplate <- function(path, pkg = NULL, open = interactive()) {
   })
 
   if (open) {
+    if (!requireNamespace("rstudioapi", quietly = TRUE)) {
+      cli_abort("The {.pkg rstudioapi} package is required to open the project in RStudio.")
+    }
     rstudioapi::openProject(path, newSession = TRUE)
   }
 

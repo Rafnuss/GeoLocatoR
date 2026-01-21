@@ -60,6 +60,9 @@ gldp_to_eml <- function(package, directory) {
   if (!requireNamespace("EML", quietly = TRUE)) {
     cli::cli_abort("The {.pkg EML} package is required for this function.")
   }
+  if (!requireNamespace("uuid", quietly = TRUE)) {
+    cli::cli_abort("The {.pkg uuid} package is required for this function.")
+  }
 
   # Helper to make sure text is valid XML (e.g. replace HTML nbsp)
   sanitize_xml_text <- function(x) {

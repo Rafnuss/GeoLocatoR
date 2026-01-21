@@ -345,6 +345,9 @@ add_gldp_geopressuretemplate <- function(
 
     # STEP 3: Overwrite tags and observations if csv/xlsx files present
     if (file.exists("data/tags.xlsx")) {
+      if (!requireNamespace("readxl", quietly = TRUE)) {
+        cli::cli_abort("The {.pkg readxl} package is required to read {.file data/tags.xlsx}.")
+      }
       file <- "data/tags.xlsx"
       tf <- readxl::read_excel(
         file,
@@ -406,6 +409,9 @@ add_gldp_geopressuretemplate <- function(
     }
 
     if (file.exists("./data/observations.xlsx")) {
+      if (!requireNamespace("readxl", quietly = TRUE)) {
+        cli::cli_abort("The {.pkg readxl} package is required to read {.file data/observations.xlsx}.")
+      }
       o <- readxl::read_excel(
         "./data/observations.xlsx",
         col_types = c(
