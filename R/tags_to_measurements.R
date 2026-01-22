@@ -152,5 +152,6 @@ tags_to_measurements <- function(tags) {
     }
   )
   m <- dplyr::rename(m, datetime = date)
+  m <- dplyr::filter(m, !is.na(.data$value))
   m
 }
