@@ -203,15 +203,12 @@ update_gldp_number_tags <- function(pkg) {
 update_gldp_bibliographic_citation <- function(pkg, ...) {
   check_gldp(pkg)
 
+  has_id <- !is.null(pkg$id) && length(pkg$id) == 1 && !is.na(pkg$id) && nzchar(pkg$id)
   default <- list(
     "Misc", # should be "dataset" but not available
     author = contributors2persons(pkg$contributors),
-    doi = pkg$id,
-    publisher = ifelse(
-      grepl("zenodo", pkg$id, ignore.case = TRUE),
-      "Zenodo",
-      NULL
-    ),
+    doi = if (has_id) pkg$id else NULL,
+    publisher = if (has_id && grepl("zenodo", pkg$id, ignore.case = TRUE)) "Zenodo" else NULL,
     title = pkg$title,
     year = format(as.Date(pkg$created), "%Y")
   )
