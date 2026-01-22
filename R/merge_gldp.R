@@ -12,7 +12,7 @@
 #' - **id**: Replaced with a new UUID for the merged package.
 #' - **source_ids**: Added (custom property) storing the original package IDs.
 #' - **description**: Combined as two separate paragraphs, with a newline separator.
-#' - **version**: Removed from the merged package.
+#' - **version**: Use the latest version (same as `create_gldp()`)
 #' - **relatedIdentifiers**: Combined, with duplicates removed.
 #' - **grants**: Combined from both packages, with duplicates removed.
 #' - **keywords**: Combined from both packages, with duplicates removed.
@@ -115,12 +115,46 @@ merge_gldp <- function(x, y) {
         NULL
       }
 
+      # Tag-specific merge rules.
       if (r == "tags") {
-        if (!is.null(data_x)) {
-          data_x <- data_x |> mutate(datapackage_id = x$id)
+        # Require a non-empty package id for both inputs before merging.
+        ensure_pkg_id <- function(id, which_pkg) {
+          if (is.null(id) || length(id) != 1 || is.na(id) || !nzchar(id)) {
+            cli_abort(
+              "Missing {.field id} in {.pkg {which_pkg}}. Merging requires a non-empty {.field id} for each datapackage.",
+            )
+          }
         }
-        if (!is.null(data_y)) {
-          data_y <- data_y |> mutate(datapackage_id = y$id)
+        ensure_pkg_id(x$id, "x")
+        ensure_pkg_id(y$id, "y")
+
+        # Add missing datapackage_id values without overwriting existing ones.
+        fill_datapackage_id <- function(df, id) {
+          df |>
+            mutate(
+              datapackage_id = dplyr::if_else(
+                is.na(datapackage_id %||% NA_character_) | datapackage_id == "",
+                id,
+                datapackage_id %||% id
+              )
+            )
+        }
+        data_x <- fill_datapackage_id(data_x, x$id)
+        data_y <- fill_datapackage_id(data_y, y$id)
+
+        if (!is.null(data_x) && !is.null(data_y)) {
+          # Prevent overlap between packages.
+          ids_x <- unique(data_x$datapackage_id)
+          ids_y <- unique(data_y$datapackage_id)
+          common_ids <- intersect(ids_x, ids_y)
+
+          if (length(common_ids) > 0) {
+            cli_abort(c(
+              "Duplicate {.field datapackage_id} detected: {col_red(paste(common_ids, collapse = ', '))}.",
+              "x" = "Tags from both packages share the same datapackage_id.",
+              "i" = "Ensure each package has distinct datapackage_id values before merging."
+            ))
+          }
         }
       }
 
