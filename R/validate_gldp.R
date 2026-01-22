@@ -88,9 +88,20 @@ validate_gldp_profile <- function(pkg) {
 
   required <- unlist(schema$allOf[[2]]$required)
   properties <- schema$allOf[[2]]$properties
+  defs <- schema$`$defs`
+
+  # Skip resource validation at the profile level (handled separately)
+  required <- setdiff(required, "resources")
+  properties$resources <- NULL
 
   cli_h2("Check GeoLocator DataPackage profile")
-  valid <- validate_gldp_object(pkg, required, properties)
+  valid <- validate_gldp_object(
+    pkg,
+    required,
+    properties,
+    defs = defs,
+    ignore_fields = c("directory", "resources")
+  )
 
   if (valid) {
     cli_alert_success("Package is consistent with the profile.")
@@ -177,12 +188,10 @@ validate_gldp_table <- function(data, schema) {
       prop$constraints <- NULL # Remove the 'constraints' field after merging
     }
 
-    valid <- valid &
-      validate_gldp_item(
-        data[[field]],
-        prop,
-        glue::glue("{schema$name}${field}")
-      )
+    field_name <- glue::glue("{schema$name}${field}")
+    prop <- resolve_prop(data[[field]], prop, defs = NULL, field = field_name)
+
+    valid <- valid & validate_gldp_item(data[[field]], prop, field_name)
   }
 
   if (valid) {
@@ -209,49 +218,96 @@ validate_gldp_table <- function(data, schema) {
 #' @param name Optional name prefix for error messages
 #' @return Logical indicating whether the object validation passed
 #' @noRd
-validate_gldp_object <- function(obj, required, properties, name = "") {
+validate_gldp_object <- function(
+  obj,
+  required,
+  properties,
+  name = "",
+  defs = NULL,
+  ignore_fields = c("directory")
+) {
   name <- glue::glue("{name}{ifelse(name=='','','$')}")
 
   valid <- TRUE
   for (field in names(obj)) {
     if (field %in% names(properties)) {
+      field_name <- glue::glue("{name}{field}")
+      prop <- resolve_prop(obj[[field]], properties[[field]], defs, field_name)
+
       valid <- valid &
         validate_gldp_item(
           obj[[field]],
-          properties[[field]],
-          glue::glue("{name}{field}")
+          prop,
+          field_name
         )
 
-      if (properties[[field]]$type == "object") {
-        if ("$ref" %in% names(properties[[field]])) {
+      if (isTRUE(prop$type == "object")) {
+        if (!is.null(prop$`$ref`) && !startsWith(prop$`$ref`, "#/$defs/")) {
           # Not easy to implement as rely on more complex schema with anyOf, allOf etc...
           # prop <- jsonlite::fromJSON(properties[[field]]$`$ref`, simplifyVector = FALSE)
           cli_alert_warning(
             "{.field {field}} cannot be validated (external schema)."
           )
-        } else {
+        } else if (!is.null(prop$properties)) {
           valid <- valid &
             validate_gldp_object(
               obj[[field]],
-              properties[[field]]$required,
-              properties[[field]]$properties,
-              field
+              prop$required,
+              prop$properties,
+              field,
+              defs,
+              ignore_fields
             )
         }
       }
 
-      if (properties[[field]]$type == "array") {
-        for (i in seq_len(length(obj[[field]]))) {
-          valid <- valid &
-            validate_gldp_item(
+      if (isTRUE(prop$type == "array")) {
+        if (is.null(prop$items)) {
+          cli_alert_warning(
+            "{.field {field}} array items schema is missing; skipping item validation."
+          )
+        } else {
+          for (i in seq_len(length(obj[[field]]))) {
+            item_field <- glue::glue("{name}{field}[[{i}]]")
+            item_prop <- resolve_prop(
               obj[[field]][[i]],
-              properties[[field]]$items,
-              glue::glue("{name}{field}[[{i}]]")
+              prop$items,
+              defs,
+              item_field
             )
+
+            valid <- valid &
+              validate_gldp_item(
+                obj[[field]][[i]],
+                item_prop,
+                item_field
+              )
+
+            if (isTRUE(item_prop$type == "object")) {
+              if (
+                !is.null(item_prop$`$ref`) &&
+                  !startsWith(item_prop$`$ref`, "#/$defs/")
+              ) {
+                cli_alert_warning(
+                  "{.field {item_field}} cannot be validated (external schema)."
+                )
+              } else if (!is.null(item_prop$properties)) {
+                valid <- valid &
+                  validate_gldp_object(
+                    obj[[field]][[i]],
+                    item_prop$required,
+                    item_prop$properties,
+                    item_field,
+                    defs,
+                    ignore_fields
+                  )
+              }
+            }
+          }
         }
       }
     } else {
-      if (!(field %in% c("directory"))) {
+      if (!(field %in% ignore_fields)) {
         cli_alert_warning("{.field {field}} does not exist in schema.")
       }
     }
@@ -264,6 +320,92 @@ validate_gldp_object <- function(obj, required, properties, name = "") {
     }
   })
   return(valid)
+}
+
+#' @noRd
+resolve_local_ref <- function(prop, defs) {
+  if (is.null(prop$`$ref`) || is.null(defs)) {
+    return(prop)
+  }
+
+  ref <- prop$`$ref`
+  if (!startsWith(ref, "#/$defs/")) {
+    return(prop)
+  }
+
+  key <- sub("^#/$defs/", "", ref)
+  if (is.null(defs[[key]])) {
+    return(prop)
+  }
+
+  base <- defs[[key]]
+  prop_no_ref <- prop
+  prop_no_ref$`$ref` <- NULL
+
+  utils::modifyList(base, prop_no_ref)
+}
+
+#' @noRd
+infer_type <- function(prop) {
+  if (!is.null(prop$type)) {
+    return(prop)
+  }
+
+  if (!is.null(prop$properties) || !is.null(prop$required)) {
+    prop$type <- "object"
+  } else if (!is.null(prop$items)) {
+    prop$type <- "array"
+  }
+
+  prop
+}
+
+#' @noRd
+resolve_oneof <- function(value, prop, defs, field) {
+  if (is.null(prop$oneOf)) {
+    return(prop)
+  }
+
+  base <- prop
+  base$oneOf <- NULL
+  base <- resolve_local_ref(base, defs)
+
+  alternatives <- lapply(prop$oneOf, function(alt) {
+    alt <- resolve_local_ref(alt, defs)
+    infer_type(alt)
+  })
+
+  matches <- vapply(
+    alternatives,
+    function(alt) check_type_silent(value, alt$type),
+    logical(1)
+  )
+
+  if (!any(matches)) {
+    cli_alert_warning(
+      "{.field {field}} could not be matched to a `oneOf` schema; using first option."
+    )
+    chosen <- alternatives[[1]]
+  } else {
+    chosen <- alternatives[[which(matches)[1]]]
+  }
+
+  utils::modifyList(chosen, base)
+}
+
+#' @noRd
+resolve_prop <- function(value, prop, defs, field) {
+  if (is.null(prop)) {
+    return(list())
+  }
+
+  prop <- resolve_local_ref(prop, defs)
+
+  if (!is.null(prop$oneOf)) {
+    prop <- resolve_oneof(value, prop, defs, field)
+  }
+
+  infer_type(prop)
 }
 
 #' @noRd
@@ -411,7 +553,15 @@ validate_gldp_item <- function(item, prop, field) {
     # Apply the regular expression to each non-NA item
     non_na_items <- !is.na(item)
     if (any(non_na_items)) {
-      pattern_match <- grepl(prop$pattern, as.character(item[non_na_items]))
+      pattern_match <- tryCatch(
+        grepl(prop$pattern, as.character(item[non_na_items]), perl = TRUE),
+        error = function(e) {
+          cli_alert_warning(
+            "{.field {field}} pattern could not be compiled; skipping pattern check."
+          )
+          rep(TRUE, sum(non_na_items))
+        }
+      )
 
       # Identify items that do not match the pattern
       not_matching <- !pattern_match
@@ -560,12 +710,8 @@ check_format <- function(value, format, field) {
 }
 
 #' @noRd
-check_type <- function(value, type, field) {
-  if (is.null(type)) {
-    return(TRUE)
-  }
-
-  type_map <- list(
+get_type_map <- function() {
+  list(
     string = function(v) is.character(v),
     number = function(v) is.numeric(v) && !is.logical(v),
     integer = function(v) {
@@ -697,6 +843,29 @@ check_type <- function(value, type, field) {
     },
     any = function(v) TRUE # 'any' accepts everything
   )
+}
+
+#' @noRd
+check_type_silent <- function(value, type) {
+  if (is.null(type)) {
+    return(FALSE)
+  }
+
+  type_map <- get_type_map()
+  if (!(type %in% names(type_map))) {
+    return(FALSE)
+  }
+
+  type_map[[type]](value)
+}
+
+#' @noRd
+check_type <- function(value, type, field) {
+  if (is.null(type)) {
+    return(TRUE)
+  }
+
+  type_map <- get_type_map()
 
   valid <- TRUE
   # Check if the expected type is in the type_map
