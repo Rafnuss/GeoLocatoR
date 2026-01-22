@@ -24,19 +24,22 @@ zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
   ))
 
   # Process contributors
-  contributors <- purrr::map(z$metadata$creators, \(c) {
+  contributors <- purrr::map(z$metadata$creators, \(creator) {
     list(
-      title = c$person_or_org$name,
-      givenName = c$person_or_org$given_name,
-      familyName = c$person_or_org$family_name,
+      title = creator$person_or_org$name,
+      givenName = creator$person_or_org$given_name,
+      familyName = creator$person_or_org$family_name,
       path = glue::glue(
-        "https://orcid.org/{purrr::pluck(purrr::keep(c$person_or_org$identifiers,
+        "https://orcid.org/{purrr::pluck(purrr::keep(creator$person_or_org$identifiers,
                         ~ .x$scheme == 'orcid'), 1)$identifier}"
       ),
       # email = NULL,
-      roles = c(c$role$id),
+      roles = map_gldp_to_zenodo(
+        creator$role$id,
+        .gldp_contributor_roles
+      ),
       organization = glue::glue_collapse(
-        purrr::map_chr(c$affiliations, "name"),
+        purrr::map_chr(creator$affiliations, "name"),
         sep = ", "
       )
     )
@@ -61,10 +64,20 @@ zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
   # Process related identifiers
   relatedIdentifiers <- purrr::map(z$metadata$related_identifiers, \(x) {
     list(
-      relationType = x$relation_type$id,
+      relationType = map_gldp_to_zenodo(
+        x$relation_type$id,
+        .gldp_relation_types,
+        default = x$relation_type$id
+      ),
       relatedIdentifier = x$identifier,
-      resourceTypeGeneral = x$resource_type$id,
-      relatedIdentifierType = x$scheme
+      resourceTypeGeneral = map_gldp_to_zenodo(
+        x$resource_type$id,
+        .gldp_resource_types
+      ),
+      relatedIdentifierType = map_gldp_to_zenodo(
+        x$scheme,
+        .gldp_identifier_types
+      )
     )
   })
 
