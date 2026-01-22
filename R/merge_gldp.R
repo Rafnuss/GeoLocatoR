@@ -9,7 +9,8 @@
 #' - **contributors**: Combined from both packages, with duplicates removed.
 #' - **embargo**: Set to the latest date from both packages.
 #' - **licenses**: Combined from both packages, with duplicates removed.
-#' - **id**: Removed from the merged package.
+#' - **id**: Replaced with a new UUID for the merged package.
+#' - **source_ids**: Added (custom property) storing the original package IDs.
 #' - **description**: Combined as two separate paragraphs, with a newline separator.
 #' - **version**: Removed from the merged package.
 #' - **relatedIdentifiers**: Combined, with duplicates removed.
@@ -18,6 +19,10 @@
 #' - **created**: Set to the current timestamp at the time of merging.
 #' - **bibliographicCitation**: Removed from the merged package.
 #' - Custom properties from `x` are retained in the merged package.
+#'
+#' @details
+#' Merging requires the [`uuid`](https://cran.r-project.org/package=uuid) package to generate
+#' a globally unique identifier for the merged package.
 #'
 #' **Resource merging logic:**
 #' - Each resource is checked for its presence in both `x` and `y`.
@@ -69,13 +74,17 @@ merge_gldp <- function(x, y) {
   relatedIdentifiers <- add_related_id(x$id, relatedIdentifiers)
   relatedIdentifiers <- add_related_id(y$id, relatedIdentifiers)
 
+  if (!requireNamespace("uuid", quietly = TRUE)) {
+    cli_abort("The {.pkg uuid} package is required for merging.")
+  }
+
   # Combine metadata fields
   xy <- create_gldp(
     title = paste(x$title, y$title, sep = " / "), # Combine titles
     contributors = unique(c(x$contributors, y$contributors)), # Remove duplicates
     licenses = unique(c(x$licenses, y$licenses)), # Remove duplicates
     embargo = format(max(as.Date(x$embargo), as.Date(y$embargo)), "%Y-%m-%d"), # Latest embargo date
-    id = NULL, # Remove ID
+    id = uuid::UUIDgenerate(), # New globally unique id for the merged package
     description = paste(x$description, y$description, sep = "\n"), # Combine descriptions
     version = NULL, # Remove version
     relatedIdentifiers = relatedIdentifiers, # Merge related identifiers
