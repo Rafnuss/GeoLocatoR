@@ -393,7 +393,7 @@ create_gldp <- function(
   # Check schema
   if (is.null(schema) || is.na(schema)) {
     schema <-
-      "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/main/geolocator-dp-profile.json"
+      "https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/v0.4/geolocator-dp-profile.json"
   }
 
   if (
