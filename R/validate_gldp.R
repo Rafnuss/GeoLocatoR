@@ -23,6 +23,7 @@ validate_gldp <- function(pkg, quiet = FALSE) {
   }
 
   valid <- validate_gldp_profile(pkg)
+  valid <- valid & validate_gldp_id(pkg)
   valid <- valid & validate_gldp_resources(pkg)
   valid <- valid & validate_gldp_coherence(pkg)
   valid <- valid & validate_gldp_observations(observations(pkg))
@@ -39,6 +40,38 @@ validate_gldp <- function(pkg, quiet = FALSE) {
   }
 
   invisible(valid)
+}
+
+#' Validate GeoLocator Data Package id
+#'
+#' Internal helper function to validate that the package id is a Zenodo concept DOI URL.
+#'
+#' @param pkg A GeoLocator Data Package object
+#' @return Logical indicating whether the id validation passed
+#' @noRd
+validate_gldp_id <- function(pkg) {
+  cli_h2("Check GeoLocator DataPackage id")
+
+  if (is.null(pkg$id) || length(pkg$id) != 1 || is.na(pkg$id) || !nzchar(pkg$id)) {
+    cli_alert_danger("Package {.field id} is missing.")
+    return(invisible(FALSE))
+  }
+
+  is_zenodo_concept_doi <- grepl(
+    "^https?://doi\\.org/10\\.5281/zenodo\\.[0-9]+$",
+    pkg$id
+  )
+
+  if (!is_zenodo_concept_doi) {
+    cli_alert_danger("Package {.field id} is not a Zenodo concept DOI URL.")
+    cli_alert_info(
+      "Expected format: {.url https://doi.org/10.5281/zenodo.<concept_id>}"
+    )
+    return(invisible(FALSE))
+  }
+
+  cli_alert_success("Package {.field id} is a valid Zenodo concept DOI URL.")
+  invisible(TRUE)
 }
 
 
