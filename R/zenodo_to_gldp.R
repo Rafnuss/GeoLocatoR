@@ -23,6 +23,13 @@ zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
     c("ZenodoRecord", "zen4RLogger", "R6") %in% class(z)
   ))
 
+  concept_doi <- z$getConceptDOI()
+  if (
+    is.null(concept_doi) || length(concept_doi) != 1 || is.na(concept_doi) || !nzchar(concept_doi)
+  ) {
+    cli_abort("Zenodo concept DOI is missing from the record.")
+  }
+
   # Process contributors
   contributors <- purrr::map(z$metadata$creators, \(creator) {
     list(
@@ -101,7 +108,7 @@ zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
     pkg$contributors <- contributors
     pkg$embargo <- embargo
     pkg$licenses <- licenses
-    pkg$id <- glue::glue("https://doi.org/{z$getConceptDOI()}")
+    pkg$id <- glue::glue("https://doi.org/{concept_doi}")
     pkg$description <- z$metadata$description
     pkg$version <- z$metadata$version
     pkg$relatedIdentifiers <- relatedIdentifiers
@@ -121,7 +128,7 @@ zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
       contributors = contributors,
       embargo = embargo,
       licenses = licenses,
-      id = glue::glue("https://doi.org/{z$getConceptDOI()}"),
+      id = glue::glue("https://doi.org/{concept_doi}"),
       description = z$metadata$description,
       version = z$metadata$version,
       relatedIdentifiers = relatedIdentifiers,
