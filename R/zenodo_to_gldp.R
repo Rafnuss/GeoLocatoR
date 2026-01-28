@@ -32,14 +32,15 @@ zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
 
   # Process contributors
   contributors <- purrr::map(z$metadata$creators, \(creator) {
-    list(
+    orcid <- creator$person_or_org$identifiers |>
+      purrr::keep(~ .x$scheme == "orcid") |>
+      purrr::pluck(1, "identifier", .default = NULL)
+
+    purrr::compact(list(
       title = creator$person_or_org$name,
       givenName = creator$person_or_org$given_name,
       familyName = creator$person_or_org$family_name,
-      path = glue::glue(
-        "https://orcid.org/{purrr::pluck(purrr::keep(creator$person_or_org$identifiers,
-                        ~ .x$scheme == 'orcid'), 1)$identifier}"
-      ),
+      path = if (is.null(orcid)) NULL else glue::glue("https://orcid.org/{orcid}"),
       # email = NULL,
       roles = map_gldp_to_zenodo(
         creator$role$id,
@@ -49,7 +50,7 @@ zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
         purrr::map_chr(creator$affiliations, "name"),
         sep = ", "
       )
-    )
+    ))
   })
 
   # Determine embargo date
