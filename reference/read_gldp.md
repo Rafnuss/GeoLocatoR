@@ -50,7 +50,7 @@ pkg <- read_gldp("https://zenodo.org/records/14099115/files/datapackage.json")
 
 pkg
 #> 
-#> ── A GeoLocator Data Package (vmain) 
+#> ── A GeoLocator Data Package (main) 
 #> • title: "GeoLocator Data Package: South African Woodland Kingfisher"
 #> • contributors:
 #>   Raphaël Nussbaumer (rafnuss@gmail.com) (Researcher, ProjectLeader) -

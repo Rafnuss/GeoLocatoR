@@ -11,7 +11,7 @@ and resource data is combined based on their presence in either package."><meta 
 
     <a class="navbar-brand me-2" href="../index.html">GeoLocatoR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,7 +33,7 @@ and resource data is combined based on their presence in either package."><meta 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Merge Two GeoLocator Data Packages</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Rafnuss/GeoLocatoR/blob/v0.4/R/merge_gldp.R" class="external-link"><code>R/merge_gldp.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Rafnuss/GeoLocatoR/blob/main/R/merge_gldp.R" class="external-link"><code>R/merge_gldp.R</code></a></small>
       <div class="d-none name"><code>merge_gldp.Rd</code></div>
     </div>
 
@@ -70,16 +70,19 @@ and resource data is combined based on their presence in either package.</p>
 <li><p><strong>contributors</strong>: Combined from both packages, with duplicates removed.</p></li>
 <li><p><strong>embargo</strong>: Set to the latest date from both packages.</p></li>
 <li><p><strong>licenses</strong>: Combined from both packages, with duplicates removed.</p></li>
-<li><p><strong>id</strong>: Removed from the merged package.</p></li>
+<li><p><strong>id</strong>: Replaced with a new UUID for the merged package.</p></li>
+<li><p><strong>source_ids</strong>: Added (custom property) storing the original package IDs.</p></li>
 <li><p><strong>description</strong>: Combined as two separate paragraphs, with a newline separator.</p></li>
-<li><p><strong>version</strong>: Removed from the merged package.</p></li>
+<li><p><strong>version</strong>: Use the latest version (same as <code><a href="create_gldp.html">create_gldp()</a></code>)</p></li>
 <li><p><strong>relatedIdentifiers</strong>: Combined, with duplicates removed.</p></li>
 <li><p><strong>grants</strong>: Combined from both packages, with duplicates removed.</p></li>
 <li><p><strong>keywords</strong>: Combined from both packages, with duplicates removed.</p></li>
 <li><p><strong>created</strong>: Set to the current timestamp at the time of merging.</p></li>
 <li><p><strong>bibliographicCitation</strong>: Removed from the merged package.</p></li>
 <li><p>Custom properties from <code>x</code> are retained in the merged package.</p></li>
-</ul><p><strong>Resource merging logic:</strong></p><ul><li><p>Each resource is checked for its presence in both <code>x</code> and <code>y</code>.</p></li>
+</ul><p>Merging requires the <a href="https://cran.r-project.org/package=uuid" class="external-link"><code>uuid</code></a> package to generate
+a globally unique identifier for the merged package.</p>
+<p><strong>Resource merging logic:</strong></p><ul><li><p>Each resource is checked for its presence in both <code>x</code> and <code>y</code>.</p></li>
 <li><p>Data from both sources is combined if the resource exists in either <code>x</code> or <code>y</code>.</p></li>
 <li><p>Resources are only included if they exist in at least one of the packages.</p></li>
 </ul></div>

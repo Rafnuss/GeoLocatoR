@@ -39,12 +39,16 @@ A GeoLocator Data Package object containing the merged data from both
 
 - **licenses**: Combined from both packages, with duplicates removed.
 
-- **id**: Removed from the merged package.
+- **id**: Replaced with a new UUID for the merged package.
+
+- **source_ids**: Added (custom property) storing the original package
+  IDs.
 
 - **description**: Combined as two separate paragraphs, with a newline
   separator.
 
-- **version**: Removed from the merged package.
+- **version**: Use the latest version (same as
+  [`create_gldp()`](https://raphaelnussbaumer.com/GeoLocatoR/reference/create_gldp.md))
 
 - **relatedIdentifiers**: Combined, with duplicates removed.
 
@@ -57,6 +61,9 @@ A GeoLocator Data Package object containing the merged data from both
 - **bibliographicCitation**: Removed from the merged package.
 
 - Custom properties from `x` are retained in the merged package.
+
+Merging requires the [`uuid`](https://cran.r-project.org/package=uuid)
+package to generate a globally unique identifier for the merged package.
 
 **Resource merging logic:**
 
