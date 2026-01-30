@@ -220,7 +220,7 @@ update_gldp_bibliographic_citation <- function(pkg, ...) {
   bib <- do.call(utils::bibentry, bib_args)
 
   # Update the bibliographic citation in the package
-  pkg$bibliographicCitation <- format(bib)
+  pkg$bibliographicCitation <- format(bib, style = "text")
 
   pkg
 }

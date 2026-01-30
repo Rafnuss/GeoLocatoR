@@ -27,7 +27,7 @@ zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
   if (
     is.null(concept_doi) || length(concept_doi) != 1 || is.na(concept_doi) || !nzchar(concept_doi)
   ) {
-    cli_abort("Zenodo concept DOI is missing from the record.")
+    cli_abort("Zenodo concept DOI is missing from the record. Make sure to reserve one on Zenodo")
   }
 
   # Process contributors
