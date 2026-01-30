@@ -230,39 +230,58 @@ create_geopressuretemplate_readme <- function(pkg) {
 #' @return Nothing (side effect: creates LICENSE files)
 #' @noRd
 create_geopressuretemplate_licences <- function(licenses) {
-  # 1. If more than one license, display a warning using cli
+  # 1. If more than one license is provided, warn and keep the first
   if (length(licenses) > 1) {
     cli_warn(c(
       "!" = "Multiple licenses detected.",
       ">" = "Only the first license will be used."
     ))
   }
-  licenses <- licenses[[1]]
+  lic <- licenses[[1]]
 
   # 2. Delete existing LICENSE.md file if it exists
   if (file.exists("LICENSE.md")) {
     file.remove("LICENSE.md")
   }
 
-  # 3. Match and apply the license using usethis functions
-  # Force usethis to recognize current directory as project root
+  # 3. Force usethis to recognize current directory as project root
   usethis::proj_set(getwd(), force = TRUE)
 
+  # 4. Fallback to license path if name is missing or empty
+  license_name <- tolower(lic$name)
+  if (is.null(license_name) || is.na(license_name) || !nzchar(license_name)) {
+    license_name <- lic$path
+  }
+  # 5. Abort if no usable license identifier is available
+  if (is.null(license_name) || is.na(license_name) || !nzchar(license_name)) {
+    cli::cli_warn(c(
+      "!" = "No license name or path provided.",
+      ">" = "License file not created."
+    ))
+    return(invisible(NULL))
+  }
+
   rules <- list(
-    list("agpl", usethis::use_agpl_license),
-    list("lgpl", usethis::use_lgpl_license),
-    list("\\bgpl\\b", usethis::use_gpl_license),
-    list("\\bmit\\b", usethis::use_mit_license),
-    list("apache", usethis::use_apache_license),
-    list("cc[- ]?0", usethis::use_cc0_license),
-    list("cc[- ]?by", usethis::use_ccby_license),
-    list("proprietary", usethis::use_proprietary_license)
+    agpl = list("agpl", usethis::use_agpl_license),
+    lgpl = list("lgpl", usethis::use_lgpl_license),
+    gpl = list("\\bgpl\\b", usethis::use_gpl_license),
+    mit = list("\\bmit\\b", usethis::use_mit_license),
+    apache = list("apache", usethis::use_apache_license),
+    cc0 = list("cc[- ]?0", usethis::use_cc0_license),
+    ccby = list("cc[- ]?by", usethis::use_ccby_license),
+    proprietary = list("proprietary", usethis::use_proprietary_license)
   )
 
-  idx <- match(TRUE, vapply(rules, function(r) grepl(r[[1]], name), logical(1)))
+  # 6. Identify the first matching rule
+  hit <- vapply(
+    rules,
+    function(r) grepl(r[[1]], license_name),
+    logical(1)
+  )
 
-  if (!is.na(idx)) {
-    rules[[idx]][[2]]()
+  # 7. Apply the corresponding usethis license function
+  if (any(hit)) {
+    rules[[which(hit)[1]]][[2]]()
   } else {
     cli::cli_warn(c(
       "!" = "No matching license found in {.pkg usethis}.",

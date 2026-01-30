@@ -267,9 +267,9 @@ add_gldp_geopressuretemplate <- function(
                   mutate(
                     type = sub("pressurepath_", "", x, fixed = TRUE),
                     tag_id = interim$tag[[i]]$param$id,
-                    datetime = date
+                    datetime = as.POSIXct(date, tz = "UTC")
                   ) %>%
-                  select(-any_of("datetime"))
+                  select(-any_of("date"))
               }
             }) %>%
             purrr::list_rbind()

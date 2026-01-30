@@ -218,7 +218,7 @@ plot_pkg_map <- function(x) {
 
   # Add polylines and markers for each tag_id
   for (tag in tag_ids) {
-    pid <- p %>% filter(.data$tag_id == tag)
+    pid <- p %>% filter(.data$tag_id == tag) |> filter(!is.na(.data$lat) & !is.na(.data$lon))
     leaflet_map <- leaflet_map %>%
       leaflet::addPolylines(
         lng = ~lon,

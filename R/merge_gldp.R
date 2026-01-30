@@ -9,15 +9,20 @@
 #' - **contributors**: Combined from both packages, with duplicates removed.
 #' - **embargo**: Set to the latest date from both packages.
 #' - **licenses**: Combined from both packages, with duplicates removed.
-#' - **id**: Removed from the merged package.
+#' - **id**: Replaced with a new UUID for the merged package.
+#' - **source_ids**: Added (custom property) storing the original package IDs.
 #' - **description**: Combined as two separate paragraphs, with a newline separator.
-#' - **version**: Removed from the merged package.
+#' - **version**: Use the latest version (same as `create_gldp()`)
 #' - **relatedIdentifiers**: Combined, with duplicates removed.
 #' - **grants**: Combined from both packages, with duplicates removed.
 #' - **keywords**: Combined from both packages, with duplicates removed.
 #' - **created**: Set to the current timestamp at the time of merging.
 #' - **bibliographicCitation**: Removed from the merged package.
 #' - Custom properties from `x` are retained in the merged package.
+#'
+#' @details
+#' Merging requires the [`uuid`](https://cran.r-project.org/package=uuid) package to generate
+#' a globally unique identifier for the merged package.
 #'
 #' **Resource merging logic:**
 #' - Each resource is checked for its presence in both `x` and `y`.
@@ -69,13 +74,17 @@ merge_gldp <- function(x, y) {
   relatedIdentifiers <- add_related_id(x$id, relatedIdentifiers)
   relatedIdentifiers <- add_related_id(y$id, relatedIdentifiers)
 
+  if (!requireNamespace("uuid", quietly = TRUE)) {
+    cli_abort("The {.pkg uuid} package is required for merging.")
+  }
+
   # Combine metadata fields
   xy <- create_gldp(
     title = paste(x$title, y$title, sep = " / "), # Combine titles
     contributors = unique(c(x$contributors, y$contributors)), # Remove duplicates
     licenses = unique(c(x$licenses, y$licenses)), # Remove duplicates
     embargo = format(max(as.Date(x$embargo), as.Date(y$embargo)), "%Y-%m-%d"), # Latest embargo date
-    id = NULL, # Remove ID
+    id = uuid::UUIDgenerate(), # New globally unique id for the merged package
     description = paste(x$description, y$description, sep = "\n"), # Combine descriptions
     version = NULL, # Remove version
     relatedIdentifiers = relatedIdentifiers, # Merge related identifiers
@@ -106,18 +115,52 @@ merge_gldp <- function(x, y) {
         NULL
       }
 
+      # Tag-specific merge rules.
       if (r == "tags") {
-        if (!is.null(data_x)) {
-          data_x <- data_x |> mutate(datapackage_id = x$id)
+        # Require a non-empty package id for both inputs before merging.
+        ensure_pkg_id <- function(id, which_pkg) {
+          if (is.null(id) || length(id) != 1 || is.na(id) || !nzchar(id)) {
+            cli_abort(
+              "Missing {.field id} in {.pkg {which_pkg}}. Merging requires a non-empty {.field id} for each datapackage.",
+            )
+          }
         }
-        if (!is.null(data_y)) {
-          data_y <- data_y |> mutate(datapackage_id = y$id)
+        ensure_pkg_id(x$id, "x")
+        ensure_pkg_id(y$id, "y")
+
+        # Add missing datapackage_id values without overwriting existing ones.
+        fill_datapackage_id <- function(df, id) {
+          if (!"datapackage_id" %in% names(df)) {
+            df$datapackage_id <- id
+            return(df)
+          }
+
+          i <- is.na(df$datapackage_id) | df$datapackage_id == ""
+          df$datapackage_id[i] <- id
+          df
+        }
+        data_x <- fill_datapackage_id(data_x, x$id)
+        data_y <- fill_datapackage_id(data_y, y$id)
+
+        if (!is.null(data_x) && !is.null(data_y)) {
+          # Prevent overlap between packages.
+          ids_x <- unique(data_x$datapackage_id)
+          ids_y <- unique(data_y$datapackage_id)
+          common_ids <- intersect(ids_x, ids_y)
+
+          if (length(common_ids) > 0) {
+            cli_abort(c(
+              "Duplicate {.field datapackage_id} detected: {col_red(paste(common_ids, collapse = ', '))}.",
+              "x" = "Tags from both packages share the same datapackage_id.",
+              "i" = "Ensure each package has distinct datapackage_id values before merging."
+            ))
+          }
         }
       }
 
       # Only add the resource if data is available in either x or y
       if (!is.null(data_x) || !is.null(data_y)) {
-        combined_data <- bind_rows(data_x, data_y) # Combine data from x and y
+        combined_data <- dplyr::bind_rows(data_x, data_y) # Combine data from x and y
         xy <- add_gldp_resource(
           package = xy,
           resource_name = r,

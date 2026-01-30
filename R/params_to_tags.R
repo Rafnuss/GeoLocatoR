@@ -51,7 +51,7 @@ params_to_tags <- function(params) {
     if ("manufacturer" %in% names(t)) {
       t <- dplyr::mutate(
         t,
-        manufacturer = dplyr::case_when(
+        manufacturer = case_when(
           .data$manufacturer == "soi" ~ "Swiss Ornithological Institute",
           .data$manufacturer == "migratetech" ~ "Migrate Technology",
           .data$manufacturer == "lund" ~ "Lund CAnMove",

@@ -15,7 +15,7 @@ print.geolocatordp <- function(x, ...) {
 
   check_gldp(x)
 
-  cli_h3("A GeoLocator Data Package (v{version(x)})")
+  cli_h3("A GeoLocator Data Package ({version(x)})")
 
   cli_bullets(c("*" = "{.field title}: {.val {x$title}}"))
 

@@ -23,23 +23,34 @@ zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
     c("ZenodoRecord", "zen4RLogger", "R6") %in% class(z)
   ))
 
+  concept_doi <- z$getConceptDOI()
+  if (
+    is.null(concept_doi) || length(concept_doi) != 1 || is.na(concept_doi) || !nzchar(concept_doi)
+  ) {
+    cli_abort("Zenodo concept DOI is missing from the record. Make sure to reserve one on Zenodo")
+  }
+
   # Process contributors
-  contributors <- purrr::map(z$metadata$creators, \(c) {
-    list(
-      title = c$person_or_org$name,
-      givenName = c$person_or_org$given_name,
-      familyName = c$person_or_org$family_name,
-      path = glue::glue(
-        "https://orcid.org/{purrr::pluck(purrr::keep(c$person_or_org$identifiers,
-                        ~ .x$scheme == 'orcid'), 1)$identifier}"
-      ),
+  contributors <- purrr::map(z$metadata$creators, \(creator) {
+    orcid <- creator$person_or_org$identifiers |>
+      purrr::keep(~ .x$scheme == "orcid") |>
+      purrr::pluck(1, "identifier", .default = NULL)
+
+    purrr::compact(list(
+      title = creator$person_or_org$name,
+      givenName = creator$person_or_org$given_name,
+      familyName = creator$person_or_org$family_name,
+      path = if (is.null(orcid)) NULL else glue::glue("https://orcid.org/{orcid}"),
       # email = NULL,
-      roles = c(c$role$id),
+      roles = map_gldp_to_zenodo(
+        creator$role$id,
+        .gldp_contributor_roles
+      ),
       organization = glue::glue_collapse(
-        purrr::map_chr(c$affiliations, "name"),
+        purrr::map_chr(creator$affiliations, "name"),
         sep = ", "
       )
-    )
+    ))
   })
 
   # Determine embargo date
@@ -61,10 +72,20 @@ zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
   # Process related identifiers
   relatedIdentifiers <- purrr::map(z$metadata$related_identifiers, \(x) {
     list(
-      relationType = x$relation_type$id,
+      relationType = map_gldp_to_zenodo(
+        x$relation_type$id,
+        .gldp_relation_types,
+        default = x$relation_type$id
+      ),
       relatedIdentifier = x$identifier,
-      resourceTypeGeneral = x$resource_type$id,
-      relatedIdentifierType = x$scheme
+      resourceTypeGeneral = map_gldp_to_zenodo(
+        x$resource_type$id,
+        .gldp_resource_types
+      ),
+      relatedIdentifierType = map_gldp_to_zenodo(
+        x$scheme,
+        .gldp_identifier_types
+      )
     )
   })
 
@@ -84,41 +105,29 @@ zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
 
   if (!is.null(pkg)) {
     check_gldp(pkg)
-    pkg$title <- z$metadata$title
-    pkg$contributors <- contributors
-    pkg$embargo <- embargo
-    pkg$licenses <- licenses
-    pkg$id <- glue::glue("https://doi.org/{z$getConceptDOI()}")
-    pkg$description <- z$metadata$description
-    pkg$version <- z$metadata$version
-    pkg$relatedIdentifiers <- relatedIdentifiers
-    pkg$grants <- grants
-    pkg$keywords <- keywords
-    pkg$created <- z$metadata$publication_date
-    # pkg$bibliographicCitation = format(bib)
-    # pkg$schema = NULL
-
-    pkg <- pkg %>%
-      update_gldp_bibliographic_citation() %>%
-      update_gldp_metadata()
   } else {
     # Create the GLDP package
-    pkg <- create_gldp(
-      title = z$metadata$title,
-      contributors = contributors,
-      embargo = embargo,
-      licenses = licenses,
-      id = glue::glue("https://doi.org/{z$getConceptDOI()}"),
-      description = z$metadata$description,
-      version = z$metadata$version,
-      relatedIdentifiers = relatedIdentifiers,
-      grants = grants,
-      keywords = keywords,
-      created = z$metadata$publication_date,
-      # bibliographicCitation = format(bib),
-      # schema = NULL,
-    )
+    pkg <- create_gldp()
   }
+
+  # Add all metadata
+  pkg$title <- z$metadata$title
+  pkg$contributors <- contributors
+  pkg$embargo <- embargo
+  pkg$licenses <- licenses
+  pkg$id <- glue::glue("https://doi.org/{concept_doi}")
+  pkg$description <- z$metadata$description
+  pkg$version <- z$metadata$version
+  pkg$relatedIdentifiers <- relatedIdentifiers
+  pkg$grants <- grants
+  pkg$keywords <- keywords
+  pkg$created <- z$metadata$publication_date
+  # pkg$bibliographicCitation = format(bib)
+  # pkg$schema = NULL
+
+  pkg <- pkg %>%
+    update_gldp_bibliographic_citation() %>%
+    update_gldp_metadata()
 
   # Return
   return(pkg)
