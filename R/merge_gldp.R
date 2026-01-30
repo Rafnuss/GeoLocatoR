@@ -130,14 +130,14 @@ merge_gldp <- function(x, y) {
 
         # Add missing datapackage_id values without overwriting existing ones.
         fill_datapackage_id <- function(df, id) {
-          df |>
-            mutate(
-              datapackage_id = dplyr::if_else(
-                is.na(datapackage_id %||% NA_character_) | datapackage_id == "",
-                id,
-                datapackage_id %||% id
-              )
-            )
+          if (!"datapackage_id" %in% names(df)) {
+            df$datapackage_id <- id
+            return(df)
+          }
+
+          i <- is.na(df$datapackage_id) | df$datapackage_id == ""
+          df$datapackage_id[i] <- id
+          df
         }
         data_x <- fill_datapackage_id(data_x, x$id)
         data_y <- fill_datapackage_id(data_y, y$id)
@@ -160,7 +160,7 @@ merge_gldp <- function(x, y) {
 
       # Only add the resource if data is available in either x or y
       if (!is.null(data_x) || !is.null(data_y)) {
-        combined_data <- bind_rows(data_x, data_y) # Combine data from x and y
+        combined_data <- dplyr::bind_rows(data_x, data_y) # Combine data from x and y
         xy <- add_gldp_resource(
           package = xy,
           resource_name = r,

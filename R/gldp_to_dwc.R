@@ -133,8 +133,8 @@ gldp_to_dwc <- function(package, directory, path_type = "most_likely") {
     paths <- paths_with_distances |>
       dplyr::group_by(.data$tag_id, .data$stap_id) |>
       dplyr::summarise(
-        lat = dplyr::first(.data$lat_center),
-        lon = dplyr::first(.data$lon_center),
+        lat = first(.data$lat_center),
+        lon = first(.data$lon_center),
         # 95th percentile: radius containing 95% of simulated positions
         coordinateUncertaintyInMeters = round(stats::quantile(
           .data$distance_m,

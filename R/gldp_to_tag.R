@@ -198,7 +198,7 @@ gldp_to_tag_single <- function(pkg, tid) {
         dplyr::rename(date = "datetime")
     } else {
       # Create empty data frame if no activity data
-      acc_df <- dplyr::tibble(
+      acc_df <- tibble::tibble(
         date = as.POSIXct(character(), tz = "UTC"),
         value = numeric()
       )

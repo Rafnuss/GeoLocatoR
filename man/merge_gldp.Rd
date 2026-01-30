@@ -26,9 +26,10 @@ and resource data is combined based on their presence in either package.
 \item \strong{contributors}: Combined from both packages, with duplicates removed.
 \item \strong{embargo}: Set to the latest date from both packages.
 \item \strong{licenses}: Combined from both packages, with duplicates removed.
-\item \strong{id}: Removed from the merged package.
+\item \strong{id}: Replaced with a new UUID for the merged package.
+\item \strong{source_ids}: Added (custom property) storing the original package IDs.
 \item \strong{description}: Combined as two separate paragraphs, with a newline separator.
-\item \strong{version}: Removed from the merged package.
+\item \strong{version}: Use the latest version (same as \code{create_gldp()})
 \item \strong{relatedIdentifiers}: Combined, with duplicates removed.
 \item \strong{grants}: Combined from both packages, with duplicates removed.
 \item \strong{keywords}: Combined from both packages, with duplicates removed.
@@ -36,6 +37,9 @@ and resource data is combined based on their presence in either package.
 \item \strong{bibliographicCitation}: Removed from the merged package.
 \item Custom properties from \code{x} are retained in the merged package.
 }
+
+Merging requires the \href{https://cran.r-project.org/package=uuid}{\code{uuid}} package to generate
+a globally unique identifier for the merged package.
 
 \strong{Resource merging logic:}
 \itemize{
