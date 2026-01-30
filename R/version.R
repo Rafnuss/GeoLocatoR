@@ -30,7 +30,7 @@ version <- function(x) {
   profile <- purrr::pluck(x, "$schema", .default = NA)
 
   # Find pattern "GeoLocator-dp/<version>/" in e.g.
-  # https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/v0.4/geolocator-dp-profile.json
+  # https://raw.githubusercontent.com/Rafnuss/GeoLocator-DP/<version>/geolocator-dp-profile.json
   pattern <- "GeoLocator-DP\\/([0-9A-Za-z]|\\.|-)+\\/"
   match <- grep(pattern, profile)
   if (length(match) > 0) {
