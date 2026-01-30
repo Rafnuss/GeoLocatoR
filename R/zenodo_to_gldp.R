@@ -105,41 +105,29 @@ zenodo_to_gldp <- function(zenodo_record, pkg = NULL) {
 
   if (!is.null(pkg)) {
     check_gldp(pkg)
-    pkg$title <- z$metadata$title
-    pkg$contributors <- contributors
-    pkg$embargo <- embargo
-    pkg$licenses <- licenses
-    pkg$id <- glue::glue("https://doi.org/{concept_doi}")
-    pkg$description <- z$metadata$description
-    pkg$version <- z$metadata$version
-    pkg$relatedIdentifiers <- relatedIdentifiers
-    pkg$grants <- grants
-    pkg$keywords <- keywords
-    pkg$created <- z$metadata$publication_date
-    # pkg$bibliographicCitation = format(bib)
-    # pkg$schema = NULL
-
-    pkg <- pkg %>%
-      update_gldp_bibliographic_citation() %>%
-      update_gldp_metadata()
   } else {
     # Create the GLDP package
-    pkg <- create_gldp(
-      title = z$metadata$title,
-      contributors = contributors,
-      embargo = embargo,
-      licenses = licenses,
-      id = glue::glue("https://doi.org/{concept_doi}"),
-      description = z$metadata$description,
-      version = z$metadata$version,
-      relatedIdentifiers = relatedIdentifiers,
-      grants = grants,
-      keywords = keywords,
-      created = z$metadata$publication_date,
-      # bibliographicCitation = format(bib),
-      # schema = NULL,
-    )
+    pkg <- create_gldp()
   }
+
+  # Add all metadata
+  pkg$title <- z$metadata$title
+  pkg$contributors <- contributors
+  pkg$embargo <- embargo
+  pkg$licenses <- licenses
+  pkg$id <- glue::glue("https://doi.org/{concept_doi}")
+  pkg$description <- z$metadata$description
+  pkg$version <- z$metadata$version
+  pkg$relatedIdentifiers <- relatedIdentifiers
+  pkg$grants <- grants
+  pkg$keywords <- keywords
+  pkg$created <- z$metadata$publication_date
+  # pkg$bibliographicCitation = format(bib)
+  # pkg$schema = NULL
+
+  pkg <- pkg %>%
+    update_gldp_bibliographic_citation() %>%
+    update_gldp_metadata()
 
   # Return
   return(pkg)
