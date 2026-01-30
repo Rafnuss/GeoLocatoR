@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/Rafnuss/GeoLocatoR/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/Rafnuss/GeoLocatoR/blob/v0.5/DESCRIPTION)
 
 Nussbaumer R (2026). *GeoLocatoR: R package for GeoLocator Data
 Package*. R package version 0.5.0,
