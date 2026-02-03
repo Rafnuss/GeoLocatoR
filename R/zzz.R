@@ -7,7 +7,6 @@
 #' @return A list of person objects
 #' @noRd
 contributors2persons <- function(contributors) {
-  # nolint start
   role_mapping <- c(
     "contactperson" = "ctr", # Contractor (assumed due to lack of clear match)
     "contributor" = "ctb", # Contributor
@@ -31,7 +30,6 @@ contributors2persons <- function(contributors) {
     "supervisor" = "ths", # Thesis advisor
     "workpackageleader" = "cre" # Creator (assumed leader role)
   )
-  # nolint end
 
   persons <- contributors %>%
     purrr::map(
