@@ -1107,7 +1107,7 @@ validate_gldp_observations <- function(o) {
   if (nrow(multiple_tags_without_retrieval) > 0) {
     error_ring_number <- unique(multiple_tags_without_retrieval$ring_number) # nolint
     cli_alert_danger(
-      "{length(error_tag)} ring{?s} where a second tag is attached without a prior \\
+      "{length(error_ring_number)} ring{?s} where a second tag is attached without a prior \\
     retrieval or capture-missing. Check: {.field {error_ring_number}}"
     )
     valid <- FALSE
