@@ -1,5 +1,7 @@
 #' Convert GeoPressureTemplate config.yml to tibble
 #'
+#' `r lifecycle::badge("experimental")`
+#'
 #' @description
 #' Reads a GeoPressureTemplate `config.yml` file and converts it into a tibble format with
 #' one row per tag and columns for each configuration parameter. This is useful for comparing
