@@ -137,10 +137,7 @@ config_to_tibble <- function(
     "tag_comments" = as.character
   )
 
-  list_id <- utils::tail(
-    names(yaml::yaml.load_file(file, eval.expr = FALSE)),
-    -1
-  )
+  list_id <- geopressuretemplate_config_ids(file)
 
   cfg <- purrr::map_df(list_id, \(id) {
     config <- GeoPressureR::geopressuretemplate_config(

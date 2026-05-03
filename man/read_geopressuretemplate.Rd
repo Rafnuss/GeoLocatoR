@@ -41,7 +41,11 @@ Manual data files take precedence over generated metadata:
 \code{observations}.
 }
 
-Files or directories whose names start with \code{"_"} are ignored.
+During automatic discovery, GeoLocatoR skips private GeoPressureTemplate
+entries whose names start with \code{"_"}: config keys, interim files, raw-tag
+folders, and files inside raw-tag folders. Empty raw-tag folders are also
+skipped, so raw-tag import only attempts folders with at least one
+non-ignored file.
 
 See the
 \href{https://geopressure.org/GeoPressureManual/geolocator-create.html}{GeoPressureManual}

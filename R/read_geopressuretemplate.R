@@ -15,7 +15,11 @@
 #' - `data/observations.csv` or `data/observations.xlsx` replaces generated
 #'   `observations`.
 #'
-#' Files or directories whose names start with `"_"` are ignored.
+#' During automatic discovery, GeoLocatoR skips private GeoPressureTemplate
+#' entries whose names start with `"_"`: config keys, interim files, raw-tag
+#' folders, and files inside raw-tag folders. Empty raw-tag folders are also
+#' skipped, so raw-tag import only attempts folders with at least one
+#' non-ignored file.
 #'
 #' See the
 #' [GeoPressureManual](https://geopressure.org/GeoPressureManual/geolocator-create.html)
@@ -84,15 +88,11 @@ read_geopressuretemplate <- function(
   # Change working directory to the specified directory so that GeoPressureR can work with default
   # value: setwd(directory)
   pkg <- withr::with_dir(directory, {
+    project_files <- geopressuretemplate_project_files()
+
     # STEP 1: Read all interim file available
     if ("interim" %in% from) {
-      all_files <- list.files(
-        path = "./data/interim/",
-        pattern = "\\.RData$",
-        full.names = TRUE
-      )
-      # Exclude folder starting with _
-      all_files <- all_files[!grepl("^_", basename(all_files))]
+      all_files <- unname(project_files$interim_files)
 
       # List of variable names to be processed
       var_names_required <- c("tag", "param")
@@ -292,12 +292,8 @@ read_geopressuretemplate <- function(
 
     # STEP 2: Read raw tag data for the file not in interim
     if ("raw-tag" %in% from) {
-      # Read tag data
-      all_dirs <- list.dirs(path = "data/raw-tag", recursive = FALSE)
-      # Exclude folder starting with _
-      all_dirs <- all_dirs[!grepl("^_", basename(all_dirs))]
-      # Get the list of tag_id
-      list_id <- basename(all_dirs)
+      # Read raw tag data
+      list_id <- names(project_files$raw_tag_files)
 
       # Remove tag_id already present in t
       list_id <- list_id[!(list_id %in% t$tag_id)]
@@ -356,16 +352,13 @@ read_geopressuretemplate <- function(
     if (!is.null(t) && file.exists("config.yml")) {
       # Add ring number and tag comments from config.yml; they are not in GeoPressureR params.
       config_tags <- config_to_tibble("config.yml", filter_return = FALSE) |>
-        select(
-          tag_id = "id",
-          any_of(c("ring_number", "tag_comments"))
-        ) |>
+        select(tag_id = "id", any_of(c("ring_number", "tag_comments"))) |>
         rename_with(\(x) glue::glue("config_{x}"), -"tag_id")
 
       if (ncol(config_tags) > 1) {
-        config_tags[
-          setdiff(c("config_ring_number", "config_tag_comments"), names(config_tags))
-        ] <- NA_character_
+        missing_config <- setdiff(c("config_ring_number", "config_tag_comments"), names(config_tags))
+        config_tags[missing_config] <- NA_character_
+
         t <- t |>
           left_join(config_tags, by = "tag_id") |>
           mutate(

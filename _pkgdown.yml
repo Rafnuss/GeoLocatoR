@@ -24,6 +24,7 @@ reference:
     contents:
       - read_geopressuretemplate
       - create_geopressuretemplate
+      - status_geopressuretemplate
       - config_to_tibble
   - title: Import from Swiss Ornithological Institute (SOI)
     contents:
