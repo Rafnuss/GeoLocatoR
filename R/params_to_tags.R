@@ -61,8 +61,8 @@ params_to_tags <- function(params) {
         t,
         manufacturer = case_when(
           .data$manufacturer == "soi" ~ "Swiss Ornithological Institute",
-          .data$manufacturer == "migratetech" ~ "Migrate Technology",
-          .data$manufacturer == "lund" ~ "Lund CAnMove",
+          .data$manufacturer == "migratetech" ~ "Migrate Technology Limited",
+          .data$manufacturer == "lund" ~ "Lund University",
           .default = .data$manufacturer
         )
       )
