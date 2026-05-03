@@ -57,6 +57,11 @@ config_to_tibble <- function(
   file = Sys.getenv("R_CONFIG_FILE", "config.yml"),
   filter_return = TRUE
 ) {
+  config_ids <- geopressuretemplate_config_ids(file)
+  raw_config <- yaml::yaml.load_file(file, eval.expr = FALSE)
+  # Top-level tag fields are not preserved by GeoPressureR config parsing.
+  config_tag_fields <- c("ring_number", "tag_comments")
+
   parse_fun <- \(x) {
     if (is.null(x) || (length(x) == 1 && is.na(x))) {
       return(NA_character_)
@@ -137,9 +142,8 @@ config_to_tibble <- function(
     "tag_comments" = as.character
   )
 
-  list_id <- geopressuretemplate_config_ids(file)
-
-  cfg <- purrr::map_df(list_id, \(id) {
+  cfg <- purrr::map_df(config_ids, \(id) {
+    # Parse GeoPressureR fields, then restore top-level tag fields from raw YAML.
     config <- GeoPressureR::geopressuretemplate_config(
       id,
       config = file,
@@ -148,7 +152,10 @@ config_to_tibble <- function(
     )
 
     class(config) <- NULL
+    config_fields <- intersect(names(raw_config[[id]]), config_tag_fields)
+    config[config_fields] <- raw_config[[id]][config_fields]
 
+    # Flatten nested config sections and apply column-specific type conversions.
     config <- purrr::list_flatten(
       config,
       name_spec = "{outer}.{inner}",
@@ -175,7 +182,7 @@ config_to_tibble <- function(
       }
     )
 
-    # detect problematic elements
+    # Keep rows rectangular if an unexpected field still has multiple values.
     idx <- lengths(config) > 1
 
     if (any(idx)) {
@@ -183,7 +190,6 @@ config_to_tibble <- function(
         "The following fields had length > 1 and were truncated: {glue::glue_collapse(names(config)[idx], sep = ', ')}"
       )
 
-      # correction: keep only first element
       config[idx] <- lapply(config[idx], `[`, 1)
     }
 
