@@ -140,23 +140,23 @@ config_to_tibble <- function(
   )
 
   cfg <- purrr::map_df(list_id, \(id) {
-    c <- GeoPressureR::geopressuretemplate_config(
+    config <- GeoPressureR::geopressuretemplate_config(
       id,
       config = file,
       assert_tag = FALSE,
       assert_graph = FALSE
     )
 
-    class(c) <- NULL
+    class(config) <- NULL
 
-    c <- purrr::list_flatten(
-      c,
+    config <- purrr::list_flatten(
+      config,
       name_spec = "{outer}.{inner}",
       name_repair = "minimal"
     )
 
-    c <- purrr::imap(
-      c,
+    config <- purrr::imap(
+      config,
       ~ {
         v <- .x
         nm <- .y
@@ -176,18 +176,18 @@ config_to_tibble <- function(
     )
 
     # detect problematic elements
-    idx <- lengths(c) > 1
+    idx <- lengths(config) > 1
 
     if (any(idx)) {
       cli_warn(
-        "The following fields had length > 1 and were truncated: {glue::glue_collapse(names(c)[idx], sep = ', ')}"
+        "The following fields had length > 1 and were truncated: {glue::glue_collapse(names(config)[idx], sep = ', ')}"
       )
 
       # correction: keep only first element
-      c[idx] <- lapply(c[idx], `[`, 1)
+      config[idx] <- lapply(config[idx], `[`, 1)
     }
 
-    as_tibble(c)
+    as_tibble(config)
   })
 
   if (filter_return) {
