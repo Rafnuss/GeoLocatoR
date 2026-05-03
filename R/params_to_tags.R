@@ -39,7 +39,8 @@ params_to_tags <- function(params) {
         tibble::tibble(
           tag_id = param$id,
           manufacturer = param$tag_create$manufacturer,
-          scientific_name = param$bird_create$scientific_name,
+          scientific_name = param$bird_create$scientific_name %||%
+            param$graph_set_movement$bird$scientific_name,
           ring_number = NA_character_
         )
       },
