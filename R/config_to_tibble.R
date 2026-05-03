@@ -67,6 +67,7 @@ config_to_tibble <- function(
 
   col_transforms <- list(
     "id" = as.character,
+    "ring_number" = as.character,
     "tag_create.manufacturer" = as.character, # NULL -> keep flexible character
     "tag_create.directory" = parse_fun,
     "tag_create.pressure_file" = as.character,
