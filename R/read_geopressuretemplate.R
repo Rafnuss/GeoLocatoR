@@ -353,6 +353,29 @@ read_geopressuretemplate <- function(
       }
     }
 
+    if (!is.null(t) && file.exists("config.yml")) {
+      # Add ring number and tag comments from config.yml; they are not in GeoPressureR params.
+      config_tags <- config_to_tibble("config.yml", filter_return = FALSE) |>
+        select(
+          tag_id = "id",
+          any_of(c("ring_number", "tag_comments"))
+        ) |>
+        rename_with(\(x) glue::glue("config_{x}"), -"tag_id")
+
+      if (ncol(config_tags) > 1) {
+        config_tags[
+          setdiff(c("config_ring_number", "config_tag_comments"), names(config_tags))
+        ] <- NA_character_
+        t <- t |>
+          left_join(config_tags, by = "tag_id") |>
+          mutate(
+            ring_number = coalesce(.data$config_ring_number, .data$ring_number),
+            tag_comments = .data$config_tag_comments
+          ) |>
+          select(-any_of(c("config_ring_number", "config_tag_comments")))
+      }
+    }
+
     # STEP 3: Overwrite tags and observations if csv/xlsx files present
     if (file.exists("data/tags.xlsx")) {
       if (!requireNamespace("readxl", quietly = TRUE)) {
