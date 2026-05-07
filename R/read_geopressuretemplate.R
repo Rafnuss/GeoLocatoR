@@ -15,7 +15,11 @@
 #' - `data/observations.csv` or `data/observations.xlsx` replaces generated
 #'   `observations`.
 #'
-#' Files or directories whose names start with `"_"` are ignored.
+#' During automatic discovery, GeoLocatoR skips private GeoPressureTemplate
+#' entries whose names start with `"_"`: config keys, interim files, raw-tag
+#' folders, and files inside raw-tag folders. Empty raw-tag folders are also
+#' skipped, so raw-tag import only attempts folders with at least one
+#' non-ignored file.
 #'
 #' See the
 #' [GeoPressureManual](https://geopressure.org/GeoPressureManual/geolocator-create.html)
@@ -84,15 +88,11 @@ read_geopressuretemplate <- function(
   # Change working directory to the specified directory so that GeoPressureR can work with default
   # value: setwd(directory)
   pkg <- withr::with_dir(directory, {
+    project_files <- geopressuretemplate_project_files()
+
     # STEP 1: Read all interim file available
     if ("interim" %in% from) {
-      all_files <- list.files(
-        path = "./data/interim/",
-        pattern = "\\.RData$",
-        full.names = TRUE
-      )
-      # Exclude folder starting with _
-      all_files <- all_files[!grepl("^_", basename(all_files))]
+      all_files <- unname(project_files$interim_files)
 
       # List of variable names to be processed
       var_names_required <- c("tag", "param")
@@ -292,12 +292,8 @@ read_geopressuretemplate <- function(
 
     # STEP 2: Read raw tag data for the file not in interim
     if ("raw-tag" %in% from) {
-      # Read tag data
-      all_dirs <- list.dirs(path = "data/raw-tag", recursive = FALSE)
-      # Exclude folder starting with _
-      all_dirs <- all_dirs[!grepl("^_", basename(all_dirs))]
-      # Get the list of tag_id
-      list_id <- basename(all_dirs)
+      # Read raw tag data
+      list_id <- names(project_files$raw_tag_files)
 
       # Remove tag_id already present in t
       list_id <- list_id[!(list_id %in% t$tag_id)]
@@ -350,6 +346,29 @@ read_geopressuretemplate <- function(
             purrr::map(~ .x$param) |>
             params_to_observations()
         )
+      }
+    }
+
+    if (!is.null(t) && file.exists("config.yml")) {
+      raw_config <- yaml::yaml.load_file("config.yml", eval.expr = FALSE)
+      # Top-level tag fields are not preserved by GeoPressureR config parsing.
+      for (field in c("ring_number", "tag_comments")) {
+        values <- tibble::tibble(
+          tag_id = project_files$config_ids,
+          value = purrr::map_chr(raw_config[project_files$config_ids], \(x) {
+            x[[field]] %||% NA_character_
+          })
+        ) |>
+          filter(!is.na(.data$value))
+        if (nrow(values) > 0) {
+          if (!field %in% names(t)) {
+            t[[field]] <- NA_character_
+          }
+          t <- t |>
+            left_join(values, by = "tag_id") |>
+            mutate("{field}" := coalesce(.data$value, .data[[field]])) |>
+            select(-"value")
+        }
       }
     }
 

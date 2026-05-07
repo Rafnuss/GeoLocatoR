@@ -508,7 +508,7 @@ read_soi_directory <- function(gdl, directory_data) {
         nrow(gdl),
         "). Rows are kept with {.field directory} = NA."
       ),
-      setNames(as.list(details), rep("x", length(details)))
+      stats::setNames(as.list(details), rep("x", length(details)))
     ))
   }
   gdl

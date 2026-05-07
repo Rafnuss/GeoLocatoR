@@ -29,6 +29,8 @@ one row per tag and columns for each configuration parameter. This is useful for
 configurations across multiple tags or for programmatic analysis of tag settings.
 }
 \details{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 This function uses \code{\link[GeoPressureR:geopressuretemplate]{GeoPressureR::geopressuretemplate_config()}} internally to parse
 each tag's configuration. It then flattens the nested list structure and applies
 appropriate type conversions for each parameter (e.g., converting dates to strings,

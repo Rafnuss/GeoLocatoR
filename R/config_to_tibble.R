@@ -1,5 +1,7 @@
 #' Convert GeoPressureTemplate config.yml to tibble
 #'
+#' `r lifecycle::badge("experimental")`
+#'
 #' @description
 #' Reads a GeoPressureTemplate `config.yml` file and converts it into a tibble format with
 #' one row per tag and columns for each configuration parameter. This is useful for comparing
@@ -55,6 +57,11 @@ config_to_tibble <- function(
   file = Sys.getenv("R_CONFIG_FILE", "config.yml"),
   filter_return = TRUE
 ) {
+  config_ids <- geopressuretemplate_config_ids(file)
+  raw_config <- yaml::yaml.load_file(file, eval.expr = FALSE)
+  # Top-level tag fields are not preserved by GeoPressureR config parsing.
+  config_tag_fields <- c("ring_number", "tag_comments")
+
   parse_fun <- \(x) {
     if (is.null(x) || (length(x) == 1 && is.na(x))) {
       return(NA_character_)
@@ -67,6 +74,7 @@ config_to_tibble <- function(
 
   col_transforms <- list(
     "id" = as.character,
+    "ring_number" = as.character,
     "tag_create.manufacturer" = as.character, # NULL -> keep flexible character
     "tag_create.directory" = parse_fun,
     "tag_create.pressure_file" = as.character,
@@ -134,29 +142,28 @@ config_to_tibble <- function(
     "tag_comments" = as.character
   )
 
-  list_id <- utils::tail(
-    names(yaml::yaml.load_file(file, eval.expr = FALSE)),
-    -1
-  )
-
-  cfg <- purrr::map_df(list_id, \(id) {
-    c <- GeoPressureR::geopressuretemplate_config(
+  cfg <- purrr::map_df(config_ids, \(id) {
+    # Parse GeoPressureR fields, then restore top-level tag fields from raw YAML.
+    config <- GeoPressureR::geopressuretemplate_config(
       id,
       config = file,
       assert_tag = FALSE,
       assert_graph = FALSE
     )
 
-    class(c) <- NULL
+    class(config) <- NULL
+    config_fields <- intersect(names(raw_config[[id]]), config_tag_fields)
+    config[config_fields] <- raw_config[[id]][config_fields]
 
-    c <- purrr::list_flatten(
-      c,
+    # Flatten nested config sections and apply column-specific type conversions.
+    config <- purrr::list_flatten(
+      config,
       name_spec = "{outer}.{inner}",
       name_repair = "minimal"
     )
 
-    c <- purrr::imap(
-      c,
+    config <- purrr::imap(
+      config,
       ~ {
         v <- .x
         nm <- .y
@@ -175,19 +182,18 @@ config_to_tibble <- function(
       }
     )
 
-    # detect problematic elements
-    idx <- lengths(c) > 1
+    # Keep rows rectangular if an unexpected field still has multiple values.
+    idx <- lengths(config) > 1
 
     if (any(idx)) {
       cli_warn(
-        "The following fields had length > 1 and were truncated: {glue::glue_collapse(names(c)[idx], sep = ', ')}"
+        "The following fields had length > 1 and were truncated: {glue::glue_collapse(names(config)[idx], sep = ', ')}"
       )
 
-      # correction: keep only first element
-      c[idx] <- lapply(c[idx], `[`, 1)
+      config[idx] <- lapply(config[idx], `[`, 1)
     }
 
-    as_tibble(c)
+    as_tibble(config)
   })
 
   if (filter_return) {

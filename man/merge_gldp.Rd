@@ -74,8 +74,8 @@ temporal coverage (\code{temporal_start}, \code{temporal_end}), taxonomic summar
 }
 }
 \examples{
-pkg1 <- read_zenodo("17367319")
-pkg2 <- read_zenodo("17257520")
+pkg1 <- read_zenodo("17367319", quiet = TRUE)
+pkg2 <- read_zenodo("17257520", quiet = TRUE)
 
 merged <- merge_gldp(pkg1, pkg2)
 merged

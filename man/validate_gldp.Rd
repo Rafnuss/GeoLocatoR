@@ -91,7 +91,7 @@ See the \href{https://geopressure.org/GeoLocator-DP/curation/}{GeoLocator-DP cur
 more information.
 }
 \examples{
-pkg <- read_zenodo("17367319")
+pkg <- read_zenodo("17367319", quiet = TRUE)
 validate_gldp(pkg)
 
 }
