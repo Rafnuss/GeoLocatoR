@@ -43,13 +43,15 @@ Suggests:
     readxl,
     rstudioapi,
     rmarkdown,
+    movepub,
     spelling,
     testthat (>= 3.0.0),
     tidyverse,
     EML,
     uuid
 Remotes: 
-  GeoPressure/GeoPressureR
+    GeoPressure/GeoPressureR,
+    inbo/movepub
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

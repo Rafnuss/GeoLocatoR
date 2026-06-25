@@ -24,25 +24,39 @@ test_that("gldp_to_dwc writes occurrence.csv and returns occurrence data", {
     "license",
     "rightsHolder",
     "datasetID",
+    "institutionCode",
+    "collectionCode",
     "datasetName",
     "basisOfRecord",
+    "dataGeneralizations",
+    "dynamicProperties",
+    "occurrenceID",
+    "sex",
+    "lifeStage",
+    "occurrenceStatus",
+    "organismID",
+    "organismName",
+    "eventID",
+    "parentEventID",
+    "eventType",
     "eventDate",
+    "samplingProtocol",
+    "samplingEffort",
+    "eventRemarks",
+    "minimumElevationInMeters",
+    "maximumElevationInMeters",
+    "locationRemarks",
     "decimalLatitude",
     "decimalLongitude",
     "geodeticDatum",
-    "scientificName",
-    "organismID",
-    "occurrenceID",
-    "samplingProtocol",
-    "samplingEffort",
-    "individualCount",
-    "occurrenceStatus",
-    "dynamicProperties",
     "coordinateUncertaintyInMeters",
-    "sex",
-    "lifeStage"
+    "georeferenceSources",
+    "identificationVerificationStatus",
+    "scientificNameID",
+    "scientificName",
+    "kingdom"
   )
-  expect_true(all(required_cols %in% names(occurrence)))
+  expect_identical(names(occurrence), required_cols)
 
   # Key fields are set consistently from package metadata
   expect_true(all(occurrence$datasetName == pkg$title))
@@ -50,7 +64,6 @@ test_that("gldp_to_dwc writes occurrence.csv and returns occurrence data", {
   expect_true(all(occurrence$basisOfRecord == "MachineObservation"))
   expect_true(all(occurrence$geodeticDatum == "EPSG:4326"))
   expect_true(all(occurrence$samplingProtocol == "geolocator"))
-  expect_true(all(occurrence$individualCount == 1L))
   expect_true(all(occurrence$occurrenceStatus == "present"))
 
   # Coordinates look numeric

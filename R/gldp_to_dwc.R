@@ -51,10 +51,14 @@
 #' - `scientificName` is taken from `tags$scientific_name`.
 #' - `organismID` is set to `ring_number` to track individual birds across
 #'   multiple observations and deployments.
+#' - `organismName` is set to `ring_number` as the available label for the
+#'   tracked individual.
 #' - `occurrenceID` is a unique identifier combining `tag_id` and `stap_id`.
-#' - `individualCount` is set to `1`.
 #' - `occurrenceStatus` is set to `"present"`.
-#' - `sex` and `lifeStage` are included if available in the `tags` resource.
+#' - `sex`, `lifeStage`, and `eventRemarks` are included from matching
+#'   observations when available.
+#' - `minimumElevationInMeters` and `maximumElevationInMeters` are estimated
+#'   from `pressurepaths$altitude` when available.
 #' - `coordinateUncertaintyInMeters` is calculated for simulation path types
 #'   (`"mean_simulation"` or `"median_simulation"`) as the 95th percentile of
 #'   the distance between each simulation and the aggregated center.
@@ -89,8 +93,70 @@ gldp_to_dwc <- function(pkg, directory, path_type = "most_likely") {
 
   # Read resources
   tags <- tags(pkg)
+  obs <- observations(pkg)
   staps <- staps(pkg)
   paths <- paths(pkg)
+
+  obs_dynamic_cols <- setdiff(
+    names(obs),
+    c(
+      "ring_number",
+      "tag_id",
+      "datetime",
+      "longitude",
+      "latitude",
+      "sex",
+      "age_class",
+      "observation_comments"
+    )
+  )
+  if (length(obs_dynamic_cols) > 0) {
+    obs <- obs |>
+      dplyr::mutate(
+        observation_dynamic_properties = purrr::pmap_chr(
+          dplyr::pick(dplyr::all_of(obs_dynamic_cols)),
+          \(...) {
+            values <- list(...)
+            names(values) <- obs_dynamic_cols
+            values <- purrr::discard(
+              values,
+              \(x) is.null(x) || is.na(x) || identical(x, "")
+            )
+            if (length(values) == 0) {
+              NA_character_
+            } else {
+              jsonlite::toJSON(values, auto_unbox = TRUE, null = "null")
+            }
+          }
+        )
+      )
+  } else {
+    obs <- obs |>
+      dplyr::mutate(observation_dynamic_properties = NA_character_)
+  }
+
+  scientific_name_ids <- tags |>
+    dplyr::distinct(.data$scientific_name)
+  if (requireNamespace("movepub", quietly = TRUE)) {
+    scientific_name_ids <- scientific_name_ids |>
+      dplyr::mutate(
+        scientificNameID = purrr::map_chr(
+          .data$scientific_name,
+          \(scientific_name) {
+            aphia <- movepub::get_aphia_id(scientific_name)
+            aphia_lsid <- aphia$aphia_lsid[!is.na(aphia$aphia_lsid)]
+            if (length(aphia_lsid) == 0) {
+              NA_character_
+            } else {
+              aphia_lsid[[1]]
+            }
+          }
+        )
+      )
+  } else {
+    scientific_name_ids <- scientific_name_ids |>
+      dplyr::mutate(scientificNameID = NA_character_)
+  }
 
   # Validate path_type
   allowed_types <- c("most_likely", "mean_simulation", "median_simulation", "geopressureviz")
@@ -161,21 +227,219 @@ gldp_to_dwc <- function(pkg, directory, path_type = "most_likely") {
     cli_warn("No paths found for type {.val {path_type}}.")
   }
 
+  pressurepath_elevation <- tibble::tibble(
+    tag_id = character(),
+    stap_id = numeric(),
+    minimumElevationInMeters = numeric(),
+    maximumElevationInMeters = numeric()
+  )
+  if ("pressurepaths" %in% frictionless::resources(pkg)) {
+    pp <- pressurepaths(pkg)
+    if ("altitude" %in% names(pp)) {
+      pressurepath_type <- if (path_type %in% c("mean_simulation", "median_simulation")) {
+        "simulation"
+      } else {
+        path_type
+      }
+
+      # Pressurepaths can include decimal stap_id values during flights.
+      pressurepath_elevation <- pp |>
+        dplyr::filter(
+          .data$type == !!pressurepath_type,
+          .data$stap_id == round(.data$stap_id)
+        ) |>
+        dplyr::group_by(.data$tag_id, .data$stap_id) |>
+        dplyr::summarise(
+          minimumElevationInMeters = min(.data$altitude, na.rm = TRUE),
+          maximumElevationInMeters = max(.data$altitude, na.rm = TRUE),
+          .groups = "drop"
+        )
+    }
+  }
+
+  # Keep only observation fields that can be added to Darwin Core occurrences.
+  obs_staps <- obs |>
+    dplyr::transmute(
+      tag_id = .data$tag_id,
+      observation_datetime = as.POSIXct(.data$datetime, tz = "UTC"),
+      observation_sex = .data$sex,
+      observation_life_stage = .data$age_class,
+      eventRemarks = .data$observation_comments,
+      observation_dynamic_properties = .data$observation_dynamic_properties
+    ) |>
+    # Compare each observation to all stationary periods from the same tag.
+    dplyr::inner_join(
+      staps |> dplyr::select("tag_id", "stap_id", "start", "end"),
+      by = "tag_id",
+      relationship = "many-to-many"
+    ) |>
+    # Prefer observations inside a stap; otherwise measure distance to stap boundaries.
+    dplyr::mutate(
+      observation_in_stap = .data$observation_datetime >= .data$start &
+        .data$observation_datetime <= .data$end,
+      observation_distance_days = dplyr::if_else(
+        .data$observation_in_stap,
+        0,
+        pmin(
+          abs(as.numeric(difftime(.data$observation_datetime, .data$start, units = "days"))),
+          abs(as.numeric(difftime(.data$observation_datetime, .data$end, units = "days")))
+        )
+      )
+    ) |>
+    # Keep exact interval matches and nearest-stap fallback matches within two weeks.
+    dplyr::filter(.data$observation_in_stap | .data$observation_distance_days <= 14) |>
+    dplyr::arrange(.data$tag_id, .data$observation_datetime, .data$observation_distance_days) |>
+    # If an observation could match several staps, keep the closest one.
+    dplyr::distinct(.data$tag_id, .data$observation_datetime, .keep_all = TRUE) |>
+    # Collapse multiple observations on the same stap into one occurrence row.
+    dplyr::group_by(.data$tag_id, .data$stap_id) |>
+    dplyr::summarise(
+      observation_sex = dplyr::first(.data$observation_sex),
+      observation_life_stage = dplyr::first(.data$observation_life_stage),
+      eventRemarks = glue::glue_collapse(
+        unique(.data$eventRemarks[!is.na(.data$eventRemarks) & .data$eventRemarks != ""]),
+        sep = "; "
+      ),
+      observation_dynamic_properties = dplyr::first(
+        .data$observation_dynamic_properties[!is.na(.data$observation_dynamic_properties)],
+        default = NA_character_
+      ),
+      .groups = "drop"
+    ) |>
+    dplyr::mutate(
+      eventRemarks = dplyr::na_if(.data$eventRemarks, ""),
+      observation_dynamic_properties = dplyr::na_if(.data$observation_dynamic_properties, "")
+    )
+
   # Join data and create occurrence data frame
   occurrence <- staps |>
     dplyr::inner_join(paths, by = c("tag_id", "stap_id")) |>
-    dplyr::inner_join(tags, by = "tag_id")
+    dplyr::inner_join(tags, by = "tag_id") |>
+    dplyr::left_join(scientific_name_ids, by = "scientific_name") |>
+    dplyr::left_join(pressurepath_elevation, by = c("tag_id", "stap_id")) |>
+    dplyr::left_join(obs_staps, by = c("tag_id", "stap_id"))
 
-  # Ensure optional fields from tags / paths exist; otherwise create empty columns
-  if (!("sex" %in% names(occurrence))) {
-    occurrence$sex <- NA_character_
+  # Ensure optional fields from observations / paths exist; otherwise create empty columns
+  if (!("observation_sex" %in% names(occurrence))) {
+    occurrence$observation_sex <- NA_character_
   }
-  if (!("life_stage" %in% names(occurrence))) {
-    occurrence$life_stage <- NA_character_
+  if (!("observation_life_stage" %in% names(occurrence))) {
+    occurrence$observation_life_stage <- NA_character_
+  }
+  if (!("eventRemarks" %in% names(occurrence))) {
+    occurrence$eventRemarks <- NA_character_
+  }
+  if (!("observation_dynamic_properties" %in% names(occurrence))) {
+    occurrence$observation_dynamic_properties <- NA_character_
   }
   if (!("coordinateUncertaintyInMeters" %in% names(occurrence))) {
     occurrence$coordinateUncertaintyInMeters <- NA_real_
   }
+
+  path_has_known <- "known" %in% names(occurrence)
+  stap_has_known <- all(c("known_lat", "known_lon") %in% names(occurrence))
+
+  occurrence <- occurrence |>
+    dplyr::mutate(
+      location_is_known = if (path_has_known) {
+        as.logical(.data$known)
+      } else if (stap_has_known) {
+        !is.na(.data$known_lat) & !is.na(.data$known_lon)
+      } else {
+        FALSE
+      },
+      georeferenceSources = dplyr::case_when(
+        .data$location_is_known ~ paste(
+          "GeoPressureR::tag_set_map()",
+          "https://geopressure.com/GeoPressureR/reference/tag_set_map.html",
+          sep = " | "
+        ),
+        path_type == "most_likely" ~ paste(
+          "GeoPressureR::graph_most_likely()",
+          "https://geopressure.com/GeoPressureR/reference/graph_most_likely.html",
+          "https://geopressure.com/GeoPressureManual/trajectory.html",
+          sep = " | "
+        ),
+        path_type %in% c("mean_simulation", "median_simulation") ~ paste(
+          "GeoPressureR::graph_simulation()",
+          "https://geopressure.com/GeoPressureR/reference/graph_simulation.html",
+          "https://geopressure.com/GeoPressureManual/trajectory.html",
+          sep = " | "
+        ),
+        path_type == "geopressureviz" ~ paste(
+          "GeoPressureR::geopressureviz()",
+          "https://geopressure.com/GeoPressureR/reference/geopressureviz.html",
+          "https://geopressure.com/GeoPressureManual/trajectory.html",
+          sep = " | "
+        ),
+        TRUE ~ "GeoLocator-DP paths resource"
+      ),
+      eventRemarks = purrr::pmap_chr(
+        list(
+          .data$location_is_known,
+          .data$eventRemarks,
+          .data$coordinateUncertaintyInMeters
+        ),
+        \(location_is_known, event_remarks, coordinate_uncertainty) {
+          values <- c(
+            if (isTRUE(location_is_known)) {
+              "Location taken from known stationary coordinates."
+            } else {
+              glue::glue("Location reconstructed from `{path_type}` trajectory.")
+            },
+            event_remarks,
+            if (!is.na(coordinate_uncertainty)) {
+              "Coordinate uncertainty reported in meters."
+            }
+          )
+          values <- values[!is.na(values) & values != ""]
+          if (length(values) == 0) {
+            NA_character_
+          } else {
+            glue::glue_collapse(values, sep = " | ")
+          }
+        }
+      ),
+      dynamicProperties = purrr::pmap_chr(
+        list(
+          .data$observation_dynamic_properties,
+          .data$location_is_known
+        ),
+        \(observation_dynamic_properties, location_is_known) {
+          values <- list(
+            pathType = path_type,
+            locationSource = if (isTRUE(location_is_known)) "known" else "reconstructed"
+          )
+          if (!is.na(observation_dynamic_properties)) {
+            values$observation <- jsonlite::fromJSON(observation_dynamic_properties, simplifyVector = TRUE)
+          }
+          jsonlite::toJSON(values, auto_unbox = TRUE, null = "null")
+        }
+      ),
+      locationRemarks = purrr::pmap_chr(
+        list(
+          .data$location_is_known,
+          .data$minimumElevationInMeters,
+          .data$maximumElevationInMeters
+        ),
+        \(location_is_known, minimum_elevation, maximum_elevation) {
+          values <- c(
+            if (isTRUE(location_is_known)) {
+              "Coordinates are known stationary locations assigned with GeoPressureR::tag_set_map()."
+            },
+            if (!is.na(minimum_elevation) || !is.na(maximum_elevation)) {
+              "Elevations are altitude above mean sea level from pressurepaths altitude."
+            }
+          )
+          values <- values[!is.na(values) & values != ""]
+          if (length(values) == 0) {
+            NA_character_
+          } else {
+            glue::glue_collapse(values, sep = " | ")
+          }
+        }
+      )
+    )
 
   occurrence <- occurrence |>
     dplyr::transmute(
@@ -183,28 +447,42 @@ gldp_to_dwc <- function(pkg, directory, path_type = "most_likely") {
       license = license,
       rightsHolder = rights_holder,
       datasetID = dataset_id,
+      institutionCode = NA_character_,
+      collectionCode = "geopressure.org",
       datasetName = dataset_name,
       basisOfRecord = "MachineObservation",
+      dataGeneralizations = NA_character_,
+      dynamicProperties = .data$dynamicProperties,
+      occurrenceID = glue::glue("{.data$ring_number}_{.data$tag_id}_{.data$stap_id}"),
+      sex = .data$observation_sex,
+      lifeStage = .data$observation_life_stage,
+      occurrenceStatus = "present",
+      organismID = .data$ring_number,
+      # Darwin Core organismName refers to the individual label, not the taxon name.
+      organismName = .data$ring_number,
+      eventID = occurrenceID,
+      parentEventID = glue::glue("{.data$ring_number}_{.data$tag_id}"),
+      eventType = "geolocator",
       eventDate = paste(
         format(.data$start, "%Y-%m-%dT%H:%M:%SZ"),
         format(.data$end, "%Y-%m-%dT%H:%M:%SZ"),
         sep = "/"
       ),
+      samplingProtocol = eventType,
+      samplingEffort = NA_character_,
+      eventRemarks = .data$eventRemarks,
+      minimumElevationInMeters = .data$minimumElevationInMeters,
+      maximumElevationInMeters = .data$maximumElevationInMeters,
+      locationRemarks = .data$locationRemarks,
       decimalLatitude = .data$lat,
       decimalLongitude = .data$lon,
       geodeticDatum = "EPSG:4326",
       coordinateUncertaintyInMeters = .data$coordinateUncertaintyInMeters,
+      georeferenceSources = .data$georeferenceSources,
+      identificationVerificationStatus = NA_character_,
+      scientificNameID = .data$scientificNameID,
       scientificName = .data$scientific_name,
-      organismID = .data$ring_number,
-      occurrenceID = glue::glue("{.data$tag_id}-{.data$stap_id}"),
-      samplingProtocol = "geolocator",
-      samplingEffort = glue::glue("{.data$start}/{.data$end}"),
-      # Additional Darwin Core fields
-      individualCount = 1L,
-      occurrenceStatus = "present",
-      dynamicProperties = glue::glue("{{\"pathType\":\"{path_type}\"}}"),
-      sex = .data$sex,
-      lifeStage = .data$life_stage
+      kingdom = "Animalia"
     )
 
   # Write files
