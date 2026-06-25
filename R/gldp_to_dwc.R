@@ -250,8 +250,8 @@ gldp_to_dwc <- function(pkg, directory, path_type = "most_likely") {
         ) |>
         dplyr::group_by(.data$tag_id, .data$stap_id) |>
         dplyr::summarise(
-          minimumElevationInMeters = min(.data$altitude, na.rm = TRUE),
-          maximumElevationInMeters = max(.data$altitude, na.rm = TRUE),
+          minimumElevationInMeters = round(min(.data$altitude, na.rm = TRUE)),
+          maximumElevationInMeters = round(max(.data$altitude, na.rm = TRUE)),
           .groups = "drop"
         )
     }
