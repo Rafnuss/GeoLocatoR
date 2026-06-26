@@ -12,12 +12,6 @@
 #'   If `NULL`, then a data frame is returned instead, which can be useful
 #'   for extending/adapting the Darwin Core mapping before writing with
 #'   [readr::write_csv()].
-#' @param path_type The type of path to use for the occurrence data.
-#'   One of `"most_likely"`, `"mean_simulation"`, `"median_simulation"`, or
-#'   `"geopressureviz"`. For simulation types, the mean or median position
-#'   (lat/lon) is calculated for each `tag_id`-`stap_id` combination across
-#'   all simulated paths. Defaults to `"most_likely"`. See [paths] for more details.
-#'
 #' @return `occurrence.csv` file written to disk.
 #'   Invisibly, an occurrence data frame.
 #'
@@ -40,8 +34,8 @@
 #' Key features of the Darwin Core transformation:
 #' - Stationary periods (`staps`) are treated as events, with each position
 #'   as an occurrence representing the bird's location during that period.
-#' - Each occurrence represents one stationary period from the path data,
-#'   filtered by `path_type`.
+#' - Each occurrence represents one stationary period from the `most_likely`
+#'   path reconstruction.
 #' - The `eventDate` is expressed as an ISO 8601 interval
 #'   (`start/end`) representing the duration of the stationary period.
 #' - `basisOfRecord` is set to `"MachineObservation"` as data are derived
@@ -59,14 +53,14 @@
 #'   observations when available.
 #' - `minimumElevationInMeters` and `maximumElevationInMeters` are estimated
 #'   from `pressurepaths$altitude` when available.
-#' - `coordinateUncertaintyInMeters` is calculated for simulation path types
-#'   (`"mean_simulation"` or `"median_simulation"`) as the 95th percentile of
-#'   the distance between each simulation and the aggregated center.
+#' - `coordinateUncertaintyInMeters` is calculated as the 50th percentile of
+#'   the distance between simulation paths and the `most_likely` position for
+#'   each stationary period.
 #'
 #' @seealso [gldp_to_eml()] to create the matching `eml.xml` metadata file.
 #'
 #' @export
-gldp_to_dwc <- function(pkg, directory, path_type = "most_likely") {
+gldp_to_dwc <- function(pkg, directory) {
   check_gldp(pkg)
 
   # Set properties from metadata
@@ -158,74 +152,40 @@ gldp_to_dwc <- function(pkg, directory, path_type = "most_likely") {
       dplyr::mutate(scientificNameID = NA_character_)
   }
 
-  # Validate path_type
-  allowed_types <- c("most_likely", "mean_simulation", "median_simulation", "geopressureviz")
-  if (!path_type %in% allowed_types) {
-    cli_abort(
-      c(
-        "x" = "{.arg path_type} must be one of {.val {allowed_types}}.",
-        "i" = "You provided: {.val {path_type}}"
-      )
+  # Keep the most likely positions for the export itself.
+  most_likely_paths <- paths |>
+    dplyr::filter(.data$type == "most_likely")
+  if (nrow(most_likely_paths) == 0) {
+    cli_warn("No paths found for type {.val {'most_likely'}}.")
+  }
+
+  # Derive uncertainty from the spread of simulation paths around the most likely position.
+  simulation_uncertainty <- paths |>
+    dplyr::filter(.data$type == "simulation") |>
+    dplyr::inner_join(
+      most_likely_paths |>
+        dplyr::select(
+          .data$tag_id,
+          .data$stap_id,
+          lat_center = .data$lat,
+          lon_center = .data$lon
+        ),
+      by = c("tag_id", "stap_id")
+    ) |>
+    dplyr::mutate(
+      dlat_m = (.data$lat - .data$lat_center) * 111000,
+      dlon_m = (.data$lon - .data$lon_center) * 111000 * cos(.data$lat_center * pi / 180),
+      distance_m = sqrt(.data$dlat_m^2 + .data$dlon_m^2)
+    ) |>
+    dplyr::group_by(.data$tag_id, .data$stap_id) |>
+    dplyr::summarise(
+      coordinateUncertaintyInMeters = round(stats::quantile(
+        .data$distance_m,
+        0.5,
+        na.rm = TRUE
+      )),
+      .groups = "drop"
     )
-  }
-
-  # Filter and aggregate paths
-  if (path_type %in% c("mean_simulation", "median_simulation")) {
-    # For simulation paths, aggregate across all simulations (j values)
-    # and calculate uncertainty metrics
-
-    # First calculate mean/median for each tag-stap
-    paths_summary <- paths |>
-      dplyr::filter(.data$type == "simulation") |>
-      dplyr::group_by(.data$tag_id, .data$stap_id) |>
-      dplyr::summarise(
-        lat_center = if (path_type == "mean_simulation") {
-          mean(.data$lat, na.rm = TRUE)
-        } else {
-          stats::median(.data$lat, na.rm = TRUE)
-        },
-        lon_center = if (path_type == "mean_simulation") {
-          mean(.data$lon, na.rm = TRUE)
-        } else {
-          stats::median(.data$lon, na.rm = TRUE)
-        },
-        .groups = "drop"
-      )
-
-    # Calculate distances from center for each simulation point
-    paths_with_distances <- paths |>
-      dplyr::filter(.data$type == "simulation") |>
-      dplyr::inner_join(paths_summary, by = c("tag_id", "stap_id")) |>
-      dplyr::mutate(
-        # Calculate distance in meters using haversine-like approximation
-        # More accurate than simple lat/lon differences
-        dlat_m = (.data$lat - .data$lat_center) * 111000,
-        dlon_m = (.data$lon - .data$lon_center) * 111000 * cos(.data$lat_center * pi / 180),
-        distance_m = sqrt(.data$dlat_m^2 + .data$dlon_m^2)
-      )
-
-    # Calculate 95th percentile of distances for each tag-stap
-    paths <- paths_with_distances |>
-      dplyr::group_by(.data$tag_id, .data$stap_id) |>
-      dplyr::summarise(
-        lat = first(.data$lat_center),
-        lon = first(.data$lon_center),
-        # 95th percentile: radius containing 95% of simulated positions
-        coordinateUncertaintyInMeters = round(stats::quantile(
-          .data$distance_m,
-          0.95,
-          na.rm = TRUE
-        )),
-        .groups = "drop"
-      )
-  } else {
-    # For other types, filter directly (no uncertainty calculated)
-    paths <- paths |> dplyr::filter(.data$type == !!path_type)
-  }
-
-  if (nrow(paths) == 0) {
-    cli_warn("No paths found for type {.val {path_type}}.")
-  }
 
   pressurepath_elevation <- tibble::tibble(
     tag_id = character(),
@@ -236,16 +196,10 @@ gldp_to_dwc <- function(pkg, directory, path_type = "most_likely") {
   if ("pressurepaths" %in% frictionless::resources(pkg)) {
     pp <- pressurepaths(pkg)
     if ("altitude" %in% names(pp)) {
-      pressurepath_type <- if (path_type %in% c("mean_simulation", "median_simulation")) {
-        "simulation"
-      } else {
-        path_type
-      }
-
       # Pressurepaths can include decimal stap_id values during flights.
       pressurepath_elevation <- pp |>
         dplyr::filter(
-          .data$type == !!pressurepath_type,
+          .data$type == "most_likely",
           .data$stap_id == round(.data$stap_id)
         ) |>
         dplyr::group_by(.data$tag_id, .data$stap_id) |>
@@ -313,7 +267,8 @@ gldp_to_dwc <- function(pkg, directory, path_type = "most_likely") {
 
   # Join data and create occurrence data frame
   occurrence <- staps |>
-    dplyr::inner_join(paths, by = c("tag_id", "stap_id")) |>
+    dplyr::inner_join(most_likely_paths, by = c("tag_id", "stap_id")) |>
+    dplyr::left_join(simulation_uncertainty, by = c("tag_id", "stap_id")) |>
     dplyr::inner_join(tags, by = "tag_id") |>
     dplyr::left_join(scientific_name_ids, by = "scientific_name") |>
     dplyr::left_join(pressurepath_elevation, by = c("tag_id", "stap_id")) |>
@@ -354,25 +309,12 @@ gldp_to_dwc <- function(pkg, directory, path_type = "most_likely") {
           "https://geopressure.com/GeoPressureR/reference/tag_set_map.html",
           sep = " | "
         ),
-        path_type == "most_likely" ~ paste(
+        TRUE ~ paste(
           "GeoPressureR::graph_most_likely()",
           "https://geopressure.com/GeoPressureR/reference/graph_most_likely.html",
           "https://geopressure.com/GeoPressureManual/trajectory.html",
           sep = " | "
-        ),
-        path_type %in% c("mean_simulation", "median_simulation") ~ paste(
-          "GeoPressureR::graph_simulation()",
-          "https://geopressure.com/GeoPressureR/reference/graph_simulation.html",
-          "https://geopressure.com/GeoPressureManual/trajectory.html",
-          sep = " | "
-        ),
-        path_type == "geopressureviz" ~ paste(
-          "GeoPressureR::geopressureviz()",
-          "https://geopressure.com/GeoPressureR/reference/geopressureviz.html",
-          "https://geopressure.com/GeoPressureManual/trajectory.html",
-          sep = " | "
-        ),
-        TRUE ~ "GeoLocator-DP paths resource"
+        )
       ),
       eventRemarks = purrr::pmap_chr(
         list(
@@ -385,11 +327,11 @@ gldp_to_dwc <- function(pkg, directory, path_type = "most_likely") {
             if (isTRUE(location_is_known)) {
               "Location taken from known stationary coordinates."
             } else {
-              glue::glue("Location reconstructed from `{path_type}` trajectory.")
+              "Location reconstructed from `most_likely` trajectory."
             },
             event_remarks,
             if (!is.na(coordinate_uncertainty)) {
-              "Coordinate uncertainty reported in meters."
+              "Coordinate uncertainty estimated as the 50th percentile of simulation distances from the `most_likely` position."
             }
           )
           values <- values[!is.na(values) & values != ""]
@@ -407,7 +349,7 @@ gldp_to_dwc <- function(pkg, directory, path_type = "most_likely") {
         ),
         \(observation_dynamic_properties, location_is_known) {
           values <- list(
-            pathType = path_type,
+            pathType = "most_likely",
             locationSource = if (isTRUE(location_is_known)) "known" else "reconstructed"
           )
           if (!is.na(observation_dynamic_properties)) {

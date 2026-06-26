@@ -8,7 +8,7 @@ test_that("gldp_to_dwc writes occurrence.csv and returns occurrence data", {
   tmp <- withr::local_tempdir()
 
   suppressMessages({
-    occurrence <- gldp_to_dwc(pkg, directory = tmp, path_type = "most_likely")
+    occurrence <- gldp_to_dwc(pkg, directory = tmp)
   })
 
   # File is written
@@ -69,22 +69,4 @@ test_that("gldp_to_dwc writes occurrence.csv and returns occurrence data", {
   # Coordinates look numeric
   expect_type(occurrence$decimalLatitude, "double")
   expect_type(occurrence$decimalLongitude, "double")
-})
-
-test_that("gldp_to_dwc works for all valid path_type values", {
-  suppressMessages({
-    occ_mean <- expect_no_error(
-      gldp_to_dwc(pkg_shared, directory = withr::local_tempdir(), path_type = "mean_simulation")
-    )
-  })
-  suppressMessages({
-    occ_median <- expect_no_error(
-      gldp_to_dwc(pkg_shared, directory = withr::local_tempdir(), path_type = "median_simulation")
-    )
-  })
-
-  expect_error(
-    gldp_to_dwc(pkg_shared, directory = tmp, path_type = "invalid_type"),
-    "path_type"
-  )
 })
