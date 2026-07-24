@@ -10,7 +10,8 @@
 #' 5. upgrades older package versions when needed;
 #' 6. recomputes derived package properties with [update_gldp()].
 #'
-#' @param x Path or URL to a GeoLocator-DP `datapackage.json` file.
+#' @param x Path to a GeoLocator-DP package directory or `datapackage.json`
+#'   file, or a URL to `datapackage.json`.
 #' @param force_read If `TRUE` (default), loads resource data into memory so
 #'   the returned object is self-contained in memory. This means that each
 #' resource is read immediately with [frictionless::read_resource()], cast to
@@ -44,6 +45,16 @@
 #'
 #' @export
 read_gldp <- function(x = "datapackage.json", force_read = TRUE, drop_measurements = FALSE) {
+  if (dir.exists(x)) {
+    x <- file.path(x, "datapackage.json")
+    if (!file.exists(x)) {
+      cli_abort(c(
+        "x" = "Directory {.file {dirname(x)}} does not contain {.file datapackage.json}.",
+        "i" = "Supply a GeoLocator Data Package directory or the path to its {.file datapackage.json}."
+      ))
+    }
+  }
+
   pkg <- frictionless::read_package(x)
   base_dir <- dirname(x)
 

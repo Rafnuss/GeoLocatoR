@@ -23,6 +23,34 @@ test_that("read_gldp reads a local datapackage.json", {
   expect_equal(gldp_version(pkg), "v1.0")
 })
 
+test_that("read_gldp reads a local package directory", {
+  directory <- withr::local_tempdir()
+  path <- file.path(directory, "datapackage.json")
+
+  jsonlite::write_json(
+    list(
+      `$schema` = "https://raw.githubusercontent.com/GeoPressure/GeoLocator-DP/v1.0/geolocator-dp-profile.json",
+      id = "unit-test",
+      resources = list()
+    ),
+    path,
+    auto_unbox = TRUE
+  )
+
+  pkg <- suppressWarnings(read_gldp(directory))
+
+  expect_s3_class(pkg, "geolocatordp")
+})
+
+test_that("read_gldp reports a missing descriptor in a package directory", {
+  directory <- withr::local_tempdir()
+
+  expect_error(
+    read_gldp(directory),
+    "does not contain.*datapackage.json"
+  )
+})
+
 test_that("read_gldp handles invalid input", {
   # Test with non-existent file
   expect_error(read_gldp("nonexistent.json"))
