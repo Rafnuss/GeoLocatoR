@@ -51,6 +51,30 @@ test_that("read_gldp reports a missing descriptor in a package directory", {
   )
 })
 
+test_that("read_gldp identifies an unreadable resource", {
+  directory <- withr::local_tempdir()
+  path <- file.path(directory, "datapackage.json")
+
+  jsonlite::write_json(
+    list(
+      `$schema` = "https://raw.githubusercontent.com/GeoPressure/GeoLocator-DP/v1.0/geolocator-dp-profile.json",
+      id = "unit-test",
+      resources = list(list(
+        name = "tags",
+        path = "tags.csv",
+        schema = list()
+      ))
+    ),
+    path,
+    auto_unbox = TRUE
+  )
+
+  expect_error(
+    read_gldp(path),
+    "(?s)Could not read resource.*tags.*Location:.*tags.csv.*Original error"
+  )
+})
+
 test_that("read_gldp handles invalid input", {
   # Test with non-existent file
   expect_error(read_gldp("nonexistent.json"))
