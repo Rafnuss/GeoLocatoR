@@ -68,7 +68,7 @@ reference:
 
 navbar:
   structure:
-    left: [ reference, geopressure-manual, geolocator-dp ]
+    left: [ reference, news, geopressure-manual, geolocator-dp ]
   components:
     geopressure-manual:
       text: User Guide
