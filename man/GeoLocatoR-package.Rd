@@ -22,6 +22,11 @@ Useful links:
 \author{
 \strong{Maintainer}: Raphaël Nussbaumer \email{rafnuss@gmail.com} (\href{https://orcid.org/0000-0002-8185-1020}{ORCID})
 
+Authors:
+\itemize{
+  \item Raphaël Nussbaumer \email{rafnuss@gmail.com} (\href{https://orcid.org/0000-0002-8185-1020}{ORCID})
+}
+
 Other contributors:
 \itemize{
   \item Peter Desmet \email{peter.desmet@inbo.be} (\href{https://orcid.org/0000-0002-8442-8025}{ORCID}) [contributor]
