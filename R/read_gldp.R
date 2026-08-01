@@ -55,7 +55,14 @@ read_gldp <- function(x = "datapackage.json", force_read = TRUE, drop_measuremen
     }
   }
 
-  pkg <- frictionless::read_package(x)
+  pkg <- withCallingHandlers(
+    frictionless::read_package(x),
+    warning = function(w) {
+      if (inherits(w, "frictionless_warning_version_not_supported")) {
+        invokeRestart("muffleWarning")
+      }
+    }
+  )
   base_dir <- dirname(x)
 
   if (!grepl("geolocator-dp-profile\\.json$", pkg$`$schema`)) {
