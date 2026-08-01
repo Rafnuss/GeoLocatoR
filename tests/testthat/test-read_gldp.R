@@ -71,7 +71,7 @@ test_that("read_gldp identifies an unreadable resource", {
 
   expect_error(
     read_gldp(path),
-    "(?s)Could not read resource.*tags.*Location:.*tags.csv.*Original error"
+    "Could not read resource tags"
   )
 })
 

@@ -165,10 +165,10 @@ gldp_to_dwc <- function(pkg, directory) {
     dplyr::inner_join(
       most_likely_paths |>
         dplyr::select(
-          .data$tag_id,
-          .data$stap_id,
-          lat_center = .data$lat,
-          lon_center = .data$lon
+          "tag_id",
+          "stap_id",
+          lat_center = "lat",
+          lon_center = "lon"
         ),
       by = c("tag_id", "stap_id")
     ) |>
@@ -405,7 +405,7 @@ gldp_to_dwc <- function(pkg, directory) {
       organismID = .data$ring_number,
       # Darwin Core organismName refers to the individual label, not the taxon name.
       organismName = .data$ring_number,
-      eventID = occurrenceID,
+      eventID = .data$occurrenceID,
       parentEventID = glue::glue("{.data$ring_number}_{.data$tag_id}"),
       eventType = "geolocator",
       eventDate = paste(
@@ -413,7 +413,7 @@ gldp_to_dwc <- function(pkg, directory) {
         format(.data$end, "%Y-%m-%dT%H:%M:%SZ"),
         sep = "/"
       ),
-      samplingProtocol = eventType,
+      samplingProtocol = .data$eventType,
       samplingEffort = NA_character_,
       eventRemarks = .data$eventRemarks,
       minimumElevationInMeters = .data$minimumElevationInMeters,
