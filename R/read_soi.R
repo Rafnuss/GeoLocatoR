@@ -119,7 +119,7 @@ read_soi <- function(
       pkg,
       "measurements",
       m,
-      replace = "measurements" %in% frictionless::resource_names(pkg)
+      replace = TRUE
     )
   }
 
@@ -255,7 +255,7 @@ read_soi <- function(
       pkg,
       "tags",
       t,
-      replace = "tags" %in% frictionless::resource_names(pkg)
+      replace = TRUE
     )
   }
 
@@ -348,7 +348,7 @@ read_soi <- function(
       pkg,
       "observations",
       o,
-      replace = "observations" %in% frictionless::resource_names(pkg)
+      replace = TRUE
     )
   }
 
