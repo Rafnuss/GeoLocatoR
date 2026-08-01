@@ -365,9 +365,9 @@ read_geopressuretemplate <- function(
             t[[field]] <- NA_character_
           }
           t <- t |>
-            left_join(values, by = "tag_id") |>
-            mutate("{field}" := coalesce(.data$value, .data[[field]])) |>
-            select(-"value")
+            left_join(values, by = "tag_id")
+          t[[field]] <- coalesce(t[["value"]], t[[field]])
+          t <- t |> select(-"value")
         }
       }
     }

@@ -51,6 +51,8 @@ create_geopressuretemplate <- function(path, pkg = NULL, open = interactive()) {
     }
   }
 
+  clone_stderr <- tempfile("create-geopressuretemplate-", fileext = ".log")
+
   clone_status <- system2(
     command = "git",
     args = c(
@@ -58,17 +60,22 @@ create_geopressuretemplate <- function(path, pkg = NULL, open = interactive()) {
       "--quiet",
       "--depth",
       "1",
-      "https://github.com/GeoPressure/GeoPressureTemplate",
-      path
+      # Quote clone arguments so paths with spaces stay single git arguments.
+      shQuote("https://github.com/GeoPressure/GeoPressureTemplate"),
+      shQuote(path)
     ),
     stdout = FALSE,
-    stderr = FALSE
+    stderr = clone_stderr
   )
   if (!identical(clone_status, 0L)) {
-    cli_abort(
-      "Failed to clone {.url https://github.com/GeoPressure/GeoPressureTemplate/} into {.path {path}}."
-    )
+    clone_error <- readLines(clone_stderr, warn = FALSE)
+    unlink(clone_stderr)
+    cli_abort(c(
+      "x" = "Failed to clone {.url https://github.com/GeoPressure/GeoPressureTemplate/} into {.path {path}}.",
+      if (length(clone_error) > 0) setNames(clone_error, rep(">", length(clone_error)))
+    ))
   }
+  unlink(clone_stderr)
   cli_alert_success(
     "Cloning repo from {.url https://github.com/GeoPressure/GeoPressureTemplate/} into {.path {path}}."
   )

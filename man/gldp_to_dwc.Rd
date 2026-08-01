@@ -4,7 +4,7 @@
 \alias{gldp_to_dwc}
 \title{Transform a GeoLocator Data Package to Darwin Core}
 \usage{
-gldp_to_dwc(pkg, directory, path_type = "most_likely")
+gldp_to_dwc(pkg, directory)
 }
 \arguments{
 \item{pkg}{A GeoLocator Data Package object.}
@@ -12,13 +12,7 @@ gldp_to_dwc(pkg, directory, path_type = "most_likely")
 \item{directory}{Path to local directory to write file(s) to.
 If \code{NULL}, then a data frame is returned instead, which can be useful
 for extending/adapting the Darwin Core mapping before writing with
-\code{\link[readr:write_delim]{readr::write_csv()}}.}
-
-\item{path_type}{The type of path to use for the occurrence data.
-One of \code{"most_likely"}, \code{"mean_simulation"}, \code{"median_simulation"}, or
-\code{"geopressureviz"}. For simulation types, the mean or median position
-(lat/lon) is calculated for each \code{tag_id}-\code{stap_id} combination across
-all simulated paths. Defaults to \code{"most_likely"}. See \link{paths} for more details.}
+\code{\link[readr:write_csv]{readr::write_csv()}}.}
 }
 \value{
 \code{occurrence.csv} file written to disk.
@@ -56,8 +50,8 @@ Key features of the Darwin Core transformation:
 \itemize{
 \item Stationary periods (\code{staps}) are treated as events, with each position
 as an occurrence representing the bird's location during that period.
-\item Each occurrence represents one stationary period from the path data,
-filtered by \code{path_type}.
+\item Each occurrence represents one stationary period from the \code{most_likely}
+path reconstruction.
 \item The \code{eventDate} is expressed as an ISO 8601 interval
 (\code{start/end}) representing the duration of the stationary period.
 \item \code{basisOfRecord} is set to \code{"MachineObservation"} as data are derived
@@ -67,13 +61,17 @@ from automated geolocator sensors.
 \item \code{scientificName} is taken from \code{tags$scientific_name}.
 \item \code{organismID} is set to \code{ring_number} to track individual birds across
 multiple observations and deployments.
+\item \code{organismName} is set to \code{ring_number} as the available label for the
+tracked individual.
 \item \code{occurrenceID} is a unique identifier combining \code{tag_id} and \code{stap_id}.
-\item \code{individualCount} is set to \code{1}.
 \item \code{occurrenceStatus} is set to \code{"present"}.
-\item \code{sex} and \code{lifeStage} are included if available in the \code{tags} resource.
-\item \code{coordinateUncertaintyInMeters} is calculated for simulation path types
-(\code{"mean_simulation"} or \code{"median_simulation"}) as the 95th percentile of
-the distance between each simulation and the aggregated center.
+\item \code{sex}, \code{lifeStage}, and \code{eventRemarks} are included from matching
+observations when available.
+\item \code{minimumElevationInMeters} and \code{maximumElevationInMeters} are estimated
+from \code{pressurepaths$altitude} when available.
+\item \code{coordinateUncertaintyInMeters} is calculated as the 50th percentile of
+the distance between simulation paths and the \code{most_likely} position for
+each stationary period.
 }
 }
 

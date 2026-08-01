@@ -7,7 +7,8 @@
 read_gldp(x = "datapackage.json", force_read = TRUE, drop_measurements = FALSE)
 }
 \arguments{
-\item{x}{Path or URL to a GeoLocator-DP \code{datapackage.json} file.}
+\item{x}{Path to a GeoLocator-DP package directory or \code{datapackage.json}
+file, or a URL to \code{datapackage.json}.}
 
 \item{force_read}{If \code{TRUE} (default), loads resource data into memory so
 the returned object is self-contained in memory. This means that each

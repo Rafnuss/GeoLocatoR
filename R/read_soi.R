@@ -45,6 +45,15 @@ read_soi <- function(
     ))
   }
 
+  # Error for duplicate
+  duplicates <- gdl$GDL_ID[duplicated(gdl$GDL_ID)]
+  if (length(duplicates) > 0) {
+    cli_abort(c(
+      "x" = "Duplicate {.var GDL_ID} found in {.arg gdl}: {unique(duplicates)}",
+      "i" = "{.var GDL_ID} (or {.var tag_id}) needs to be unique."
+    ))
+  }
+
   # Retrieve directory of all data and display warning message if absent
   if (!("directory" %in% names(gdl))) {
     cli_progress_step("Retrieving data directories for SOI tags")
@@ -57,15 +66,6 @@ read_soi <- function(
     gdl <- gdl |> filter(!(.data$GDL_ID %in% unique(m$tag_id)))
   } else {
     m <- NULL
-  }
-
-  # Error for duplicate
-  duplicates <- gdl$GDL_ID[duplicated(gdl$GDL_ID)]
-  if (length(duplicates) > 0) {
-    cli_abort(c(
-      "x" = "Duplicate {.var GDL_ID} found in {.arg gdl}: {unique(duplicates)}",
-      "i" = "{.var GDL_ID} (or {.var tag_id}) needs to be unique."
-    ))
   }
 
   # Read tag data

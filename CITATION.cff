@@ -1,14 +1,14 @@
-# --------------------------------------------
-# CITATION file created with {cffr} R package
+# ------------------------------------------------
+# CITATION.cff file created with {cffr} R package
 # See also: https://docs.ropensci.org/cffr/
-# --------------------------------------------
+# ------------------------------------------------
  
 cff-version: 1.2.0
 message: 'To cite package "GeoLocatoR" in publications use:'
 type: software
 license: GPL-3.0-or-later
 title: 'GeoLocatoR: R package for GeoLocator Data Package'
-version: 1.0.1
+version: 1.0.2
 identifiers:
 - type: url
   value: https://geopressure.org/GeoLocatoR/
@@ -33,10 +33,13 @@ references:
   url: https://www.R-project.org/
   authors:
   - name: R Core Team
+    website: https://ror.org/02zz1nj61
   institution:
     name: R Foundation for Statistical Computing
+    website: https://ror.org/05qewa988
     address: Vienna, Austria
   year: '2026'
+  doi: 10.32614/R.manuals
   version: '>= 4.1.0'
 - type: software
   title: cli
@@ -137,6 +140,7 @@ references:
     email: mathieu@mgravey.com
     orcid: https://orcid.org/0000-0002-0871-1507
   year: '2026'
+  version: '>= 3.5.4'
 - type: software
   title: glue
   abstract: 'glue: Interpreted String Literals'
@@ -572,6 +576,23 @@ references:
     orcid: https://orcid.org/0000-0003-3925-190X
   year: '2026'
   doi: 10.32614/CRAN.package.rmarkdown
+- type: software
+  title: movepub
+  abstract: 'movepub: Prepare Movebank Data for Publication'
+  notes: Suggests
+  url: https://inbo.github.io/movepub/
+  authors:
+  - family-names: Desmet
+    given-names: Peter
+    email: peter.desmet@inbo.be
+    orcid: https://orcid.org/0000-0002-8442-8025
+    affiliation: Research Institute for Nature and Forest (INBO)
+  - family-names: Govaert
+    given-names: Sanne
+    email: sanne.govaert@inbo.be
+    orcid: https://orcid.org/0000-0002-8939-1305
+    affiliation: Research Institute for Nature and Forest (INBO)
+  year: '2026'
 - type: software
   title: spelling
   abstract: 'spelling: Tools for Spell Checking in R'

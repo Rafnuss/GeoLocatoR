@@ -31,7 +31,7 @@ configurations across multiple tags or for programmatic analysis of tag settings
 \details{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-This function uses \code{\link[GeoPressureR:geopressuretemplate]{GeoPressureR::geopressuretemplate_config()}} internally to parse
+This function uses \code{\link[GeoPressureR:geopressuretemplate_config]{GeoPressureR::geopressuretemplate_config()}} internally to parse
 each tag's configuration. It then flattens the nested list structure and applies
 appropriate type conversions for each parameter (e.g., converting dates to strings,
 functions to their deparsed representation).
@@ -64,7 +64,7 @@ View(cfg)
 }
 \seealso{
 \itemize{
-\item \code{\link[GeoPressureR:geopressuretemplate]{GeoPressureR::geopressuretemplate_config()}} for the underlying config parser
+\item \code{\link[GeoPressureR:geopressuretemplate_config]{GeoPressureR::geopressuretemplate_config()}} for the underlying config parser
 \item \href{https://github.com/GeoPressure/GeoPressureTemplate}{GeoPressureTemplate} for the
 template structure
 }

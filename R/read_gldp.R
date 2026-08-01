@@ -10,7 +10,8 @@
 #' 5. upgrades older package versions when needed;
 #' 6. recomputes derived package properties with [update_gldp()].
 #'
-#' @param x Path or URL to a GeoLocator-DP `datapackage.json` file.
+#' @param x Path to a GeoLocator-DP package directory or `datapackage.json`
+#'   file, or a URL to `datapackage.json`.
 #' @param force_read If `TRUE` (default), loads resource data into memory so
 #'   the returned object is self-contained in memory. This means that each
 #' resource is read immediately with [frictionless::read_resource()], cast to
@@ -44,6 +45,16 @@
 #'
 #' @export
 read_gldp <- function(x = "datapackage.json", force_read = TRUE, drop_measurements = FALSE) {
+  if (dir.exists(x)) {
+    x <- file.path(x, "datapackage.json")
+    if (!file.exists(x)) {
+      cli_abort(c(
+        "x" = "Directory {.file {dirname(x)}} does not contain {.file datapackage.json}.",
+        "i" = "Supply a GeoLocator Data Package directory or the path to its {.file datapackage.json}."
+      ))
+    }
+  }
+
   pkg <- frictionless::read_package(x)
   base_dir <- dirname(x)
 
@@ -73,6 +84,15 @@ read_gldp <- function(x = "datapackage.json", force_read = TRUE, drop_measuremen
     pkg$resources <- purrr::map(pkg$resources, \(r) {
       resource_name <- as.character(r$name %||% NA_character_)[1]
       resource_path <- as.character(r$path %||% NA_character_)[1]
+      resource_location <- if (!is.na(resource_path) && nzchar(resource_path)) {
+        if (grepl("^https?://", resource_path)) {
+          resource_path
+        } else {
+          file.path(base_dir, resource_path)
+        }
+      } else {
+        base_dir
+      }
 
       # When modification of the csv were made without adapting the datapackage.json,
       # this create issue in the reading of the resources. For now, only if
@@ -80,28 +100,31 @@ read_gldp <- function(x = "datapackage.json", force_read = TRUE, drop_measuremen
       # But this warning is impossible to know where it occurs which resources
       # and which column. So we add this bad catching of error
       has_parsing_warning <- FALSE
-      df <- withCallingHandlers(
-        frictionless::read_resource(pkg, resource_name),
-        warning = function(w) {
-          msg <- conditionMessage(w)
-          if (grepl("One or more parsing issues", msg, fixed = TRUE)) {
-            has_parsing_warning <<- TRUE
-            invokeRestart("muffleWarning")
+      df <- tryCatch(
+        withCallingHandlers(
+          frictionless::read_resource(pkg, resource_name),
+          warning = function(w) {
+            msg <- conditionMessage(w)
+            if (grepl("One or more parsing issues", msg, fixed = TRUE)) {
+              has_parsing_warning <<- TRUE
+              invokeRestart("muffleWarning")
+            }
           }
+        ),
+        error = function(e) {
+          cli_abort(
+            c(
+              "x" = "Could not read resource {.field {resource_name}}.",
+              "i" = "Location: {.file {resource_location}}",
+              "i" = "The resource descriptor or CSV does not match the declared schema.",
+              "i" = "Original error: {conditionMessage(e)}"
+            ),
+            parent = e
+          )
         }
       )
 
       if (has_parsing_warning) {
-        resource_location <- if (!is.na(resource_path) && nzchar(resource_path)) {
-          if (grepl("^https?://", resource_path)) {
-            resource_path
-          } else {
-            file.path(base_dir, resource_path)
-          }
-        } else {
-          base_dir
-        }
-
         problems <- tryCatch(
           readr::problems(df),
           error = \(e) tibble::tibble()

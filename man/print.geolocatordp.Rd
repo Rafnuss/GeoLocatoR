@@ -16,7 +16,7 @@ Invisibly returns \code{x}.
 }
 \description{
 Prints a human-readable summary of a GeoLocator Data Package, as an
-extension of \code{\link[frictionless:print.datapackage]{frictionless::print.datapackage()}}.
+extension of \code{\link[frictionless:print.datapackage]{print.datapackage()}}.
 }
 \examples{
 pkg <- read_zenodo("17367319", quiet = TRUE)
