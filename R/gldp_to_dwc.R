@@ -353,7 +353,10 @@ gldp_to_dwc <- function(pkg, directory) {
             locationSource = if (isTRUE(location_is_known)) "known" else "reconstructed"
           )
           if (!is.na(observation_dynamic_properties)) {
-            values$observation <- jsonlite::fromJSON(observation_dynamic_properties, simplifyVector = TRUE)
+            values$observation <- jsonlite::fromJSON(
+              observation_dynamic_properties,
+              simplifyVector = TRUE
+            )
           }
           jsonlite::toJSON(values, auto_unbox = TRUE, null = "null")
         }

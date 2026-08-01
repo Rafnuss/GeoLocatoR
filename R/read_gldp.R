@@ -112,12 +112,15 @@ read_gldp <- function(x = "datapackage.json", force_read = TRUE, drop_measuremen
           }
         ),
         error = function(e) {
-          cli_abort(c(
-            "x" = "Could not read resource {.field {resource_name}}.",
-            "i" = "Location: {.file {resource_location}}",
-            "i" = "The resource descriptor or CSV does not match the declared schema.",
-            "i" = "Original error: {conditionMessage(e)}"
-          ), parent = e)
+          cli_abort(
+            c(
+              "x" = "Could not read resource {.field {resource_name}}.",
+              "i" = "Location: {.file {resource_location}}",
+              "i" = "The resource descriptor or CSV does not match the declared schema.",
+              "i" = "Original error: {conditionMessage(e)}"
+            ),
+            parent = e
+          )
         }
       )
 
