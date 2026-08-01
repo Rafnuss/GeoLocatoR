@@ -72,7 +72,7 @@ create_geopressuretemplate <- function(path, pkg = NULL, open = interactive()) {
     unlink(clone_stderr)
     cli_abort(c(
       "x" = "Failed to clone {.url https://github.com/GeoPressure/GeoPressureTemplate/} into {.path {path}}.",
-      if (length(clone_error) > 0) ">" <- clone_error
+      if (length(clone_error) > 0) setNames(clone_error, rep(">", length(clone_error)))
     ))
   }
   unlink(clone_stderr)
