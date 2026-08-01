@@ -19,7 +19,7 @@ test_that("observations getter and setter work correctly", {
   pkg <- pkg_shared
 
   skip_if_not(
-    "observations" %in% frictionless::resources(pkg),
+    "observations" %in% frictionless::resource_names(pkg),
     "Package has no observations resource"
   )
 
@@ -35,7 +35,7 @@ test_that("measurements getter and setter work correctly", {
   pkg <- pkg_shared
 
   skip_if_not(
-    "measurements" %in% frictionless::resources(pkg),
+    "measurements" %in% frictionless::resource_names(pkg),
     "Package has no measurements resource"
   )
 
@@ -51,7 +51,7 @@ test_that("staps getter and setter work correctly", {
   pkg <- pkg_shared
 
   skip_if_not(
-    "staps" %in% frictionless::resources(pkg),
+    "staps" %in% frictionless::resource_names(pkg),
     "Package has no staps resource"
   )
 
@@ -67,7 +67,7 @@ test_that("twilights getter and setter work correctly", {
   pkg <- pkg_shared
 
   skip_if_not(
-    "twilights" %in% frictionless::resources(pkg),
+    "twilights" %in% frictionless::resource_names(pkg),
     "Package has no twilights resource"
   )
 
@@ -83,7 +83,7 @@ test_that("paths getter and setter work correctly", {
   pkg <- pkg_shared
 
   skip_if_not(
-    "paths" %in% frictionless::resources(pkg),
+    "paths" %in% frictionless::resource_names(pkg),
     "Package has no paths resource"
   )
 
@@ -99,7 +99,7 @@ test_that("edges getter and setter work correctly", {
   pkg <- pkg_shared
 
   skip_if_not(
-    "edges" %in% frictionless::resources(pkg),
+    "edges" %in% frictionless::resource_names(pkg),
     "Package has no edges resource"
   )
 
@@ -115,7 +115,7 @@ test_that("pressurepaths getter and setter work correctly", {
   pkg <- pkg_shared
 
   skip_if_not(
-    "pressurepaths" %in% frictionless::resources(pkg),
+    "pressurepaths" %in% frictionless::resource_names(pkg),
     "Package has no pressurepaths resource"
   )
 

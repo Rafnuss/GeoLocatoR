@@ -77,7 +77,7 @@ validate_gldp_meta <- function(pkg) {
     "Lund University",
     "British Antarctic Survey"
   )
-  if ("tags" %in% frictionless::resources(pkg)) {
+  if ("tags" %in% frictionless::resource_names(pkg)) {
     t <- tags(pkg)
     manufacturers <- unique(t$manufacturer)
     invalid_manufacturers <- manufacturers[

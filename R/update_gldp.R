@@ -75,7 +75,7 @@ update_gldp_order_resources <- function(pkg) {
 #' @export
 update_gldp_temporal <- function(pkg) {
   check_gldp(pkg)
-  resources <- frictionless::resources(pkg)
+  resources <- frictionless::resource_names(pkg)
 
   if (!"measurements" %in% resources) {
     pkg$temporal <- NULL
@@ -108,7 +108,7 @@ update_gldp_temporal <- function(pkg) {
 #' @export
 update_gldp_taxonomic <- function(pkg) {
   check_gldp(pkg)
-  resources <- frictionless::resources(pkg)
+  resources <- frictionless::resource_names(pkg)
 
   if (!"tags" %in% resources) {
     pkg$taxonomic <- NULL
@@ -149,7 +149,7 @@ update_gldp_taxonomic <- function(pkg) {
 #' @export
 update_gldp_number_tags <- function(pkg) {
   check_gldp(pkg)
-  resources <- frictionless::resources(pkg)
+  resources <- frictionless::resource_names(pkg)
 
   out <- list()
 

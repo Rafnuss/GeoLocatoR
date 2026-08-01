@@ -193,7 +193,7 @@ gldp_to_dwc <- function(pkg, directory) {
     minimumElevationInMeters = numeric(),
     maximumElevationInMeters = numeric()
   )
-  if ("pressurepaths" %in% frictionless::resources(pkg)) {
+  if ("pressurepaths" %in% frictionless::resource_names(pkg)) {
     pp <- pressurepaths(pkg)
     if ("altitude" %in% names(pp)) {
       # Pressurepaths can include decimal stap_id values during flights.

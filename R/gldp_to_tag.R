@@ -121,7 +121,7 @@ gldp_to_tag <- function(pkg, tag_id = NULL) {
 #' @noRd
 gldp_to_tag_single <- function(pkg, tid) {
   # Get measurements for this tag
-  if ("measurements" %in% frictionless::resources(pkg)) {
+  if ("measurements" %in% frictionless::resource_names(pkg)) {
     meas <- measurements(pkg) |>
       dplyr::filter(.data$tag_id == tid)
   } else {
@@ -268,7 +268,7 @@ gldp_to_tag_single <- function(pkg, tid) {
   }
 
   # Add stap data if available
-  if ("staps" %in% frictionless::resources(pkg)) {
+  if ("staps" %in% frictionless::resource_names(pkg)) {
     stap_data <- staps(pkg) |>
       dplyr::filter(.data$tag_id == tid) |>
       dplyr::select(-"tag_id")
@@ -287,7 +287,7 @@ gldp_to_tag_single <- function(pkg, tid) {
   }
 
   # Add twilight data if available
-  if ("twilights" %in% frictionless::resources(pkg)) {
+  if ("twilights" %in% frictionless::resource_names(pkg)) {
     twilight_data <- twilights(pkg) |>
       dplyr::filter(.data$tag_id == tid) |>
       dplyr::select(-"tag_id")
