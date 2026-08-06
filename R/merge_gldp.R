@@ -73,7 +73,7 @@ merge_gldp <- function(x, y = NULL, ...) {
   # Normalize input packages and cache their available resources.
   purrr::walk(pkgs, check_gldp)
   pkgs <- purrr::map(pkgs, update_gldp)
-  resources_by_pkg <- purrr::map(pkgs, frictionless::resources)
+  resources_by_pkg <- purrr::map(pkgs, frictionless::resource_names)
   resources <- unique(unlist(resources_by_pkg, use.names = FALSE))
 
   # Warn when several spec versions are present.

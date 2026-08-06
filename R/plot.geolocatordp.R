@@ -25,9 +25,9 @@
 #' @export
 plot.geolocatordp <- function(x, type = NULL, ...) {
   if (is.null(type)) {
-    if ("measurements" %in% frictionless::resources(x)) {
+    if ("measurements" %in% frictionless::resource_names(x)) {
       type <- "coverage"
-    } else if ("observations" %in% frictionless::resources(x)) {
+    } else if ("observations" %in% frictionless::resource_names(x)) {
       type <- "ring"
     } else {
       cli_abort("No coverage data available in the GeoLocator Data Package.")

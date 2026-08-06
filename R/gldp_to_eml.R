@@ -213,11 +213,10 @@ gldp_to_eml <- function(pkg, directory) {
 
   # Spatial
   if (!is.null(spatial)) {
-    # Extract bounding box from polygon
-    coords <- spatial$coordinates
-    # coords is array(dim=c(1,5,2))
-    lons <- coords[1, , 1]
-    lats <- coords[1, , 2]
+    # Extract bounding box from the polygon's outer ring.
+    coords <- matrix(unlist(spatial$coordinates[[1]]), ncol = 2, byrow = TRUE)
+    lons <- coords[, 1]
+    lats <- coords[, 2]
 
     coverage$geographicCoverage <- list(
       geographicDescription = "Bounding box of all locations",

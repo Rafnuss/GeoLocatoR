@@ -58,7 +58,7 @@ read_geopressuretemplate <- function(
   }
 
   # pkg has already data
-  if (length(frictionless::resources(pkg)) > 0) {
+  if (length(frictionless::resource_names(pkg)) > 0) {
     cli_bullets(
       c(
         "!" = "The {.pkg pkg} has already resources
@@ -74,7 +74,7 @@ read_geopressuretemplate <- function(
     if (is.na(res) || !res) {
       return(pkg)
     }
-    for (r in frictionless::resources(pkg)) {
+    for (r in frictionless::resource_names(pkg)) {
       pkg <- frictionless::remove_resource(pkg, r)
     }
   }

@@ -16,6 +16,7 @@
 #'   the returned object is self-contained in memory. This means that each
 #' resource is read immediately with [frictionless::read_resource()], cast to
 #' the schema types, stored in `resource$data`, and its `path` field is removed.
+#'   The `measurements` resource is read last.
 #' @param drop_measurements `r lifecycle::badge("experimental")` If `TRUE`,
 #'   drops the `measurements` resource after reading `datapackage.json` and
 #'   before the optional `force_read` step loads resource data into memory. Use
@@ -55,7 +56,14 @@ read_gldp <- function(x = "datapackage.json", force_read = TRUE, drop_measuremen
     }
   }
 
-  pkg <- frictionless::read_package(x)
+  pkg <- withCallingHandlers(
+    frictionless::read_package(x),
+    warning = function(w) {
+      if (inherits(w, "frictionless_warning_version_not_supported")) {
+        invokeRestart("muffleWarning")
+      }
+    }
+  )
   base_dir <- dirname(x)
 
   if (!grepl("geolocator-dp-profile\\.json$", pkg$`$schema`)) {
@@ -81,7 +89,8 @@ read_gldp <- function(x = "datapackage.json", force_read = TRUE, drop_measuremen
   # Goal: return a self-contained package where `resources[[i]]$data` is available
   # and `path` is dropped, while still surfacing readr parsing issues with location.
   if (force_read) {
-    pkg$resources <- purrr::map(pkg$resources, \(r) {
+    read_order <- order(vapply(pkg[["resources"]], \(r) identical(r[["name"]], "measurements"), logical(1)))
+    pkg[["resources"]][read_order] <- purrr::map(pkg[["resources"]][read_order], \(r) {
       resource_name <- as.character(r$name %||% NA_character_)[1]
       resource_path <- as.character(r$path %||% NA_character_)[1]
       resource_location <- if (!is.na(resource_path) && nzchar(resource_path)) {

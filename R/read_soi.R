@@ -61,7 +61,7 @@ read_soi <- function(
   }
 
   # Do not add any data if same id already presents in measurements
-  if ("measurements" %in% frictionless::resources(pkg)) {
+  if ("measurements" %in% frictionless::resource_names(pkg)) {
     m <- measurements(pkg)
     gdl <- gdl |> filter(!(.data$GDL_ID %in% unique(m$tag_id)))
   } else {
@@ -119,12 +119,12 @@ read_soi <- function(
       pkg,
       "measurements",
       m,
-      replace = "measurements" %in% frictionless::resources(pkg)
+      replace = TRUE
     )
   }
 
   # Only add tags and observations data to the tag_id not yet present in tag
-  if ("tags" %in% frictionless::resources(pkg)) {
+  if ("tags" %in% frictionless::resource_names(pkg)) {
     t <- tags(pkg)
     gdl_to <- gdl |> filter(!(.data$GDL_ID %in% t$tag_id))
   } else {
@@ -255,11 +255,11 @@ read_soi <- function(
       pkg,
       "tags",
       t,
-      replace = "tags" %in% frictionless::resources(pkg)
+      replace = TRUE
     )
   }
 
-  if ("observations" %in% frictionless::resources(pkg)) {
+  if ("observations" %in% frictionless::resource_names(pkg)) {
     o <- observations(pkg)
   } else {
     o <- NULL
@@ -348,7 +348,7 @@ read_soi <- function(
       pkg,
       "observations",
       o,
-      replace = "observations" %in% frictionless::resources(pkg)
+      replace = TRUE
     )
   }
 

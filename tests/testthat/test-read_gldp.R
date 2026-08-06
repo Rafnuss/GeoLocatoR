@@ -130,7 +130,7 @@ test_that("read_gldp canonicalizes legacy schema owners", {
 
   writeLines("tag_id\nid-1", file.path(dirname(path), "tags.csv"))
 
-  pkg <- suppressWarnings(read_gldp(path, force_read = FALSE))
+  pkg <- expect_no_warning(read_gldp(path, force_read = FALSE))
 
   expect_equal(
     pkg$`$schema`,

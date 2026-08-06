@@ -153,8 +153,8 @@ test_that("gldp_to_tag extracts stap and twilight data correctly", {
   pkg <- pkg_shared
 
   # Check if package has staps and twilights resources
-  has_staps <- "staps" %in% frictionless::resources(pkg)
-  has_twilights <- "twilights" %in% frictionless::resources(pkg)
+  has_staps <- "staps" %in% frictionless::resource_names(pkg)
+  has_twilights <- "twilights" %in% frictionless::resource_names(pkg)
 
   # Get the first tag_id
   tag_ids <- unique(tags(pkg)$tag_id)

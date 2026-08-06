@@ -15,7 +15,7 @@
     resource_name = resource_name,
     data = value,
     cast_type = TRUE,
-    replace = resource_name %in% frictionless::resources(x)
+    replace = TRUE
   )
 
   post(x)

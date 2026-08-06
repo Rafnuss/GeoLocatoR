@@ -51,10 +51,10 @@ test_that("upgrade_gldp migrates v0.1 package fields to v0.6", {
           stringsAsFactors = FALSE
         )
       )
-    ),
-    directory = "."
+    )
   )
   class(pkg) <- c("geolocatordp", "datapackage", "list")
+  attr(pkg, "directory") <- "."
 
   upgraded <- suppressMessages(upgrade_gldp(pkg, to_version = "v0.6"))
 
@@ -102,10 +102,10 @@ test_that("step v0.4 -> v0.5 reconstructs missing edges$type from j", {
           stringsAsFactors = FALSE
         )
       )
-    ),
-    directory = "."
+    )
   )
   class(pkg) <- c("geolocatordp", "datapackage", "list")
+  attr(pkg, "directory") <- "."
 
   upgraded <- suppressMessages(upgrade_gldp(pkg, to_version = "v0.5"))
   edges_data <- purrr::detect(upgraded$resources, \(r) r$name == "edges")$data
@@ -143,10 +143,10 @@ test_that("step v0.5 -> v0.6 preserves pressurepaths extra schema fields", {
           stringsAsFactors = FALSE
         )
       )
-    ),
-    directory = "."
+    )
   )
   class(pkg) <- c("geolocatordp", "datapackage", "list")
+  attr(pkg, "directory") <- "."
 
   upgraded <- suppressMessages(upgrade_gldp(pkg, to_version = "v0.6"))
   pressurepaths_res <- upgraded$resources[[1]]
@@ -245,10 +245,10 @@ test_that("upgrade_gldp migrates v0.6 package to v1.0 schema refs", {
           stringsAsFactors = FALSE
         )
       )
-    ),
-    directory = "."
+    )
   )
   class(pkg) <- c("geolocatordp", "datapackage", "list")
+  attr(pkg, "directory") <- "."
 
   msgs <- testthat::capture_messages({
     upgraded <- upgrade_gldp(pkg, to_version = "v1.0")
