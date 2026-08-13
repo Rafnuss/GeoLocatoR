@@ -1,5 +1,10 @@
 #' @noRd
-read_zenodo_download_files <- function(zenodo_record, token = NULL, sandbox = FALSE) {
+read_zenodo_download_files <- function(
+  zenodo_record,
+  token = NULL,
+  sandbox = FALSE,
+  timeout = 600
+) {
   token <- resolve_zenodo_token(token, sandbox = sandbox)
   rec_url <- zenodo_record$links$self_html %||% ""
   files <- zenodo_record$files$entries
@@ -44,7 +49,7 @@ read_zenodo_download_files <- function(zenodo_record, token = NULL, sandbox = FA
     }
     req <- httr2::request(url) |>
       httr2::req_user_agent(glue::glue("GeoLocatoR/{utils::packageVersion('GeoLocatoR')}")) |>
-      httr2::req_timeout(60) |>
+      httr2::req_timeout(timeout) |>
       httr2::req_retry(max_tries = 2) |>
       httr2::req_error(body = \(resp) {
         status <- httr2::resp_status(resp)
